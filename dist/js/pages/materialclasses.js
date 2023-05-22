@@ -1,4 +1,5 @@
 //classescode
+var materialClasses = (function(){
 class material {
     constructor(id,code,description,materialType,materialid,status,price) {
         this.id = id;
@@ -52,4 +53,15 @@ class MaterialSerial {
         return this.GroupCode;
     }
 }
+function materialClassesInstence(){
+    return{
+        material: new material(),
+        material_service: new material_service(),
+        MaterialSerial: new MaterialSerial()
+    }
+}
+return {
+    materialClassesInstence : materialClassesInstence
+}
+})();
 //end of classes

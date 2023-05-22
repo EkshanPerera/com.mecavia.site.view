@@ -1,10 +1,12 @@
 $(function () {
     //variables
-    let customerorder_col = new customerorder_service();
-    let finishedgoodsinnote_col = new finishedGoodsInNote_service();
-    let customerorderobj = new customerorder();
-    let copobj = new customerOrderProduct()
-    let finishedgoodsinnoteobj = new finishedgoodsinnote();
+    var customerorderClassesInstence = customerorderClasses.customerorderClassesInstence()
+    let customerorder_col = customerorderClassesInstence.customerorder_service;
+    let customerorderobj = customerorderClassesInstence.customerorder;
+    let fginClassesInstence = fginClasses.fginClassesInstence();
+    let finishedgoodsinnote_col = fginClassesInstence.finishedGoodsInNote_service;
+    let copobj = fginClassesInstence.customerOrderProduct;
+    let finishedgoodsinnoteobj = fginClassesInstence.finishedgoodsinnote;
     let customerOrderProductsobjarr = [];
     let finishedGoodsInNoteProductsobjarr = [];
     var outstangingcount = 0;
@@ -93,7 +95,7 @@ $(function () {
                         var date = day + "/" + (parseInt(month) + 1) + "/" + year;
                         let index = finishedgoodsinnote_col.getFGINsByJobId(selectedcode).length
                         let code = customerorderobj.code;
-                        let fgincode = new FinishedGoodsInSerial().genarateFGINCode(index,code);
+                        let fgincode = fginClassesInstence.FinishedGoodsInSerial.genarateFGINCode(index,code);
                         var panumber = $("#fgin_pano").val();
                         var padate = $("#fgin_padate").val();
                         var fgicode = fgincode;
@@ -222,7 +224,7 @@ $(function () {
     function setGRMValues() {
         setOutstanding(selectedcopcode);
         var index = finishedgoodsinnote_col.getFGINNProductsByOrderCode(selectedcopcode).length;
-        var fginmcode = new FinishedGoodsInSerial().genarateFGINMCode(index,selectedcopcode);
+        var fginmcode = fginClassesInstence.FinishedGoodsInSerial.genarateFGINMCode(index,selectedcopcode);
         var finishedCount = $("#fgin_finishedcount").val();
         var res = finishedgoodsinnote_col.addNewFGINProductstoArray(undefined,fginmcode,selectedcopcode,finishedgoodsinnoteobj,copobj,finishedCount,outstangingcount);
         
@@ -298,7 +300,7 @@ $(function () {
         }
     }
     function setNewValues(panumber,padate,code,enterddate,remark,status,customerOrder,finishedGoodsInNoteProducts,printeddate) {
-        finishedgoodsinnoteobj = new finishedgoodsinnote();
+        finishedgoodsinnoteobj = fginClassesInstence.finishedgoodsinnote;
         if(panumber)finishedgoodsinnoteobj.panumber = panumber;
         if(padate)finishedgoodsinnoteobj.padate = padate;
         if(code)finishedgoodsinnoteobj.code = code;
@@ -337,7 +339,7 @@ $(function () {
             addmoddel = "add";
             let index = finishedgoodsinnote_col.getFGINsByJobId(selectedcode).length
             let code = customerorderobj.code;
-            let fgincode = new FinishedGoodsInSerial().genarateFGINCode(index,code);
+            let fgincode = fginClassesInstence.FinishedGoodsInSerial.genarateFGINCode(index,code);
             $("#fgin_code").val(fgincode);
             enablefillin("#fgin_finishedcount");
             enablefillin("#fgin_pano");

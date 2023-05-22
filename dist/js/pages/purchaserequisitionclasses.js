@@ -1,3 +1,4 @@
+var purchaserequisitionClasses = (function(){
 //classescodematerial
 class purchaserequisition {
     constructor(id,prcode,pocode,supplierid,status,remark,totalAmount,purchaseRequisitionMaterials) {
@@ -98,4 +99,16 @@ class PurchaseRequisitionSerial {
         return this.GroupCode;
     }
 }
+function purchaserequisitionClassesInstence(){
+    return{
+        purchaserequisition: new purchaserequisition(),
+        purchaseRequisitionMaterials: new purchaseRequisitionMaterials(),
+        purchaserequisition_service: new purchaserequisition_service(),
+        PurchaseRequisitionSerial: new PurchaseRequisitionSerial()
+    }
+}
+return {
+    purchaserequisitionClassesInstence : purchaserequisitionClassesInstence
+}
+})();
 //end of classes

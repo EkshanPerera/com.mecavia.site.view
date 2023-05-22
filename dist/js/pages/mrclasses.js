@@ -1,3 +1,4 @@
+var mrClasses = (function(){
 class billofmaterial {
     constructor(id,code,customerOrder,bomMaterials,totalcost,status) {
         this.id = id; 
@@ -219,4 +220,19 @@ class GoodsRecevedNoteSerial {
         return this.GroupCode;
     }
 }
+function mrClassesInstence(){
+    return{
+        billofmaterial: new billofmaterial(),
+        bommaterial: new bommaterial(),
+        materialrequisition: new materialrequisition(),
+        materialRequisitionMaterial: new materialRequisitionMaterial(),
+        materialRequisition_service: new materialRequisition_service(),
+        billofmaterial_service: new billofmaterial_service(),
+        GoodsRecevedNoteSerial: new GoodsRecevedNoteSerial()
+    }
+}
+return {
+    mrClassesInstence : mrClassesInstence
+}
+})();
 //end of classes

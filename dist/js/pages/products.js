@@ -1,8 +1,9 @@
 $(function () {
     //variables
-    let product_col = new product_service();
-    let productobj = new product();
-    let productpriceobj = new productprice();
+    var productClassesInstence = productClasses.productClassesInstence();
+    let product_col = productClassesInstence.product_service;
+    let productobj = productClassesInstence.product;
+    let productpriceobj = productClassesInstence.productprice;
     var addmoddel;
     var selectedcode;
     var t13 = $("#table13").DataTable({
@@ -284,12 +285,12 @@ $(function () {
             if (description) productobj.desc = description;
             if (status) productobj.status = status;
         } else {
-            productobj = new product();
+            productobj = productClassesInstence.product;
             setNewValues(code, name, description, status);
         }
     }
     function setNewPriceValues(code,price,effectiveDate,status){
-        productpriceobj = new productprice();
+        productpriceobj = productClassesInstence.productprice;
         if(productobj.pricelist.length!=0){
             productobj.pricelist = productobj.pricelist.map(priceobj => {
                 if(priceobj.status === "ACTIVE"){
@@ -333,7 +334,7 @@ $(function () {
         setValues(undefined);
         addmoddel = "add";
         let productlist = product_col.allProduct()
-        let productcode = new ProductSerial().genarateProductCode(productlist.length);
+        let productcode = productClassesInstence.ProductSerial.genarateProductCode(productlist.length);
         $("#product_code").val(productcode);
         $("#table13 tbody tr").removeClass('selected');
         enablefillin("#product_name");
@@ -343,7 +344,7 @@ $(function () {
     $(document).on("click", "#addProductPrice", function () {
         addmoddel = "addprice";
         setProductpricevalues();
-        let productcode = new ProductSerial().genarateProductPriceCode(productobj.pricelist.length,productobj.code);
+        let productcode = productClassesInstence.ProductSerial.genarateProductPriceCode(productobj.pricelist.length,productobj.code);
         enablefillin("#product_price_amt");
         var year = new Date().getFullYear();
         var month =  new Date().getMonth();

@@ -1,3 +1,4 @@
+var customerorderClasses = (function(){
 //classescodematerial
 class customerorder {
     constructor(id,code,JobID,JobNumber,customerid,totalAmount,grossAmount,remark,customerOrderProducts,printeddate,status) {
@@ -100,4 +101,16 @@ class CustomerOrderSerial {
         return this.GroupCode;
     }
 }
+function customerorderClassesInstence(){
+    return{
+        customerorder: new customerorder(),
+        customerOrderProducts: new customerOrderProducts(),
+        customerorder_service: new customerorder_service(),
+        CustomerOrderSerial: new CustomerOrderSerial(),
+    }
+}
+return {
+    customerorderClassesInstence : customerorderClassesInstence
+}
+})();
 //end of classes

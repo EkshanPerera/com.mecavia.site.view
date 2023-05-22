@@ -1,10 +1,11 @@
 $(function () {
     //variables
-    let billofmaterial_col = new billofmaterial_service();
-    let materialrequisition_col = new materialRequisition_service();
-    let billofmaterialobj = new billofmaterial();
-    let prmobj = new bommaterial()
-    let materialrequisitionobj = new materialrequisition();
+    var mrClassesInstence = mrClasses.mrClassesInstence();
+    let billofmaterial_col = mrClassesInstence.billofmaterial_service;
+    let materialrequisition_col = mrClassesInstence.materialRequisition_service;
+    let billofmaterialobj = mrClassesInstence.billofmaterial;
+    let prmobj = mrClassesInstence.bommaterial;
+    let materialrequisitionobj = mrClassesInstence.materialrequisition;
     let bommaterialsobjarr = [];
     let materialRequisitionMaterialsobjarr = [];
     var outstangingcount = 0;
@@ -235,7 +236,7 @@ $(function () {
     function setGRMValues() {
         setOutstanding(selectedpomcode);
         var index = materialrequisition_col.getNewMRNMaterialsByOrderCode(selectedpomcode).length;
-        var mrmcode = new GoodsRecevedNoteSerial().genarateMRMCode(index,selectedpomcode);
+        var mrmcode = mrClassesInstence.GoodsRecevedNoteSerial.genarateMRMCode(index,selectedpomcode);
         var arrivedCount = $("#mr_arrivedcount").val();
         var res = materialrequisition_col.addNewMRMaterialstoArray(undefined,mrmcode,selectedpomcode,materialrequisitionobj,prmobj,arrivedCount,outstangingcount);
         
@@ -352,7 +353,7 @@ $(function () {
             addmoddel = "add";
             let index = materialrequisition_col.getMRsByPOCode(selectedcode).length
             let prcode = billofmaterialobj.prcode;
-            let mrcode = new GoodsRecevedNoteSerial().genarateMRCode(index,prcode);
+            let mrcode = mrClassesInstence.GoodsRecevedNoteSerial.genarateMRCode(index,prcode);
             $("#mr_code").val(mrcode);
             enablefillin("#mr_arrivedcount");
             enablefillin("#mr_invoiceno");

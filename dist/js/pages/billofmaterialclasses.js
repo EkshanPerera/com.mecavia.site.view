@@ -1,4 +1,5 @@
 //classescodematerial
+var billofmaterialClasses = (function(){
 class billofmaterial {
     constructor(id,code,customerOrder,bomMaterials,totalcost,status) {
         this.id = id; 
@@ -85,4 +86,16 @@ class BillOfMaterialSerial {
         return this.GroupCode;
     }
 }
+function billofmaterialClassesInstence(){
+    return{
+        billofmaterial: new billofmaterial(),
+        bommaterial: new bommaterial(),
+        billofmaterial_service: new billofmaterial_service(),
+        BillOfMaterialSerial: new BillOfMaterialSerial()
+    }
+}
+return {
+    billofmaterialClassesInstence : billofmaterialClassesInstence
+}
+})();
 //end of classes

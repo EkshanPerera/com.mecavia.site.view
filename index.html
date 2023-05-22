@@ -210,7 +210,7 @@
                             <a href="#" class="nav-link active">
                                 <i class="nav-icon  fas fa-building"></i>
                                 <p>
-                                    Procurement
+                                    Procurements
                                     <i class="fas fa-angle-left right"></i>
                                 </p>
                             </a>
@@ -224,11 +224,13 @@
                                         </p>
                                     </a>
                                     <ul class="nav nav-treeview" style="display: none;">
-                                        <li class="nav-item">
+                                        <li class="nav-item" id="lnkcreatepr">
                                             <a href="#" class="nav-link">
                                                 <i class="far fa-circle nav-icon"></i>
                                                 <p>Create</p>
                                             </a>
+                                        </li>
+                                        <li class="nav-item" id="lnkprintpr"></li>
                                             <a href="#" class="nav-link">
                                                 <i class="far fa-circle nav-icon"></i>
                                                 <p>Print</p>
@@ -245,11 +247,13 @@
                                         </p>
                                     </a>
                                     <ul class="nav nav-treeview" style="display: none;">
-                                        <li class="nav-item">
+                                        <li class="nav-item" id="lnkprapprove">
                                             <a href="#" class="nav-link">
                                                 <i class="far fa-circle nav-icon"></i>
                                                 <p>PR Approve</p>
                                             </a>
+                                        </li>
+                                        <li class="nav-item" id="lnkprintpo">
                                             <a href="#" class="nav-link">
                                                 <i class="far fa-circle nav-icon"></i>
                                                 <p>Print</p>
@@ -258,7 +262,7 @@
                                     </ul>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="#" class="nav-link">
+                                    <a href="#" class="nav-link" >
                                         <i class="nav-icon fas fa-circle"></i>
                                         <p>
                                             GRN
@@ -266,11 +270,13 @@
                                         </p>
                                     </a>
                                     <ul class="nav nav-treeview" style="display: none;">
-                                        <li class="nav-item">
-                                            <a href="#" class="nav-link">
+                                        <li class="nav-item" id="lnkgrn">
+                                            <a href="#" class="nav-link" >
                                                 <i class="far fa-circle nav-icon"></i>
                                                 <p>GRN width PO</p>
                                             </a>
+                                        </li>
+                                        <li class="nav-item" id="lnkprintgrn">
                                             <a href="#" class="nav-link">
                                                 <i class="far fa-circle nav-icon"></i>
                                                 <p>Print</p>
@@ -289,13 +295,13 @@
                                 </p>
                             </a>
                             <ul class="nav nav-treeview">
-                                <li class="nav-item">
+                                <li class="nav-item" id="lnkmr">
                                     <a href="#" class="nav-link ">
                                         <i class="fa fa-users nav-icon"></i>
                                         <p>Material Requisition</p>
                                     </a>
                                 </li>
-                                <li class="nav-item">
+                                <li class="nav-item" id="mron">
                                     <a href="#" class="nav-link">
                                         <i class="fa fa-users nav-icon"></i>
                                         <p>Material Out Note</p>
@@ -312,13 +318,13 @@
                                 </p>
                             </a>
                             <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <a href="#" class="nav-link ">
+                                <li class="nav-item" id="lnkcreatejob">
+                                    <a href="#" class="nav-link">
                                         <i class="fa fa-users nav-icon"></i>
                                         <p>Job Creation</p>
                                     </a>
                                 </li>
-                                <li class="nav-item">
+                                <li class="nav-item" id="lnkbom">
                                     <a href="#" class="nav-link ">
                                         <i class="fa fa-users nav-icon"></i>
                                         <p>BOM Details</p>
@@ -346,7 +352,7 @@
                                 </p>
                             </a>
                             <ul class="nav nav-treeview">
-                                <li class="nav-item">
+                                <li class="nav-item" id="lnkcreatejobid">
                                     <a href="#" class="nav-link ">
                                         <i class="fa fa-users nav-icon"></i>
                                         <p>Job ID cration</p>
@@ -358,7 +364,7 @@
                                         <p>Print Order Form</p>
                                     </a>
                                 </li>
-                                <li class="nav-item">
+                                <li class="nav-item" id="lnkfgin">
                                     <a href="#" class="nav-link">
                                         <i class="fa fa-users nav-icon"></i>
                                         <p>FGI Note</p>
@@ -548,14 +554,14 @@
     <script src="plugins/datatables-select/js/dataTables.select.min.js"></script>
     <script src="plugins/datatables-select/js/select.bootstrap4.js"></script>
     <script src="plugins/datatables-select/js/select.bootstrap4.min.js"></script>
+    <script src="plugins/jquery.print/jQuery.print.min.js"></script>
     <script src="plugins/sweetalert2/sweetalert2.min.js"></script>
     <!-- jquery-validation -->
     <script src="plugins/jquery-validation/jquery.validate.min.js"></script>
     <script src="plugins/jquery-validation/additional-methods.min.js"></script>
     <!-- AdminLTE App -->
     <script src="dist/js/adminlte.min.js"></script>
-    <!-- AdminLTE for demo purposes -->
-    <script src="dist/js/demo.js"></script>
+
     <script src="dist/js/index.js"></script>
 </body>
 

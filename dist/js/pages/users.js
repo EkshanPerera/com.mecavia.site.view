@@ -1,14 +1,14 @@
 $(function () {
 //variables
-var usergroupclassesInstence = usergroupclasses.usergroupclassesInstence();
-var userclasses = userclasses.userclassesInstence();
-let usr_col = userclasses.usr_service;
-let usr_obj = userclasses.user;
-let usr_addressobj = userclasses.user_addresses;
-let usr_contactobj = userclasses.user_contacts;
-let grp_col = usergroupclassesInstence.usr_grp_service;
-let usr_grpobj = usergroupclassesInstence.usr_grp;
-let usr_roleobj = usergroupclassesInstence.user_role;
+var usergroupClassesInstence = usergroupClasses.usergroupClassesInstence();
+var userClassesInstence = userClasses.userClassesInstence();
+let usr_col = userClassesInstence.usr_service;
+let usr_obj = userClassesInstence.user;
+let usr_addressobj = userClassesInstence.user_addresses;
+let usr_contactobj = userClassesInstence.user_contacts;
+let grp_col = usergroupClassesInstence.usr_grp_service;
+let usr_grpobj = usergroupClassesInstence.usr_grp;
+let usr_roleobj = usergroupClassesInstence.user_role;
 var addmoddel;
 var selectedcode;
 var selectedaddrcode;
@@ -580,7 +580,7 @@ $(function () {
             if (status) usr_obj.status = status;
 
         } else {
-            usr_obj = new user();
+            usr_obj = userClassesInstence.user;
             setNewValues(user_code, user_firstname, user_lastname, user_email, user_brole, user_userGroupid, user_roleid, password, firstLogin, status);
         }
     }
@@ -594,7 +594,7 @@ $(function () {
             if (usr_addr_status) usr_addressobj.status = usr_addr_status;
             if (usr_addr_isdef) usr_addressobj.isdef = usr_addr_isdef;
         } else {
-            usr_addressobj = new user_addresses();
+            usr_addressobj = userClassesInstence.user_addresses;
             setNewAddrValues(usr_addr_line01, usr_addr_line02, usr_addr_line03, usr_addr_line04, usr_addr_code, usr_addr_status, usr_addr_isdef);
             usr_obj.addresses.push(usr_addressobj);
         }
@@ -607,7 +607,7 @@ $(function () {
             if (usr_cont_status) usr_contactobj.status = usr_cont_status;
             if (usr_cont_isdef) usr_contactobj.isdef = usr_cont_isdef;
         } else {
-            usr_contactobj = new user_contacts();
+            usr_contactobj = userClassesInstence.user_contacts;
             setNewContValues(usr_cont_desc, usr_cont_tpno, usr_cont_code, usr_cont_status, usr_cont_isdef);
             usr_obj.contactNumbers.push(usr_contactobj);
         }
@@ -723,7 +723,7 @@ $(function () {
         setValues();
         addmoddel = "add";
         let usrlist = usr_col.allUsers()
-        let usrcode = new UsrSerial().genarateUserCode(usrlist.length);
+        let usrcode = userClassesInstence.UsrSerial.genarateUserCode(usrlist.length);
         $("#user_code").val(usrcode);
         $("#table4 tbody tr").removeClass('selected');
         enablefillin("#user_firstname");
@@ -741,7 +741,7 @@ $(function () {
 
     $(document).on("click", "#addUserAddrbtn", function () {
         if (selectedcode) {
-            let addrcode = new UsrSerial().genarateUserAddrCode(usr_obj.addresses.length, usr_obj.code);
+            let addrcode = userClassesInstence.UsrSerial.genarateUserAddrCode(usr_obj.addresses.length, usr_obj.code);
             selectedaddrcode = "";
             setAddressValues();
             addmoddel = "modaddr";
@@ -762,7 +762,7 @@ $(function () {
     });
     $(document).on("click", "#addUserContbtn", function () {
         if (selectedcode) {
-            let contcode = new UsrSerial().genarateUserContCode(usr_obj.contactNumbers.length, usr_obj.code);
+            let contcode = userClassesInstence.UsrSerial.genarateUserContCode(usr_obj.contactNumbers.length, usr_obj.code);
             selectedcontcode = "";
             setContactValues();
             addmoddel = "modcont";

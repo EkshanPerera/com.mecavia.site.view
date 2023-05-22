@@ -1,7 +1,8 @@
 $(function () {
     //variables
-    let uom_col = new uom_service();
-    let uomobj = new uom();
+    var uomClassesInstence = uomClasses.uomClassesInstence()
+    let uom_col = uomClassesInstence.uom_service;
+    let uomobj = uomClassesInstence.uom;
     var addmoddel;
     var selectedcode;
     var t7 = $("#table7").DataTable({
@@ -194,7 +195,7 @@ $(function () {
             if (description) uomobj.description = description;
             if (status) uomobj.status = status;
         } else {
-            uomobj = new uom();
+            uomobj = uomClassesInstence.uom;
             setNewValues(code, scode, description, status);
         }
     }
@@ -223,7 +224,7 @@ $(function () {
         setValues(undefined);
         addmoddel = "add";
         let uomlist = uom_col.allUOM()
-        let uomcode = new UOMSerial().genarateUOMCode(uomlist.length);
+        let uomcode = uomClassesInstence.UOMSerial.genarateUOMCode(uomlist.length);
         console.log(uom_col.allUOM());
         $("#uom_code").val(uomcode);
         $("#table7 tbody tr").removeClass('selected');

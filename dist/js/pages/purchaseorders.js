@@ -1,12 +1,15 @@
 $(function () {
     //variables
-    let purchaserequisition_col = new purchaserequisition_service();
-    let purchaserequisitionobj = new purchaserequisition();
+    var purchaseorderClassesInstence = purchaseorderClasses.purchaseorderClassesInstence();
+    let purchaserequisition_col = purchaseorderClassesInstence.purchaserequisition_service;
+    let purchaserequisitionobj = purchaseorderClassesInstence.purchaserequisition;
     let purchaseRequisitionMaterialsobjarr = [];
-    let material_col = new material_service();
-    let material_obj = new material();
-    let cli_col = new cli_service();
-    let cli_obj = new client();
+    var materialClassesInstence = materialClasses.materialClassesInstence();
+    let material_obj = materialClassesInstence.material;
+    let material_col = materialClassesInstence.material_service;
+    var clientClassesInstence = clientClasses.clientClassesInstence();
+    let cli_col = clientClassesInstence.cli_service;
+    let cli_obj = clientClassesInstence.client;
 
     var addmoddel;
     var selectedcode;
@@ -226,7 +229,7 @@ $(function () {
             if (status) purchaserequisitionobj.status = status;
             if (!purchaserequisitionobj.printeddate ) purchaserequisitionobj.printeddate = printeddate;
         } else {
-            purchaserequisitionobj = new purchaserequisition();
+            purchaserequisitionobj = purchaseorderClassesInstence.purchaserequisition;
             setNewValues(status);
         }
     }

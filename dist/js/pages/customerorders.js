@@ -1,12 +1,15 @@
 $(function () {
     //variables
-    let customerorder_col = new customerorder_service();
-    let customerorderobj = new customerorder();
+    var customerorderClassesInstence = customerorderClasses.customerorderClassesInstence()
+    let customerorder_col = customerorderClassesInstence.customerorder_service;
+    let customerorderobj = customerorderClassesInstence.customerorder;
     let customerOrderProductsobjarr = [];
-    let product_col = new product_service();
-    let product_obj = new product();
-    let cli_col = new cli_service();
-    let cli_obj = new client();
+    var productClassesInstence = productClasses.productClassesInstence();
+    let product_col = productClassesInstence.product_service;
+    let productobj = productClassesInstence.product;
+    var clientClassesInstence = clientClasses.clientClassesInstence();
+    let cli_col = clientClassesInstence.cli_service;
+    let cli_obj = clientClassesInstence.client;
     var unitrate; 
     var addmoddel;
     var selectedcode;
@@ -421,7 +424,7 @@ $(function () {
             if (jobno) customerorderobj.jobNumber = jobno;
             if (customerOrderProducts) customerorderobj.customerOrderProducts = customerOrderProducts;
         } else {
-            customerorderobj = new customerorder();
+            customerorderobj = customerorderClassesInstence.customerorder;
             setNewValues(code, remark, totalamount, status, customerid, customerOrderProducts, jobno);
         }
     }
@@ -432,7 +435,7 @@ $(function () {
     }
     function genaratecode() {
         let customerorderlist = customerorder_col.allCustomerOrder()
-        let customerordercode = new CustomerOrderSerial().genarateCustomerOrderCode(customerorderlist.length);
+        let customerordercode = customerorderClassesInstence.CustomerOrderSerial.genarateCustomerOrderCode(customerorderlist.length);
         return customerordercode;
     }
     //end of functions

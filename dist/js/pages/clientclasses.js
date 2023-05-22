@@ -1,4 +1,5 @@
 //classes
+var clientClasses = (function(){
 class client {
     constructor(id, code, firstname, middlename, lastname, email, businessRole, status, addresses, contactNumbers) {
         this.id = id;
@@ -119,4 +120,17 @@ class CliSerial {
         return this.GroupCode;
     }
 }
+function clientClassesInstence(){
+    return{
+        client: new client(),
+        client_addresses: new client_addresses(),
+        client_contacts: new client_contacts(),
+        cli_service: new cli_service(),
+        CliSerial: new CliSerial()
+    }
+}
+return {
+    clientClassesInstence : clientClassesInstence
+}
+})();
 //end of classes

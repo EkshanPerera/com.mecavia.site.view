@@ -1,12 +1,15 @@
 $(function () {
     //variables
-    let purchaserequisition_col = new purchaserequisition_service();
-    let purchaserequisitionobj = new purchaserequisition();
+    var purchaserequisitionClassesInstence = purchaserequisitionClasses.purchaserequisitionClassesInstence();
+    let purchaserequisition_col = purchaserequisitionClassesInstence.purchaserequisition_service;
+    let purchaserequisitionobj = purchaserequisitionClassesInstence.purchaserequisition;
     let purchaseRequisitionMaterialsobjarr = [];
-    let material_col = new material_service();
-    let material_obj = new material();
-    let cli_col = new cli_service();
-    let cli_obj = new client();
+    var materialClassesInstence = materialClasses.materialClassesInstence();
+    let material_obj = materialClassesInstence.material;
+    let material_col = materialClassesInstence.material_service;
+    var clientClassesInstence = clientClasses.clientClassesInstence();
+    let cli_col = clientClassesInstence.cli_service;
+    let cli_obj = clientClassesInstence.client;
 
     var addmoddel;
     var selectedcode;

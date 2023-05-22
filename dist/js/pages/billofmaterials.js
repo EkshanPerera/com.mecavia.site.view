@@ -1,16 +1,21 @@
 $(function () {
     //variables
-    let customerorder_col = new customerorder_service();
-    let customerorderobj = new customerorder();
-    let billofmaterial_col = new billofmaterial_service();
-    let billofmaterialobj = new billofmaterial()
+    var customerorderClassesInstence = customerorderClasses.customerorderClassesInstence()
+    let customerorder_col = customerorderClassesInstence.customerorder_service;
+    let customerorderobj = customerorderClassesInstence.customerorder;
+    var billofmaterialClassesInstence = billofmaterialClasses.billofmaterialClassesInstence();
+    let billofmaterial_col = billofmaterialClassesInstence.billofmaterial_service;
+    let billofmaterialobj = billofmaterialClassesInstence.billofmaterial;
     let bomMaterialobjArry = [];
-    let product_col = new product_service();
-    let product_obj = new product();
-    let cli_col = new cli_service();
-    let cli_obj = new client();
-    let material_col = new material_service();
-    let material_obj = new material();
+    var productClassesInstence = productClasses.productClassesInstence();
+    let product_col = productClassesInstence.product_service;
+    let product_obj = productClassesInstence.product;
+    var materialClassesInstence = materialClasses.materialClassesInstence();
+    let material_obj = materialClassesInstence.material;
+    let material_col = materialClassesInstence.material_service;
+    var clientClassesInstence = clientClasses.clientClassesInstence();
+    let cli_col = clientClassesInstence.cli_service;
+    let cli_obj = clientClassesInstence.client;
 
     var addmoddel;
     var selectedcode;
@@ -285,7 +290,7 @@ $(function () {
         }
     }
     function setNewValues(code,customerOrder,bomMaterials,totalcost,status) {
-        billofmaterialobj = new billofmaterial();
+        billofmaterialobj = billofmaterialClassesInstence.billofmaterial;
         if(code)billofmaterialobj.code = code;
         if(customerOrder)billofmaterialobj.customerOrder = customerOrder;
         if(bomMaterials)billofmaterialobj.bomMaterials = bomMaterials;
@@ -305,7 +310,7 @@ $(function () {
         }
     }
     function genaratecode() {
-        let code = new BillOfMaterialSerial().genarateBillOfMaterialCode(0, selectedcode);
+        let code = billofmaterialClassesInstence.BillOfMaterialSerial.genarateBillOfMaterialCode(0, selectedcode);
         return code;
     }
     function enablefillin(fillinid) {

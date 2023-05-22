@@ -1,5 +1,5 @@
 //classes
-var usergroupclasses = (function(){
+var usergroupClasses = (function(){
 class usr_grp {
     constructor(id, code, description, status, userslist, roleslist) {
         this.id = id;
@@ -107,18 +107,18 @@ class UsrGrpSerial {
         return this.GroupCode;
     }
 }
-function usergroupclassesInstence(){
-    return{
-        usr_grp: new usr_grp(),
-        abstract_user: new abstract_user(),
-        user_role: new user_role(),
-        usr_grp_service: new usr_grp_service(),
-        UsrGrpSerial: new UsrGrpSerial()
-    }
-}
-return {
-    usergroupclassesInstence : usergroupclassesInstence
-}
-});
+function usergroupClassesInstence(){
+    return {
+      usr_grp: new usr_grp(),
+      abstract_user: new abstract_user(),
+      user_role: new user_role(),
+      usr_grp_service: new usr_grp_service(),
+      UsrGrpSerial: new UsrGrpSerial()
+    };
+  }
+  return {
+    usergroupClassesInstence: usergroupClassesInstence
+  };
+})();
 
 //end of classes

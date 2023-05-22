@@ -1,9 +1,11 @@
 $(function () {
     //variables
-    let material_col = new material_service();
-    let materialobj = new material();
-    let uomobj = new uom();
-    let uom_col = new uom_service();
+    var materialClassesInstence = materialClasses.materialClassesInstence();
+    let material_col = materialClassesInstence.material_service;
+    let materialobj = materialClassesInstence.material;
+    var uomClassesInstence = uomClasses.uomClassesInstence()
+    let uom_col = uomClassesInstence.uom_service;
+    let uomobj = uomClassesInstence.uom;
     var addmoddel;
     var selectedcode;
     var t8 = $("#table8").DataTable({
@@ -248,7 +250,7 @@ $(function () {
             if (description) materialobj.uomid = uomid;
             if (status) materialobj.status = status;
         } else {
-            materialobj = new material();
+            materialobj = materialClassesInstence.material;
             setNewValues(code, materialType, description, uomid, status);
         }
     }
@@ -287,7 +289,7 @@ $(function () {
         setValues(undefined);
         addmoddel = "add";
         let materiallist = material_col.allMaterial()
-        let materialcode = new MaterialSerial().genarateMaterialCode(materiallist.length);
+        let materialcode = materialClassesInstence.MaterialSerial.genarateMaterialCode(materiallist.length);
         console.log(material_col.allMaterial());
         $("#material_code").val(materialcode);
         $("#table8 tbody tr").removeClass('selected');

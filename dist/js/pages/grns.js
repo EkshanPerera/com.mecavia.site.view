@@ -1,10 +1,11 @@
 $(function () {
     //variables
-    let purchaserequisition_col = new purchaserequisition_service();
-    let goodsreceivednote_col = new goodsReceivedNote_service();
-    let purchaserequisitionobj = new purchaserequisition();
-    let prmobj = new purchaseRequisitionMaterial()
-    let goodsreceivednoteobj = new goodsreceivednote();
+    var grnClassesInstence = grnClasses.grnClassesInstence();
+    let purchaserequisition_col = grnClassesInstence.purchaserequisition_service;
+    let goodsreceivednote_col = grnClassesInstence.goodsReceivedNote_service;
+    let purchaserequisitionobj = grnClassesInstence.purchaserequisition;
+    let prmobj = grnClassesInstence.purchaseRequisitionMaterial;
+    let goodsreceivednoteobj = grnClassesInstence.goodsreceivednote;
     let purchaseRequisitionMaterialsobjarr = [];
     let goodsReceivedNoteMaterialsobjarr = [];
     var outstangingcount = 0;
@@ -235,7 +236,7 @@ $(function () {
     function setGRMValues() {
         setOutstanding(selectedpomcode);
         var index = goodsreceivednote_col.getNewGRNNMaterialsByOrderCode(selectedpomcode).length;
-        var grnmcode = new GoodsRecevedNoteSerial().genarateGRNMCode(index,selectedpomcode);
+        var grnmcode = grnClassesInstence.GoodsRecevedNoteSerial.genarateGRNMCode(index,selectedpomcode);
         var arrivedCount = $("#grn_arrivedcount").val();
         var res = goodsreceivednote_col.addNewGRNMaterialstoArray(undefined,grnmcode,selectedpomcode,goodsreceivednoteobj,prmobj,arrivedCount,outstangingcount);
         
@@ -312,7 +313,7 @@ $(function () {
         }
     }
     function setNewValues(invoicenumber,invocedate,code,mradate,mrano,enterddate,remark,status,purchaseRequisition,goodsReceivedNoteMaterials,printeddate) {
-        goodsreceivednoteobj = new goodsreceivednote();
+        goodsreceivednoteobj = grnClassesInstence.goodsreceivednote;
         if(invoicenumber)goodsreceivednoteobj.invoicenumber = invoicenumber;
         if(invocedate)goodsreceivednoteobj.invocedate = invocedate;
         if(code)goodsreceivednoteobj.code = code;
@@ -352,7 +353,7 @@ $(function () {
             addmoddel = "add";
             let index = goodsreceivednote_col.getGRNsByPOCode(selectedcode).length
             let prcode = purchaserequisitionobj.prcode;
-            let grncode = new GoodsRecevedNoteSerial().genarateGRNCode(index,prcode);
+            let grncode = grnClassesInstence.GoodsRecevedNoteSerial.genarateGRNCode(index,prcode);
             $("#grn_code").val(grncode);
             enablefillin("#grn_arrivedcount");
             enablefillin("#grn_invoiceno");

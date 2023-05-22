@@ -1,4 +1,5 @@
 //classescodeproduct
+var fginClasses = (function(){
 class customerorder {
     constructor(id, code, jobID, jobNumber, customerid, totalAmount, grossAmount, remark, customerOrderProducts, printeddate, status) {
         this.id = id;
@@ -228,4 +229,20 @@ class FinishedGoodsInSerial {
         return this.GroupCode;
     }
 }
+function fginClassesInstence(){
+    return{
+        customerorder: new customerorder(),
+        customerOrderProduct: new customerOrderProduct(),
+        finishedgoodsinnote: new finishedgoodsinnote(),
+        finishedGoodsInNoteProduct: new finishedGoodsInNoteProduct(),
+        finishedGoodsInNote_service: new finishedGoodsInNote_service(),
+        finishedGoodsInNote_service: new finishedGoodsInNote_service(),
+        customerorder_service: new customerorder_service(),
+        FinishedGoodsInSerial:new FinishedGoodsInSerial()
+    }
+}
+return {
+    fginClassesInstence : fginClassesInstence
+}
+})();
 //end of classes

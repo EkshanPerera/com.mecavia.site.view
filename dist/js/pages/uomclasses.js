@@ -1,4 +1,5 @@
 //classes
+var uomClasses = (function(){
 class uom {
     constructor(id, code,scode, description, status) {
         this.id = id;
@@ -50,4 +51,15 @@ class UOMSerial {
         return this.GroupCode;
     }
 }
+function uomClassesInstence(){
+    return{
+        uom: new uom(),
+        uom_service: new uom_service(),
+        UOMSerial: new UOMSerial()
+    }
+}
+return {
+    uomClassesInstence : uomClassesInstence
+}
+})();
 //end of classes

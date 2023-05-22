@@ -1,4 +1,5 @@
 //classescodematerial
+var grnClasses = (function(){
 class purchaserequisition {
     constructor(id, prcode, pocode, supplierid, status, remark, totalAmount, purchaseRequisitionMaterials, printeddate) {
         this.id = id;
@@ -224,4 +225,19 @@ class GoodsRecevedNoteSerial {
         return this.GroupCode;
     }
 }
+function grnClassesInstence(){
+    return{
+        purchaserequisition: new purchaserequisition(),
+        purchaseRequisitionMaterial: new purchaseRequisitionMaterial(),
+        goodsreceivednote: new goodsreceivednote(),
+        goodsReceivedNoteMaterial: new goodsReceivedNoteMaterial(),
+        goodsReceivedNote_service: new goodsReceivedNote_service(),
+        purchaserequisition_service: new purchaserequisition_service(),
+        GoodsRecevedNoteSerial: new GoodsRecevedNoteSerial()
+    }
+}
+return {
+    grnClassesInstence : grnClassesInstence
+}
+})();
 //end of classes

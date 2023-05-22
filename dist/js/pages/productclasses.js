@@ -1,4 +1,5 @@
 //classescode
+var productClasses = (function(){
 class product {
     constructor(id,code,description,name,status,pricelist) {
         this.id = id;
@@ -88,4 +89,16 @@ class ProductSerial {
         return this.GroupCode;
     }
 }
+function productClassesInstence(){
+    return{
+        product: new product(),
+        productprice: new productprice(),
+        product_service: new product_service(),
+        ProductSerial: new ProductSerial()
+    }
+}
+return {
+    productClassesInstence : productClassesInstence
+}
+})();
 //end of classes
