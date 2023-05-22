@@ -1,8 +1,9 @@
 $(function () {
     //variables
-    let grp_col = new usr_grp_service();
-    let usr_grpobj = new usr_grp();
-    let usr_roleobj = new user_role();
+    var usergroupclassesInstence = usergroupclasses.usergroupclassesInstence();
+    let grp_col = usergroupclassesInstence.usr_grp_service;
+    let usr_grpobj = usergroupclassesInstence.usr_grp;
+    let usr_roleobj = usergroupclassesInstence.user_role;
     var addmoddel;
     var selectedcode;
     var selectedrolecode;
@@ -295,7 +296,7 @@ $(function () {
             if (description) usr_grpobj.description = description;
             if (status) usr_grpobj.status = status;
         } else {
-            usr_grpobj = new usr_grp();
+            usr_grpobj = usergroupclassesInstence.usr_grp;
             setNewValues(code, description, status);
         }
     }
@@ -305,7 +306,7 @@ $(function () {
             if (description) usr_roleobj.description = description;
             if (status) usr_roleobj.status = status;
         } else {
-            usr_roleobj = new user_role();
+            usr_roleobj = usergroupclassesInstence.user_role;
             setNewRoleValues(code, description, status);
             usr_grpobj.roleslist.push(usr_roleobj);
         }
@@ -351,7 +352,7 @@ $(function () {
         setValues(undefined);
         addmoddel = "add";
         let grplist = grp_col.allUsrGrp()
-        let grpcode = new UsrGrpSerial().genarateUserGroupCode(grplist.length);
+        let grpcode = usergroupclassesInstence.UsrGrpSerial.genarateUserGroupCode(grplist.length);
         console.log(grp_col.allUsrGrp());
         $("#usr_grp_code").val(grpcode);
         $("#table1 tbody tr").removeClass('selected');
@@ -360,7 +361,7 @@ $(function () {
     });
     $(document).on("click", "#addUserRoles", function () {
         if (selectedcode) {
-            let rolecode = new UsrGrpSerial().genarateUserRoleCode(usr_grpobj.roleslist.length, usr_grpobj.code);
+            let rolecode = usergroupclassesInstence.UsrGrpSerial.genarateUserRoleCode(usr_grpobj.roleslist.length, usr_grpobj.code);
             selectedrolecode = "";
             setRoleValues();
             addmoddel = "modrole";

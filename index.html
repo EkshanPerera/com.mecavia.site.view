@@ -21,15 +21,6 @@
     <link rel="stylesheet" href="plugins/datatables-select/css/select.bootstrap4.css">
     <!-- Theme style -->
     <link rel="stylesheet" href="dist/css/adminlte.min.css">
-    <style>
-        .usr-card-body {
-            min-height: 310px;
-        }
-
-        .usr-card-body.role {
-            min-height: 372px;
-        }
-    </style>
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -216,7 +207,7 @@
                     <ul class="nav nav-pills nav-sidebar flex-column nav-child-indent" data-widget="treeview"
                         role="menu" data-accordion="false">
                         <li class="nav-item">
-                            <a href="#" class="nav-link">
+                            <a href="#" class="nav-link active">
                                 <i class="nav-icon  fas fa-building"></i>
                                 <p>
                                     Procurement
@@ -290,88 +281,10 @@
                             </ul>
                         </li>
                         <li class="nav-item">
-                            <a href="#" class="nav-link">
+                            <a href="#" class="nav-link active">
                                 <i class="nav-icon  fas fa-building"></i>
                                 <p>
-                                    General Store 
-                                    <i class="fas fa-angle-left right"></i>
-                                </p>
-                            </a>
-                            <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <a href="#" class="nav-link">
-                                        <i class="nav-icon fas fa-circle"></i>
-                                        <p>
-                                            Material Requisition
-                                            <i class="right fas fa-angle-left"></i>
-                                        </p>
-                                    </a>
-                                    <ul class="nav nav-treeview" style="display: none;">
-                                        <li class="nav-item">
-                                            <a href="#" class="nav-link">
-                                                <i class="far fa-circle nav-icon"></i>
-                                                <p>Create</p>
-                                            </a>
-                                            <a href="#" class="nav-link">
-                                                <i class="far fa-circle nav-icon"></i>
-                                                <p>Print</p>
-                                            </a>
-                                            <a href="#" class="nav-link">
-                                                <i class="far fa-circle nav-icon"></i>
-                                                <p>MR Approve</p>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="#" class="nav-link">
-                                        <i class="nav-icon fas fa-circle"></i>
-                                        <p>
-                                            Purchase Order
-                                            <i class="right fas fa-angle-left"></i>
-                                        </p>
-                                    </a>
-                                    <ul class="nav nav-treeview" style="display: none;">
-                                        <li class="nav-item">
-                                            <a href="#" class="nav-link">
-                                                <i class="far fa-circle nav-icon"></i>
-                                                <p>PR Approve</p>
-                                            </a>
-                                            <a href="#" class="nav-link">
-                                                <i class="far fa-circle nav-icon"></i>
-                                                <p>Print</p>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="#" class="nav-link">
-                                        <i class="nav-icon fas fa-circle"></i>
-                                        <p>
-                                            GRN
-                                            <i class="right fas fa-angle-left"></i>
-                                        </p>
-                                    </a>
-                                    <ul class="nav nav-treeview" style="display: none;">
-                                        <li class="nav-item">
-                                            <a href="#" class="nav-link">
-                                                <i class="far fa-circle nav-icon"></i>
-                                                <p>GRN width PO</p>
-                                            </a>
-                                            <a href="#" class="nav-link">
-                                                <i class="far fa-circle nav-icon"></i>
-                                                <p>Print</p>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link ">
-                                <i class="nav-icon  fas fa-building"></i>
-                                <p>
-                                    Corporate Data
+                                    Genaral Store
                                     <i class="fas fa-angle-left right"></i>
                                 </p>
                             </a>
@@ -379,31 +292,165 @@
                                 <li class="nav-item">
                                     <a href="#" class="nav-link ">
                                         <i class="fa fa-users nav-icon"></i>
-                                        <p>User Groups</p>
+                                        <p>Material Requisition</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
+                                    <a href="#" class="nav-link">
+                                        <i class="fa fa-users nav-icon"></i>
+                                        <p>Material Out Note</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link active">
+                                <i class="nav-icon  fas fa-building"></i>
+                                <p>
+                                    Sales
+                                    <i class="fas fa-angle-left right"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link ">
+                                        <i class="fa fa-users nav-icon"></i>
+                                        <p>Job Creation</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link ">
+                                        <i class="fa fa-users nav-icon"></i>
+                                        <p>BOM Details</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link ">
+                                        <i class="fa fa-users nav-icon"></i>
+                                        <p>FGO Note</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link">
+                                        <i class="fa fa-users nav-icon"></i>
+                                        <p>Invoice</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link active">
+                                <i class="nav-icon  fas fa-building"></i>
+                                <p>Production
+                                    <i class="fas fa-angle-left right"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link ">
+                                        <i class="fa fa-users nav-icon"></i>
+                                        <p>Job ID cration</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link">
+                                        <i class="fa fa-users nav-icon"></i>
+                                        <p>Print Order Form</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link">
+                                        <i class="fa fa-users nav-icon"></i>
+                                        <p>FGI Note</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link active">
+                                <i class="nav-icon  fas fa-building "></i>
+                                <p>
+                                    Corporate Data
+                                    <i class="fas fa-angle-left right"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item" id="lnkusergroup">
+                                    <a href="#" class="nav-link ">
+                                        <i class="fa fa-users nav-icon"></i>
+                                        <p>User Groups</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item" id="lnkuser">
                                     <a href="#" class="nav-link">
                                         <i class="fa fa-users nav-icon"></i>
                                         <p>User</p>
                                     </a>
                                 </li>
-                                <li class="nav-item">
+                                <li class="nav-item" id="lnkclient">
                                     <a href="#" class="nav-link">
                                         <i class="fa fa-users nav-icon"></i>
                                         <p>Client</p>
                                     </a>
                                 </li>
-                                <li class="nav-item">
+                                <li class="nav-item" id="lnkmaterial">
                                     <a href="#" class="nav-link">
                                         <i class="fa fa-users nav-icon"></i>
                                         <p>Material</p>
                                     </a>
                                 </li>
-                                <li class="nav-item">
+                                <li class="nav-item" id="lnkproduct">
                                     <a href="#" class="nav-link">
                                         <i class="fa fa-users nav-icon"></i>
                                         <p>Product</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link active">
+                                <i class="nav-icon  fas fa-building"></i>
+                                <p>
+                                    Administration
+                                    <i class="fas fa-angle-left right"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link">
+                                        <i class="nav-icon fas fa-circle"></i>
+                                        <p>
+                                            Manager`s Screen
+                                            <i class="right fas fa-angle-left"></i>
+                                        </p>
+                                    </a>
+                                    <ul class="nav nav-treeview" style="display: none;">
+                                        <li class="nav-item">
+                                            <a href="#" class="nav-link">
+                                                <i class="far fa-circle nav-icon"></i>
+                                                <p>General Store</p>
+                                            </a>
+                                            <a href="#" class="nav-link">
+                                                <i class="far fa-circle nav-icon"></i>
+                                                <p>Stock and Inventory</p>
+                                            </a>
+                                            <a href="#" class="nav-link">
+                                                <i class="far fa-circle nav-icon"></i>
+                                                <p>Client Order query</p>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link">
+                                        <i class="fa fa-users nav-icon"></i>
+                                        <p>Access Config</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link">
+                                        <i class="fa fa-users nav-icon"></i>
+                                        <p>Report Center</p>
                                     </a>
                                 </li>
                             </ul>
@@ -417,204 +464,10 @@
 
         <!-- Content Wrapper. Contains page content -->
         <div class="content-wrapper">
-            <!-- Content Header (Page header) -->
-            <section class="content-header">
-                <div class="container-fluid">
-                    <div class="row mb-2">
-                        <div class="col-sm-6">
-                            <h1>User Groups</h1>
-                        </div>
-                        <div class="col-sm-6">
-                            <ol class="breadcrumb float-sm-right">
-                                <li class="breadcrumb-item"><a href="#">Home</a></li>
-                                <li class="breadcrumb-item ">Corporate Data</li>
-                                <li class="breadcrumb-item active">User Groups</li>
-                            </ol>
-                        </div>
-                    </div>
-                </div><!-- /.container-fluid -->
-            </section>
-
             <!-- Main content -->
-            <section class="content">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-6">
-                            <div class="card card card-primary card-outline ">
-                                <div class="card-header">
-                                    <h3 class="card-title">User Group Details</h3>
-                                </div>
-                                <!-- /.card-header -->
-                                <div class="card-body">
-                                    <table id="table1" class="table table-bordered table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th>Group ID</th>
-                                                <th>Description</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <!-- /.card-body -->
-                                <div class="card-footer">
-                                    <div class="float-right">
-                                        <button type="button" class="btn btn-primary" data-toggle="modal"
-                                            data-target="#modal-xl" id="btn-usrgrps"><i class="fa fa-list-alt"
-                                                aria-hidden="true"></i> Show Users List</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- /.card -->
-                            <div class="card card-info">
-                                <!-- form start -->
-                                <form class="form-horizontal" id="quickForm">
-                                    <div class="card-header">
-                                        <h3 class="card-title">User Group Settings</h3>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="row">
-                                            <div class="col-lg-6">
-                                                <div class="form-group">
-                                                    <label for="usr_grp_code" class="col-form-label">Group ID</label>
-                                                    <div class="col-sm-10">
-                                                        <input type="input" name="description"
-                                                            class="form-control formfillin" id="usr_grp_code"
-                                                            placeholder="">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-6">
-                                                <div class="form-group">
-                                                    <label for="usr_grp_description"
-                                                        class="col-form-label">Description</label>
-                                                    <div class="col-sm-10">
-                                                        <input type="input" name="description"
-                                                            class="form-control formfillin" id="usr_grp_description"
-                                                            placeholder="">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-6">
-                                                <div class="form-group">
-                                                    <label for="usr_grp_status" class="col-form-label">Status</label>
-                                                    <div class="col-sm-10">
-                                                        <input type="input" name="status"
-                                                            class="form-control formfillin" id="usr_grp_status"
-                                                            placeholder="">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- /.card-body -->
-                                    <div class="card-footer">
-                                        <button type="button" class="btn btn-primary formbtn" id="addUserGroups"><i
-                                                class="fa fa-plus" aria-hidden="true"></i> Add</button>
-
-                                        <button type="button" class="btn btn-warning formbtn" id="setUserGroups"> <i
-                                                class="far fa-edit"></i> Modify</button>
-                                        <button type="button" class="btn btn-danger formbtn" id="removaUserGroups"> <i
-                                                class="far fa-trash-alt"></i> Delete</button>
-                                        <div class="float-right">
-                                            <button type="submit" class="btn btn-success formbtn" id="submitUserGroup">
-                                                <i class="far fa-save"></i> Save</button>
-                                        </div>
-                                    </div>
-                                    <!-- /.card-footer -->
-                                </form>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="card card card-primary card-outline">
-                                <div class="card-header">
-                                    <h3 class="card-title">User Role Details</h3>
-                                </div>
-                                <!-- /.card-header -->
-                                <div class="card-body" id="usrrole-card-body">
-                                    <table id="table3" class="table table-bordered table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th>Role ID</th>
-                                                <th>Description</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <!-- /.card-body -->
-                            </div>
-                            <!-- /.card -->
-                            <div class="card card-info">
-                                <!-- form start -->
-                                <form class="form-horizontal" id="quickForm2">
-                                    <div class="card-header">
-                                        <h3 class="card-title">User Role Settings</h3>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="row">
-                                            <div class="col-lg-6">
-                                                <div class="form-group">
-                                                    <label for="usr_role_code" class="col-form-label">Role ID</label>
-                                                    <div class="col-sm-10">
-                                                        <input type="input" name="roledescription"
-                                                            class="form-control formfillin" id="usr_role_code"
-                                                            placeholder="">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-6">
-                                                <div class="form-group">
-                                                    <label for="usr_role_description"
-                                                        class="col-form-label">Description</label>
-                                                    <div class="col-sm-10">
-                                                        <input type="input" name="roledescription"
-                                                            class="form-control formfillin" id="usr_role_description"
-                                                            placeholder="">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-6">
-                                                <div class="form-group">
-                                                    <label for="usr_role_status" class="col-form-label">Status</label>
-                                                    <div class="col-sm-10">
-                                                        <input type="input" name="rolestatus"
-                                                            class="form-control formfillin" id="usr_role_status"
-                                                            placeholder="">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- /.card-body -->
-                                    <div class="card-footer">
-                                        <button type="button" class="btn btn-primary formbtn" id="addUserRoles"><i
-                                                class="fa fa-plus" aria-hidden="true"></i> Add</button>
-
-                                        <button type="button" class="btn btn-warning formbtn" id="setUserRoles"> <i
-                                                class="far fa-edit"></i> Modify</button>
-                                        <button type="button" class="btn btn-danger formbtn" id="removaUserRoles"> <i
-                                                class="far fa-trash-alt"></i> Delete</button>
-                                        <div class="float-right">
-                                            <button type="submit" class="btn btn-success formbtn" id="submitUserRoles">
-                                                <i class="far fa-save"></i> Save</button>
-                                        </div>
-                                    </div>
-                                    <!-- /.card-footer -->
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- /.row -->
-                    <div class="row">
-                        <!-- /.col -->
-                        <div class="col-6">
-
-                        </div>
-
-                    </div>
+            <section class="content" >
+                <div id = "content">
+                    
                 </div>
                 <!-- /.container-fluid -->
             </section>
@@ -703,9 +556,7 @@
     <script src="dist/js/adminlte.min.js"></script>
     <!-- AdminLTE for demo purposes -->
     <script src="dist/js/demo.js"></script>
-    <!-- Page specific script -->
-    <script src="dist/js/pages/usergroupclasses.js"></script>
-    <script src="dist/js/pages/usergroups.js"></script>
+    <script src="dist/js/index.js"></script>
 </body>
 
 </html>

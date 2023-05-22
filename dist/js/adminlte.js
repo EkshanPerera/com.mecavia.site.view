@@ -1286,18 +1286,18 @@
       if (autoOpen) {
         if (this._config.loadingScreen) {
           var $loadingScreen = $__default["default"](SELECTOR_TAB_LOADING);
-          $loadingScreen.fadeIn();
+          // $loadingScreen.fadeIn();
           $__default["default"](tabId + " iframe").ready(function () {
             if (typeof _this._config.loadingScreen === 'number') {
               _this.switchTab("#" + navId);
 
-              setTimeout(function () {
-                $loadingScreen.fadeOut();
-              }, _this._config.loadingScreen);
+              // setTimeout(function () {
+              //   $loadingScreen.fadeOut();
+              // }, _this._config.loadingScreen);
             } else {
               _this.switchTab("#" + navId);
 
-              $loadingScreen.fadeOut();
+              // $loadingScreen.fadeOut();
             }
           });
         } else {
@@ -1359,19 +1359,19 @@
         var $loadingScreen = $__default["default"](SELECTOR_TAB_LOADING);
 
         if (this._config.loadingScreen) {
-          $loadingScreen.show(0, function () {
-            $__default["default"](tabId + " iframe").attr('src', $__default["default"](tabId + " iframe").attr('src')).ready(function () {
-              if (_this2._config.loadingScreen) {
-                if (typeof _this2._config.loadingScreen === 'number') {
-                  setTimeout(function () {
-                    $loadingScreen.fadeOut();
-                  }, _this2._config.loadingScreen);
-                } else {
-                  $loadingScreen.fadeOut();
-                }
-              }
-            });
-          });
+          // $loadingScreen.show(0, function () {
+          //   $__default["default"](tabId + " iframe").attr('src', $__default["default"](tabId + " iframe").attr('src')).ready(function () {
+          //     if (_this2._config.loadingScreen) {
+          //       if (typeof _this2._config.loadingScreen === 'number') {
+          //         // setTimeout(function () {
+          //         //   $loadingScreen.fadeOut();
+          //         // }, _this2._config.loadingScreen);
+          //       } else {
+          //         // $loadingScreen.fadeOut();
+          //       }
+          //     }
+          //   });
+          // });
         } else {
           $__default["default"](tabId + " iframe").attr('src', $__default["default"](tabId + " iframe").attr('src'));
         }
@@ -1612,7 +1612,7 @@
       if ($__default["default"]('body').hasClass(CLASS_NAME_FULLSCREEN_MODE)) {
         var windowHeight = $__default["default"](window).height();
         var navbarHeight = $__default["default"](SELECTOR_TAB_NAV).outerHeight();
-        $__default["default"](SELECTOR_TAB_EMPTY + ", " + SELECTOR_TAB_LOADING + ", " + SELECTOR_CONTENT_IFRAME).height(windowHeight - navbarHeight);
+        $__default["default"](SELECTOR_TAB_EMPTY + ", " + SELECTOR_TAB_LOADING + ", " + SELECTOR_CONTENT_IFRAME).height("100%");
         $__default["default"](SELECTOR_CONTENT_WRAPPER).height(windowHeight);
       } else {
         var contentWrapperHeight = parseFloat($__default["default"](SELECTOR_CONTENT_WRAPPER).css('height'));

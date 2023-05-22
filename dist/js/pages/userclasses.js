@@ -1,4 +1,5 @@
 //classes
+var userclasses = (function(){
 class user {
     constructor(id, code, firstname, middlename, lastname, email, password, businessRole, status, addresses, contactNumbers, userGroupid, roleid, firstLogin) {
         this.id = id;
@@ -123,4 +124,17 @@ class UsrSerial {
         return this.GroupCode;
     }
 }
+function userInstence(){
+    return{
+        user: new user(),
+        user_addresses: new user_addresses(),
+        user_contacts: new user_contacts(),
+        usr_service:new usr_service(),
+        UsrSerial:new UsrSerial()
+    }
+}
+return {
+    userInstence : userInstence()
+}
+});
 //end of classes

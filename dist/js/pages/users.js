@@ -1,11 +1,14 @@
+$(function () {
 //variables
-let usr_col = new usr_service();
-let usr_obj = new user();
-let usr_addressobj = new user_addresses();
-let usr_contactobj = new user_contacts();
-let grp_col = new usr_grp_service();
-let usr_grpobj = new usr_grp();
-let usr_roleobj = new user_role();
+var usergroupclassesInstence = usergroupclasses.usergroupclassesInstence();
+var userclasses = userclasses.userclassesInstence();
+let usr_col = userclasses.usr_service;
+let usr_obj = userclasses.user;
+let usr_addressobj = userclasses.user_addresses;
+let usr_contactobj = userclasses.user_contacts;
+let grp_col = usergroupclassesInstence.usr_grp_service;
+let usr_grpobj = usergroupclassesInstence.usr_grp;
+let usr_roleobj = usergroupclassesInstence.user_role;
 var addmoddel;
 var selectedcode;
 var selectedaddrcode;
@@ -894,6 +897,6 @@ $(function () {
 
     //end of triggers
     formctrl();
-    refreshtable();
-    
+    refreshtable();   
+    });
 });
