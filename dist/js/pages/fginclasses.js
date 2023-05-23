@@ -184,13 +184,14 @@ class customerorder_service {
         this.customerorder = this.customerorders.find(customerorder => customerorder.prcode == prcode);
         return this.customerorder;
     }
-    getPRMsByOrderCode(ordercode) {
+    getFGINPsByOrderCode(ordercode) {
         return this.customerOrderProducts.find(customerOrderProduct => customerOrderProduct.code == ordercode)
     }
     getPurchaseOrder(jobID) {
         this.customerorder = this.customerorders.find(customerorder => customerorder.jobID == jobID);
         return this.customerorder;
     }
+
     getCustomerOrderById(id) {
         this.customerorder = this.customerorders.find(customerorder => customerorder.id == id);
         return this.customerorder;

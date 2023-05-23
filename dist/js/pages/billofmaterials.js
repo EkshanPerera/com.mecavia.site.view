@@ -17,20 +17,20 @@ $(function () {
     let cli_col = clientClassesInstence.cli_service;
     let cli_obj = clientClassesInstence.client;
 
-    var addmoddel;
-    var selectedcode;
+    var addmoddel = undefined;
+    var selectedcode = undefined;
 
-    var t10 = $("#table10").DataTable({
+    var t36 = $("#table36").DataTable({
         
         pageLength: 5,
         dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>'
     });
-    var t11 = $("#table11").DataTable({
+    var t37 = $("#table37").DataTable({
         "order": [[0, "desc"]],
         pageLength: 7,
         dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body met"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>'
     });
-    var t8 = $("#table8").DataTable({
+    var t38 = $("#table38").DataTable({
         "order": [[0, "desc"]]
     });
     var Toast = Swal.mixin({
@@ -168,7 +168,7 @@ $(function () {
         billofmaterial_col.clear();
         material_col.clear();
         addmoddel = undefined;
-        t10.clear().draw(false);
+        t36.clear().draw(false);
         $.ajax({
             url: "http://localhost:8080/api/customerorderctrl/getcustomerorders",
             dataType: "JSON",
@@ -177,21 +177,22 @@ $(function () {
                     if (item.status == "SUBMIT" || item.status == "ACCEPTED" || item.status == "PRINTED" || item.status == "INITIATED" || item.status == "PENDING") {
                         customerorder_col.addCustomerOrdertoArray(item.id, item.code, item.jobID, item.jobNumber, item.customerid, item.totalAmount, item.grossAmount, item.remark, item.customerOrderProducts, item.printeddate, item.status);
                         if (item.billOfMaterial) {
-                            billofmaterial_col.addBillOfMaterialtoArray(item.billOfMaterial.id, item.billOfMaterial.code, item.billOfMaterial.customerOrder, item.billOfMaterial.bomMaterials, totalcost, item.billOfMaterial.status)
-                            $.each(item.billOfMaterial.bomMaterials, function (i, item) {
-                                billofmaterial_col.addbommaterialtoArray(item.id, item.code, item.material, item.materialCost, item.quantity);
-                            })
+                            billofmaterial_col.addBillOfMaterialtoArray(item.billOfMaterial.id, item.billOfMaterial.code, item.billOfMaterial.customerOrder, item.billOfMaterial.bomMaterials, item.billOfMaterial.totalcost, item.billOfMaterial.status);
                         }
                     }
                 });
                 setValues(selectedcode);
                 refreshmatarialtable();
+                fadepageloder();
+            },
+            error:function(xhr, status, error){
+                fadepageloder();
             }
         })
     }
     function refreshmatarialtable() {
         material_col.clear()
-        t8.clear().draw(false);
+        t38.clear().draw(false);
         $.ajax({
             url: "http://localhost:8080/api/materialctrl/getmaterials",
             dataType: "JSON",
@@ -199,10 +200,10 @@ $(function () {
                 $.each(data.content, function (i, item) {
                     if (item.materialType == "ROW" && item.status == "ACTIVE") {
                         material_col.addMaterialtoArray(item.id, item.code, item.description, item.materialType, item.uomid, item.status, item.price);
-                        t8.row.add([item.code, item.description]).draw(false);
+                        t38.row.add([item.code, item.description]).draw(false);
                     }
                 })
-                var $tableRow = $("#table8 tr td:contains('" + selectedcode + "')").closest("tr");
+                var $tableRow = $("#table38 tr td:contains('" + selectedcode + "')").closest("tr");
                 $tableRow.trigger("click");
             }
         })
@@ -210,16 +211,17 @@ $(function () {
     function refreshprmatarialtable() {
         bomMaterialobjArry = billofmaterial_col.allBillOfMaterialMaterials();
         console.log(bomMaterialobjArry);
-        t11.clear().draw(false);
+        t37.clear().draw(false);
         var total = 0;
         $.each(bomMaterialobjArry, function (i, item) {
-            t11.row.add([i + 1, item.material.description, item.materialCost, item.quantity, item.material.uomid.scode]).draw(false);
+            t37.row.add([i + 1, item.material.description, item.materialCost, item.quantity, item.material.uomid.scode]).draw(false);
             total += parseFloat(item.materialCost) * parseFloat(item.quantity);
         })
         $('#purchaserequisition_totalamount').val(total);
     }
     //definded functions
     function submit() {
+        showpageloder();
         var url;
         var method;
         var token = localStorage.getItem("jwt_token");
@@ -244,7 +246,6 @@ $(function () {
         addmoddel = undefined;
         if (code) {
             customerorderobj = customerorder_col.getCustomerOrder(code);
-            bomMaterialobjArry = customerorderobj.customerOrderProducts;
             $("#customerorder_code").val(customerorderobj.code);
             $("#customerorder_jobcode").val(customerorderobj.jobID);
             $("#customerorder_unitrate").val(customerorderobj.unitrate)
@@ -263,16 +264,16 @@ $(function () {
                 $("#customerorder_productid").val(customerorderobj.product.code + " - " + customerorderobj.product.name);
             }
             if (customerorderobj.customerOrderProducts) {
-                t10.clear().draw(false);
+                t36.clear().draw(false);
                 $.each(customerorderobj.customerOrderProducts, function (i, item) {
-                    t10.row.add([i + 1, item.product.name, item.quantity]).draw(false);
+                    t36.row.add([i + 1, item.product.name, item.quantity]).draw(false);
                 })
             }
 
         } else {
             customerorderobj = undefined;
-            t10.clear().draw(false);
-            customerorder_col.clearprm();
+            t36.clear().draw(false);
+            customerorder_col.clearcop();
             bomMaterialobjArry = [];
             total = undefined;
             material_obj = undefined;
@@ -318,20 +319,20 @@ $(function () {
     }
     //end of functions
     //triggers
-    $('#table8 tbody').on('click', 'tr', function () {
+    $('#table38 tbody').on('click', 'tr', function () {
         if ($(this).hasClass('selected')) {
             $(this).removeClass('selected');
             setMatarialalues();
         } else {
-            t8.$('tr.selected').removeClass('selected');
+            t38.$('tr.selected').removeClass('selected');
             $(this).addClass('selected');
             setMatarialalues($(this).children("td:nth-child(1)").text());
         }
     });
     $(document).on("click", "#addMaterialbtn", function () {
-        if ($("#table8 tbody tr").hasClass('selected')) {
+        if ($("#table38 tbody tr").hasClass('selected')) {
             material_obj = undefined;
-            $("#table8 tbody tr").removeClass('selected');
+            $("#table38 tbody tr").removeClass('selected');
         }
         $("#purchaserequisition_unitrate").val(undefined);
         $("#purchaserequisition_quntity").val(undefined);

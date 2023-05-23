@@ -3,9 +3,9 @@ $(function () {
     var uomClassesInstence = uomClasses.uomClassesInstence()
     let uom_col = uomClassesInstence.uom_service;
     let uomobj = uomClassesInstence.uom;
-    var addmoddel;
-    var selectedcode;
-    var t7 = $("#table7").DataTable({
+    var addmoddel = undefined;
+    var selectedcode = undefined;
+    var t16 = $("#table16").DataTable({
         "order": [[ 0, "desc" ]],
         pageLength: 5,
         dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>'
@@ -121,22 +121,27 @@ $(function () {
         uom_col.clear()
         addmoddel = undefined;
         selectedcode = undefined;
-        t7.clear().draw(false);
+        t16.clear().draw(false);
         $.ajax({
             url: "http://localhost:8080/api/uomctrl/getuoms",
             dataType: "JSON",
             success: function (data) {
                 $.each(data.content, function (i, item) {
                     uom_col.addUOMtoArray(item.id, item.code, item.scode, item.description, item.status);
-                    t7.row.add([item.code, item.scode, item.description]).draw(false);
+                    t16.row.add([item.code, item.scode, item.description]).draw(false);
                     setValues();
-                    var $tableRow = $("#table7 tr td:contains('" + selectedcode + "')").closest("tr");
+                    var $tableRow = $("#table16 tr td:contains('" + selectedcode + "')").closest("tr");
                     $tableRow.trigger("click");
                 })
+                fadepageloder();
+            },
+            error:function(xhr, status, error){
+                fadepageloder();
             }
         })
     }
     function submit() {
+        showpageloder();
         var url;
         var method;
         var token = localStorage.getItem("jwt_token");
@@ -206,14 +211,14 @@ $(function () {
     }
     //end of functions
     //triggers
-    $('#table7 tbody').on('click', 'tr', function () {
+    $('#table16 tbody').on('click', 'tr', function () {
         resetform("#quickForm6");
         if ($(this).hasClass('selected')) {
             $(this).removeClass('selected');
             setValues();
             selectedcode = "";
         } else {
-            t7.$('tr.selected').removeClass('selected');
+            t16.$('tr.selected').removeClass('selected');
             $(this).addClass('selected');
             selectedcode = $(this).children("td:nth-child(1)").text();
             setValues($(this).children("td:nth-child(1)").text());
@@ -227,7 +232,7 @@ $(function () {
         let uomcode = uomClassesInstence.UOMSerial.genarateUOMCode(uomlist.length);
         console.log(uom_col.allUOM());
         $("#uom_code").val(uomcode);
-        $("#table7 tbody tr").removeClass('selected');
+        $("#table16 tbody tr").removeClass('selected');
         enablefillin("#uom_scode");
         enablefillin("#uom_description");
         $("#uom_status").val("ACTIVE");

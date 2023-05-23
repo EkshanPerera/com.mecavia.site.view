@@ -5,20 +5,18 @@ $(function () {
     let cli_obj = clientClassesInstence.client;
     let cli_addressobj = clientClassesInstence.client_addresses;
     let cli_contactobj = clientClassesInstence.client_contacts;
-    var addmoddel;
-    var selectedcode;
-    var selectedaddrcode;
-    var selectedcontcode;
-    var selectedgrpcode;
-    var selectedrolecode;
-    var t4 = $("#table4").DataTable({
+    var addmoddel = undefined;
+    var selectedcode = undefined;
+    var selectedaddrcode = undefined;
+    var selectedcontcode = undefined;
+    var t9 = $("#table9").DataTable({
         "order": [[0, "desc"]],
         dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row cli-card-body"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>'
     });
-    var t5 = $("#table5").DataTable({
+    var t10 = $("#table10").DataTable({
         "order": [[0, "desc"]]
     })
-    var t6 = $("#table6").DataTable({
+    var t11 = $("#table11").DataTable({
         "order": [[0, "desc"]]
     })
     //end of variables
@@ -330,9 +328,10 @@ $(function () {
         function refreshtable() {
             cli_col.clear()
             addmoddel = undefined;
+            selectedcode = undefined;
             selectedaddrcode = undefined;
             selectedcontcode = undefined;
-            t4.clear().draw(false);
+            t9.clear().draw(false);
             $.ajax({
                 url: "http://localhost:8080/api/clientctrl/getclients",
                 dataType: "JSON",
@@ -345,18 +344,22 @@ $(function () {
                             cli_col.addContactstoArry(item.id, item.code, item.description, item.tpno, item.isdef, item.status);
                         });
                         cli_col.addClitoArray(item.id, item.code, item.firstname, item.middlename, item.lastname, item.email, item.businessRole, item.status, item.clientGroupid, item.roleid);
-                        t4.row.add([item.code, item.firstname, item.lastname, item.email]).draw(false);
+                        t9.row.add([item.code, item.firstname, item.lastname, item.email]).draw(false);
                     });
                     setValues();
-                    var $tableRow = $("#table4 tr td:contains('" + selectedcode + "')").closest("tr");
+                    fadepageloder();
+                    var $tableRow = $("#table9 tr td:contains('" + selectedcode + "')").closest("tr");
                     $tableRow.trigger("click");
-
+                },
+                error:function(xhr, status, error){
+                    fadepageloder();
                 }
             });
 
         }
 
         function submit() {
+            showpageloder();
             var url;
             var method;
             var token = localStorage.getItem("jwt_token");
@@ -396,8 +399,8 @@ $(function () {
             $(fillinid).prop("disabled", false);
         }
         function setValues(code) {
-            t5.clear().draw(false);
-            t6.clear().draw(false);
+            t10.clear().draw(false);
+            t11.clear().draw(false);
             formctrl();
             addmoddel = undefined;
             if (code) {
@@ -412,11 +415,11 @@ $(function () {
                 $("#client_contactNumbers").val(cli_obj.contactNumbers);
                 $.each(cli_obj.addresses, function (i, item) {
                     if (item.status == "ACTIVE")
-                        t5.row.add([item.code, item.line01, item.line02, item.line03, item.line04]).draw(false);
+                        t10.row.add([item.code, item.line01, item.line02, item.line03, item.line04]).draw(false);
                 })
                 $.each(cli_obj.contactNumbers, function (i, item) {
                     if (item.status == "ACTIVE")
-                        t6.row.add([item.code, item.description, item.tpno]).draw(false);
+                        t11.row.add([item.code, item.description, item.tpno]).draw(false);
                 })
                 setAddressValues();
                 setContactValues();
@@ -528,14 +531,14 @@ $(function () {
         }
         //end of functions
         //triggers
-        $('#table4 tbody').on('click', 'tr', function () {
+        $('#table9 tbody').on('click', 'tr', function () {
             resetform("#quickForm03");
             if ($(this).hasClass('selected')) {
                 $(this).removeClass('selected');
                 setValues();
                 selectedcode = "";
             } else {
-                t4.$('tr.selected').removeClass('selected');
+                t9.$('tr.selected').removeClass('selected');
                 $(this).addClass('selected');
                 selectedcode = $(this).children("td:nth-child(1)").text();
                 setValues($(this).children("td:nth-child(1)").text());
@@ -543,7 +546,7 @@ $(function () {
 
             }
         });
-        $('#table5 tbody').on('click', 'tr', function () {
+        $('#table10 tbody').on('click', 'tr', function () {
             resetform("#quickForm04");
             if (cli_obj.addresses.length != 0) {
                 if ($(this).hasClass('selected')) {
@@ -551,14 +554,14 @@ $(function () {
                     setAddressValues();
                     selectedaddrcode = "";
                 } else {
-                    t5.$('tr.selected').removeClass('selected');
+                    t10.$('tr.selected').removeClass('selected');
                     $(this).addClass('selected');
                     selectedaddrcode = $(this).children("td:nth-child(1)").text();
                     setAddressValues(selectedcode, $(this).children("td:nth-child(1)").text());
                 }
             }
         });
-        $('#table6 tbody').on('click', 'tr', function () {
+        $('#table11 tbody').on('click', 'tr', function () {
             resetform("#quickForm05");
             if (cli_obj.contactNumbers.length != 0) {
                 if ($(this).hasClass('selected')) {
@@ -566,7 +569,7 @@ $(function () {
                     setContactValues();
                     selectedcontcode = "";
                 } else {
-                    t6.$('tr.selected').removeClass('selected');
+                    t11.$('tr.selected').removeClass('selected');
                     $(this).addClass('selected');
                     selectedcontcode = $(this).children("td:nth-child(1)").text();
                     setContactValues(selectedcode, $(this).children("td:nth-child(1)").text());
@@ -580,7 +583,7 @@ $(function () {
             let clilist = cli_col.allClients()
             let clicode = clientClassesInstence.CliSerial().genarateClientCode(clilist.length);
             $("#client_code").val(clicode);
-            $("#table4 tbody tr").removeClass('selected');
+            $("#table9 tbody tr").removeClass('selected');
             enablefillin("#client_firstname");
             enablefillin("#client_lastname");
             enablefillin("#client_email");
@@ -598,7 +601,7 @@ $(function () {
                 selectedaddrcode = "";
                 setAddressValues();
                 addmoddel = "modaddr";
-                $("#table5 tbody tr").removeClass('selected');
+                $("#table10 tbody tr").removeClass('selected');
                 enablefillin("#cli_addr_line01");
                 enablefillin("#cli_addr_line02");
                 enablefillin("#cli_addr_line03");
@@ -619,7 +622,7 @@ $(function () {
                 selectedcontcode = "";
                 setContactValues();
                 addmoddel = "modcont";
-                $("#table6 tbody tr").removeClass('selected');
+                $("#table11 tbody tr").removeClass('selected');
                 enablefillin("#cli_cont_desc");
                 enablefillin("#cli_cont_tpno");
                 $("#cli_cont_code").val(contcode);

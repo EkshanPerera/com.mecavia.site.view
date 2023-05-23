@@ -1,30 +1,29 @@
 $(function () {
     //variables
-    var customerorderClassesInstence = customerorderClasses.customerorderClassesInstence()
-    let customerorder_col = customerorderClassesInstence.customerorder_service;
-    let customerorderobj = customerorderClassesInstence.customerorder;
     let fginClassesInstence = fginClasses.fginClassesInstence();
+    let customerorder_col = fginClassesInstence.customerorder_service;
+    let customerorderobj = fginClassesInstence.customerorder;
     let finishedgoodsinnote_col = fginClassesInstence.finishedGoodsInNote_service;
     let copobj = fginClassesInstence.customerOrderProduct;
     let finishedgoodsinnoteobj = fginClassesInstence.finishedgoodsinnote;
     let customerOrderProductsobjarr = [];
     let finishedGoodsInNoteProductsobjarr = [];
     var outstangingcount = 0;
-    var addmoddel;
-    var selectedcode;
-    var selectedcopcode;
+    var addmoddel = undefined;
+    var selectedcode = undefined;
+    var selectedcopcode = undefined;
 
-    var t10 = $("#table10").DataTable({
+    var t28 = $("#table28").DataTable({
         "order": [[0, "desc"]],
         pageLength: 5,
         dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>'
     });
-    var t11 = $("#table11").DataTable({
+    var t29 = $("#table29").DataTable({
         "order": [[0, "desc"]],
         pageLength: 5,
         dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>'
     });
-    var t12 = $("#table12").DataTable({
+    var t30 = $("#table30").DataTable({
         "order": [[0, "desc"]],
         pageLength: 5,
         dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>'
@@ -123,8 +122,8 @@ $(function () {
         customerorder_col.clear();
         finishedgoodsinnote_col.clear();
         addmoddel = undefined;
-        t10.clear().draw(false);
-        t11.clear().draw(false);
+        t28.clear().draw(false);
+        t29.clear().draw(false);
         $.ajax({
             url: "http://localhost:8080/api/customerorderctrl/getcustomerorders",
             dataType: "JSON",
@@ -148,22 +147,31 @@ $(function () {
                             finishedgoodsinnote_col.addFGINtoArray(item.id,item.code,item.panumber,item.padate,item.enterddate,item.remark,item.status,item.customerOrder,item.finishedGoodsInNoteProducts,item.printeddate);
                         });
                         setValues(selectedcode);
+                        fadepageloder();
+                    },
+                    error:function(xhr, status, error){
+                        fadepageloder();
                     }
                 })
 
+                fadepageloder();
+            },
+            error:function(xhr, status, error){
+                fadepageloder();
             }
         })
 
     }
     function refreshfginmtable(){
-        t12.clear().draw(false);
+        t30.clear().draw(false);
         let fginmlist = finishedgoodsinnote_col.allNewFGINNProducts();
         $.each(fginmlist,function(i,item){
-            t12.row.add([item.code,item.cordercode,item.finishedCount]).draw(false);
+            t30.row.add([item.code,item.cordercode,item.finishedCount]).draw(false);
         })
     }
     //definded functions
     function submit() {
+        showpageloder();
         var url;
         var method;
         var token = localStorage.getItem("jwt_token");
@@ -187,7 +195,7 @@ $(function () {
     }
     function setCOPValues(cordercode) {
         if (cordercode) {
-            t11.clear().draw(false);
+            t29.clear().draw(false);
             finishedGoodsInNoteProductsobjarr = [];
             finishedGoodsInNoteProductsobjarr = finishedgoodsinnote_col.allFGINsByOrderCode(cordercode).FGINMs;
             setOutstanding(cordercode);
@@ -197,12 +205,12 @@ $(function () {
             if (finishedGoodsInNoteProductsobjarr.length != 0) {
                 $.each(finishedGoodsInNoteProductsobjarr, function (i, item) {
                     if (item.id != undefined)
-                        t11.row.add([item.finishedGoodsInNote.code, item.code, item.finishedCount, item.prproduct.product.uomid.scode, item.finishedGoodsInNote.enterddate,
+                        t29.row.add([item.finishedGoodsInNote.code, item.code, item.finishedCount, item.prproduct.product.uomid.scode, item.finishedGoodsInNote.enterddate,
                         item.finishedGoodsInNote.panumber, item.finishedGoodsInNote.padate]).draw(false);
                 })
             }
         } else {
-            t11.clear().draw(false);
+            t29.clear().draw(false);
             finishedGoodsInNoteProductsobjarr = [];
             $("#fgin_outstanding").val(undefined);
             $("#fgin_orderno").val(undefined);
@@ -212,7 +220,8 @@ $(function () {
     function setOutstanding(cordercode){
         if(cordercode){
             var totfinished = finishedgoodsinnote_col.allFGINsByOrderCode(cordercode).totfinished;
-            copobj = customerorder_col.getPRMsByOrderCode(cordercode);
+            copobj = customerorder_col.getFGINPsByOrderCode(cordercode);
+            console.log(copobj);
             outstangingcount = copobj.quantity - totfinished;
             $("#fgin_outstanding").val(outstangingcount);
         }else{
@@ -257,13 +266,12 @@ $(function () {
                 $("#fgin_lastfgin").val(finishedgoodsinnote_col.getlastFGINByJobId(code));
                 if (customerorderobj.customerid) {
                     cli_obj = customerorderobj.customerid;
-                    
                     $("#customerorder_customerid").val(customerorderobj.customerid.code + " - " + customerorderobj.customerid.firstname + " " + customerorderobj.customerid.lastname);
                 }
                 if (customerorderobj.customerOrderProducts) {
-                    t10.clear().draw(false);
+                    t28.clear().draw(false);
                     $.each(customerorderobj.customerOrderProducts, function (i, item) {
-                        t10.row.add([item.code, item.product.name, item.quantity]).draw(false);
+                        t28.row.add([item.code, item.product.name, item.quantity]).draw(false);
                     })
                 }
             } else {
@@ -271,8 +279,8 @@ $(function () {
             }
 
         } else {
-            t10.clear().draw(false);
-            t12.clear().draw(false);
+            t28.clear().draw(false);
+            t30.clear().draw(false);
             copobj = null;
             finishedgoodsinnoteobj = null;
             finishedGoodsInNoteProductsobjarr = [];
@@ -304,7 +312,6 @@ $(function () {
         if(panumber)finishedgoodsinnoteobj.panumber = panumber;
         if(padate)finishedgoodsinnoteobj.padate = padate;
         if(code)finishedgoodsinnoteobj.code = code;
-       
         if(enterddate)finishedgoodsinnoteobj.enterddate = enterddate;
         if(remark)finishedgoodsinnoteobj.remark = remark;
         if(status)finishedgoodsinnoteobj.status = status;
@@ -314,14 +321,14 @@ $(function () {
     }
     //end of functions
     //triggers
-    $('#table10 tbody').on('click', 'tr', function () {
+    $('#table28 tbody').on('click', 'tr', function () {
         if (customerOrderProductsobjarr.length != 0 &&  addmoddel == "add") {
             if ($(this).hasClass('selected')) {
                 $(this).removeClass('selected');
                 setCOPValues();
                 selectedcopcode = undefined;
             } else {
-                t10.$('tr.selected').removeClass('selected');
+                t28.$('tr.selected').removeClass('selected');
                 $(this).addClass('selected');
                 selectedcopcode = $(this).children("td:nth-child(1)").text();
                 setCOPValues($(this).children("td:nth-child(1)").text());

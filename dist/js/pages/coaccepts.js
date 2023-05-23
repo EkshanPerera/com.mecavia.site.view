@@ -11,10 +11,10 @@ $(function () {
     let cli_col = clientClassesInstence.cli_service;
     let cli_obj = clientClassesInstence.client;
 
-    var addmoddel;
-    var selectedcode;
+    var addmoddel = undefined;
+    var selectedcode = undefined;
 
-    var t10 = $("#table10").DataTable({
+    var t35 = $("#table35").DataTable({
         "order": [[ 0, "desc" ]],
         pageLength: 5,
         dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>'
@@ -102,7 +102,7 @@ $(function () {
         product_col.clear();
         cli_col.clear();
         addmoddel = undefined;
-        t10.clear().draw(false);
+        t35.clear().draw(false);
         $.ajax({
             url: "http://localhost:8080/api/customerorderctrl/getcustomerorders",
             dataType: "JSON",
@@ -113,11 +113,16 @@ $(function () {
                     }
                 });
                 setValues(selectedcode);
+                fadepageloder();
+            },
+            error:function(xhr, status, error){
+                fadepageloder();
             }
         })
     }
     //definded functions
     function submit() {
+        showpageloder();
         var url;
         var method;
         var token = localStorage.getItem("jwt_token");
@@ -142,34 +147,41 @@ $(function () {
         addmoddel = undefined;
         if (code) {
             customerorderobj = customerorder_col.getCustomerOrder(code);
-            customerOrderProductsobjarr = customerorderobj.customerOrderProducts;
-            $("#customerorder_code").val(customerorderobj.code);
-            $("#customerorder_jobcode").val(customerorderobj.jobID);
-            $("#customerorder_unitrate").val(customerorderobj.unitrate)
-            $("#customerorder_quntity").val(customerorderobj.quntity)
-            $("#customerorder_remark").val(customerorderobj.remark);
-            $("#customerorder_jobno").val(customerorderobj.jobNumber);
-            $("#customerorder_totalamount").val(customerorderobj.totalAmount);
-            $("#customerorder_status").val(customerorderobj.status);
-            if (customerorderobj.customerid) {
-                cli_obj = customerorderobj.customerid;
-                $("#customerorder_customerid").val(customerorderobj.customerid.code + " - " + customerorderobj.customerid.firstname + " " + customerorderobj.customerid.lastname);
+            if(customerorderobj!=undefined){
+                customerOrderProductsobjarr = customerorderobj.customerOrderProducts;
+                $("#customerorder_code").val(customerorderobj.code);
+                $("#customerorder_jobcode").val(customerorderobj.jobID);
+                $("#customerorder_unitrate").val(customerorderobj.unitrate)
+                $("#customerorder_quntity").val(customerorderobj.quntity)
+                $("#customerorder_remark").val(customerorderobj.remark);
+                $("#customerorder_jobno").val(customerorderobj.jobNumber);
+                $("#customerorder_totalamount").val(customerorderobj.totalAmount);
+                $("#customerorder_status").val(customerorderobj.status);
+                if (customerorderobj.customerid) {
+                    cli_obj = customerorderobj.customerid;
+                    $("#customerorder_customerid").val(customerorderobj.customerid.code + " - " + customerorderobj.customerid.firstname + " " + customerorderobj.customerid.lastname);
+                }
+                if (customerorderobj.product) {
+                    product_obj = customerorderobj.product;
+                    $("#customerorder_productid").val(customerorderobj.product.code + " - " + customerorderobj.product.name);
+                }
+                if (customerorderobj.customerOrderProducts) {
+                    t35.clear().draw(false);
+                    $.each(customerorderobj.customerOrderProducts, function (i, item) {
+                        t35.row.add([i + 1, item.product.name, item.quantity]).draw(false);
+                    })
+                }
+            }else{
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Your Oreder is not submitted yet or the order number is incorrect.',
+                });
             }
-            if (customerorderobj.product) {
-                product_obj = customerorderobj.product;
-                $("#customerorder_productid").val(customerorderobj.product.code + " - " + customerorderobj.product.name);
-            }
-            if (customerorderobj.customerOrderProducts) {
-                t10.clear().draw(false);
-                $.each(customerorderobj.customerOrderProducts, function (i, item) {
-                    t10.row.add([i + 1, item.product.name, item.quantity]).draw(false);
-                })
-            }
-
         } else {
             customerorderobj = undefined;
-            t10.clear().draw(false);
-            customerorder_col.clearprm();
+            t35.clear().draw(false);
+            customerorder_col.clearcop();
             customerOrderProductsobjarr = [];
             total = undefined;
             $("#customerorder_code").val(undefined);
@@ -190,13 +202,13 @@ $(function () {
             if (code) customerorderobj.jobID = code;
             if (status) customerorderobj.status = status;
         } else {
-            customerorderobj = new customerorder();
+            customerorderobj = customerorderClassesInstence.customerorder;
             setNewValues(code, status);
         }
     }
     function genaratecode() {
         let joblist = customerorder_col.allJobs()
-        let jobcode = new CustomerOrderSerial().genarateJobCode(joblist.length, selectedcode);
+        let jobcode = customerorderClassesInstence.CustomerOrderSerial.genarateJobCode(joblist.length, selectedcode);
         return jobcode;
     }
     //end of functions

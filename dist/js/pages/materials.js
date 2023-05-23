@@ -6,14 +6,14 @@ $(function () {
     var uomClassesInstence = uomClasses.uomClassesInstence()
     let uom_col = uomClassesInstence.uom_service;
     let uomobj = uomClassesInstence.uom;
-    var addmoddel;
-    var selectedcode;
-    var t8 = $("#table8").DataTable({
+    var addmoddel = undefined;
+    var selectedcode = undefined;
+    var t12 = $("#table12").DataTable({
         "order": [[ 0, "desc" ]],
         pageLength: 5,
         dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>'
     });
-    var t7 = $("#table7").DataTable({
+    var t13 = $("#table13").DataTable({
         "order": [[ 0, "desc" ]]
     });
     //end of variables
@@ -142,19 +142,25 @@ $(function () {
         material_col.clear();
         uom_col.clear();
         addmoddel = undefined;
-        t8.clear().draw(false);
+        selectedcode = undefined;
+        t12.clear().draw(false);
         $.ajax({
             url: "http://localhost:8080/api/materialctrl/getmaterials",
             dataType: "JSON",
             success: function (data) {
                 $.each(data.content, function (i, item) {
                     material_col.addMaterialtoArray(item.id, item.code, item.description, item.materialType, item.uomid, item.status,item.price);
-                    t8.row.add([item.code, item.description]).draw(false);
+                    t12.row.add([item.code, item.description]).draw(false);
                 })
                 setValues();
-                var $tableRow = $("#table8 tr td:contains('" + selectedcode + "')").closest("tr");
+                fadepageloder();
+                var $tableRow = $("#table12 tr td:contains('" + selectedcode + "')").closest("tr");
                 $tableRow.trigger("click");
                 refreshuomtable();
+                
+            },
+            error:function(xhr, status, error){
+                fadepageloder();
             }
         })
     }
@@ -162,19 +168,20 @@ $(function () {
     function refreshuomtable() {
         uom_col.clear()
         addmoddel = undefined;
-        t7.clear().draw(false);
+        t13.clear().draw(false);
         $.ajax({
             url: "http://localhost:8080/api/uomctrl/getuoms",
             dataType: "JSON",
             success: function (data) {
                 $.each(data.content, function (i, item) {
                     uom_col.addUOMtoArray(item.id, item.code, item.scode, item.description, item.status);
-                    t7.row.add([item.code, item.scode]).draw(false);
+                    t13.row.add([item.code, item.scode]).draw(false);
                 })
             }
         })
     }
     function submit() {
+        showpageloder();
         var url;
         var method;
         var token = localStorage.getItem("jwt_token");
@@ -261,25 +268,25 @@ $(function () {
     }
     //end of functions
     //triggers
-    $('#table8 tbody').on('click', 'tr', function () {
+    $('#table12 tbody').on('click', 'tr', function () {
         resetform("#quickForm6");
         if ($(this).hasClass('selected')) {
             $(this).removeClass('selected');
             setValues();
             selectedcode = "";
         } else {
-            t8.$('tr.selected').removeClass('selected');
+            t12.$('tr.selected').removeClass('selected');
             $(this).addClass('selected');
             selectedcode = $(this).children("td:nth-child(1)").text();
             setValues($(this).children("td:nth-child(1)").text());
         }
     });
-    $('#table7 tbody').on('click', 'tr', function () {
+    $('#table13 tbody').on('click', 'tr', function () {
         if ($(this).hasClass('selected')) {
             $(this).removeClass('selected');
             setUOMValues();
         } else {
-            t7.$('tr.selected').removeClass('selected');
+            t13.$('tr.selected').removeClass('selected');
             $(this).addClass('selected');
             setUOMValues($(this).children("td:nth-child(1)").text());
         }
@@ -292,7 +299,7 @@ $(function () {
         let materialcode = materialClassesInstence.MaterialSerial.genarateMaterialCode(materiallist.length);
         console.log(material_col.allMaterial());
         $("#material_code").val(materialcode);
-        $("#table8 tbody tr").removeClass('selected');
+        $("#table12 tbody tr").removeClass('selected');
         enablefillin("#material_type");
         enablefillin("#uombtn");
         enablefillin("#material_description");

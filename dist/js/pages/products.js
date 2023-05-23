@@ -4,9 +4,9 @@ $(function () {
     let product_col = productClassesInstence.product_service;
     let productobj = productClassesInstence.product;
     let productpriceobj = productClassesInstence.productprice;
-    var addmoddel;
-    var selectedcode;
-    var t13 = $("#table13").DataTable({
+    var addmoddel = undefined;
+    var selectedcode = undefined;
+    var t15 = $("#table15").DataTable({
         "order": [[ 0, "desc" ]],
         pageLength: 5,
         dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>'
@@ -191,25 +191,32 @@ $(function () {
     
     function refreshtable() {
         product_col.clear();
+        selectedcode =undefined;
         addmoddel = undefined;
-        t13.clear().draw(false);
+        t15.clear().draw(false);
         $.ajax({
             url: "http://localhost:8080/api/productctrl/getproducts",
             dataType: "JSON",
             success: function (data) {
                 $.each(data.content, function (i, item) {
                     product_col.addProducttoArray(item.id,item.code,item.desc,item.name,item.status,item.pricelist);
-                    t13.row.add([item.code, item.name]).draw(false);
+                    t15.row.add([item.code, item.name]).draw(false);
                 });
                 setValues();
-                var $tableRow = $("#table13 tr td:contains('" + selectedcode + "')").closest("tr");
+                fadepageloder();
+                var $tableRow = $("#table15 tr td:contains('" + selectedcode + "')").closest("tr");
                 $tableRow.trigger("click");
+                
+            },
+            error:function(xhr, status, error){
+                fadepageloder();
             }
         })
     }
     //definded functions
  
     function submit() {
+        showpageloder();
         var url;
         var method;
         var token = localStorage.getItem("jwt_token");
@@ -314,7 +321,7 @@ $(function () {
     }
     //end of functions
     //triggers
-    $('#table13 tbody').on('click', 'tr', function () {
+    $('#table15 tbody').on('click', 'tr', function () {
         resetform("#quickForm7");
         resetform("#quickForm8");
         if ($(this).hasClass('selected')) {
@@ -322,7 +329,7 @@ $(function () {
             setValues();
             selectedcode = "";
         } else {
-            t13.$('tr.selected').removeClass('selected');
+            t15.$('tr.selected').removeClass('selected');
             $(this).addClass('selected');
             selectedcode = $(this).children("td:nth-child(1)").text();
             setValues($(this).children("td:nth-child(1)").text());
@@ -336,7 +343,7 @@ $(function () {
         let productlist = product_col.allProduct()
         let productcode = productClassesInstence.ProductSerial.genarateProductCode(productlist.length);
         $("#product_code").val(productcode);
-        $("#table13 tbody tr").removeClass('selected');
+        $("#table15 tbody tr").removeClass('selected');
         enablefillin("#product_name");
         enablefillin("#product_description");
         $("#product_status").val("ACTIVE");

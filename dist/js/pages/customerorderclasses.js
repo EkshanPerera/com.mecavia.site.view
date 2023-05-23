@@ -61,7 +61,7 @@ class customerorder_service {
         this.customerorder = undefined;
         this.customerOrderProducts = []
     }
-    clearprm(){
+    clearcop(){
         this.customerOrderProducts = [];
     }
 }

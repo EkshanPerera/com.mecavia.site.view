@@ -10,23 +10,23 @@ $(function () {
     var clientClassesInstence = clientClasses.clientClassesInstence();
     let cli_col = clientClassesInstence.cli_service;
     let cli_obj = clientClassesInstence.client;
-    var unitrate; 
-    var addmoddel;
-    var selectedcode;
-    var t9 = $("#table9").DataTable({
+    var unitrate = undefined; 
+    var addmoddel = undefined;
+    var selectedcode = undefined;
+    var t32 = $("#table32").DataTable({
         "order": [[ 0, "desc" ]],
         pageLength: 5,
         dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>'
     });
-    var t10 = $("#table10").DataTable({
+    var t31 = $("#table31").DataTable({
         "order": [[ 0, "desc" ]],
         pageLength: 5,
         dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>'
     });
-    var t8 = $("#table8").DataTable({
+    var t33 = $("#table33").DataTable({
         "order": [[ 0, "desc" ]]
     });
-    var t4 = $("#table4").DataTable({
+    var t34 = $("#table34").DataTable({
         "order": [[ 0, "desc" ]]
     });
     var Toast = Swal.mixin({
@@ -230,39 +230,43 @@ $(function () {
         cli_col.clear();
         addmoddel = undefined;
         selectedcode = undefined;
-        t9.clear().draw(false);
-        t10.clear().draw(false);
+        selectedcode = undefined;
+        t32.clear().draw(false);
+        t31.clear().draw(false);
         $.ajax({
             url: "http://localhost:8080/api/customerorderctrl/getcustomerorders",
             dataType: "JSON",
             success: function (data) {
                 $.each(data.content, function (i, item) {
                     customerorder_col.addCustomerOrdertoArray(item.id,item.code,item.jobID,item.jobNumber,item.customerid,item.totalAmount,item.grossAmount,item.remark,item.customerOrderProducts,item.printeddate,item.status);
-                    t9.row.add([item.code, item.jobID, item.customerid.code, item.customerid.firstname + " " + item.customerid.lastname, item.status]).draw(false);
-                    setValues();
-                    var $tableRow = $("#table9 tr td:contains('" + selectedcode + "')").closest("tr");
-                    $tableRow.trigger("click");
+                    t32.row.add([item.code, item.jobID, item.customerid.code, item.customerid.firstname + " " + item.customerid.lastname, item.status]).draw(false);
                 });
+                setValues();
+                fadepageloder();
+                var $tableRow = $("#table32 tr td:contains('" + selectedcode + "')").closest("tr");
+                $tableRow.trigger("click");
                 refreshproducttable();
-                refreshcustomertable();
+               
+            },
+            error:function(xhr, status, error){
+                fadepageloder();
             }
         })
     }
     function refreshcoproducttable() {
         customerOrderProductsobjarr = customerorder_col.allCustomerOrderProducts();
-        t10.clear().draw(false);
+        t31.clear().draw(false);
         var total = 0;
         $.each(customerOrderProductsobjarr, function (i, item) {
-            t10.row.add([i + 1, item.product.name, item.unitrate, item.quantity]).draw(false);
+            t31.row.add([i + 1, item.product.name, item.unitrate, item.quantity]).draw(false);
             total += parseFloat(item.unitrate) * parseFloat(item.quantity);
-
         })
 
         $('#customerorder_totalamount').val(total);
     }
     function refreshproducttable() {
         product_col.clear()
-        t8.clear().draw(false);
+        t33.clear().draw(false);
         $.ajax({
             url: "http://localhost:8080/api/productctrl/getproducts",
             dataType: "JSON",
@@ -270,17 +274,18 @@ $(function () {
                 $.each(data.content, function (i, item) {
                     if (item.status == "ACTIVE") {
                         product_col.addProducttoArray(item.id,item.code,item.desc,item.name,item.status,item.pricelist);
-                        t8.row.add([item.code, item.name]).draw(false);
+                        t33.row.add([item.code, item.name]).draw(false);
                     }
                 })
-                var $tableRow = $("#table8 tr td:contains('" + selectedcode + "')").closest("tr");
+                refreshcustomertable();
+                var $tableRow = $("#table33 tr td:contains('" + selectedcode + "')").closest("tr");
                 $tableRow.trigger("click");
             }
         })
     }
     function refreshcustomertable() {
         cli_col.clear();
-        t4.clear().draw(false);
+        t34.clear().draw(false);
         $.ajax({
             url: "http://localhost:8080/api/clientctrl/getclients",
             dataType: "JSON",
@@ -288,10 +293,10 @@ $(function () {
                 $.each(data.content, function (i, item) {
                     if (item.businessRole == "CUSTOMER" && item.status == "ACTIVE") {
                         cli_col.addClitoArray(item.id, item.code, item.firstname, item.middlename, item.lastname, item.email, item.businessRole, item.status, item.clientGroupid, item.roleid);
-                        t4.row.add([item.code, item.firstname + " " + item.lastname]).draw(false);
+                        t34.row.add([item.code, item.firstname + " " + item.lastname]).draw(false);
                     }
                 });
-                var $tableRow = $("#table4 tr td:contains('" + selectedcode + "')").closest("tr");
+                var $tableRow = $("#table34 tr td:contains('" + selectedcode + "')").closest("tr");
                 $tableRow.trigger("click");
             }
         });
@@ -300,6 +305,7 @@ $(function () {
     //definded functions
 
     function submit() {
+        showpageloder();
         var url;
         var method;
         var token = localStorage.getItem("jwt_token");
@@ -308,15 +314,16 @@ $(function () {
                 url = "http://localhost:8080/api/customerorderctrl/savecustomerorder";
                 method = "POST";
                 break;
+            // case "mod":
+            // case "del":
+            //     url = "http://localhost:8080/api/customerorderctrl/updatecustomerorder";
+            //     method = "PUT";
+            //     break;
             case "mod":
             case "del":
-                url = "http://localhost:8080/api/customerorderctrl/updatecustomerorder";
-                method = "PUT";
+                url = "http://localhost:8080/api/customerorderctrl/activeinactivecustomerorder";
+                method = "POST";
                 break;
-            // case "del":
-            //     url = "http://localhost:8080/api/customerorderctrl/activeinactivecustomerorder";
-            //     method = "POST";
-            //     break;
         }
         $.ajax({
             url: url,
@@ -357,16 +364,16 @@ $(function () {
                 $("#customerorder_productid").val(customerorderobj.product.code + " - " + customerorderobj.product.name);
             }
             if (customerorderobj.customerOrderProducts) {
-                t10.clear().draw(false);
+                t31.clear().draw(false);
                 $.each(customerorderobj.customerOrderProducts, function (i, item) {
-                    t10.row.add([i + 1, item.product.name, item.unitrate, item.quantity]).draw(false);
+                    t31.row.add([i + 1, item.product.name, item.unitrate, item.quantity]).draw(false);
                 })
             }
 
         } else {
             customerorderobj = undefined;
-            t10.clear().draw(false);
-            customerorder_col.clearprm();
+            t31.clear().draw(false);
+            customerorder_col.clearcop();
             customerOrderProductsobjarr = [];
             total = undefined;
             $("#customerorder_code").val(undefined);
@@ -440,43 +447,43 @@ $(function () {
     }
     //end of functions
     //triggers
-    $('#table9 tbody').on('click', 'tr', function () {
+    $('#table32 tbody').on('click', 'tr', function () {
         resetform("#quickForm8");
         if ($(this).hasClass('selected')) {
             $(this).removeClass('selected');
             setValues();
             selectedcode = "";
         } else {
-            t9.$('tr.selected').removeClass('selected');
+            t32.$('tr.selected').removeClass('selected');
             $(this).addClass('selected');
             selectedcode = $(this).children("td:nth-child(1)").text();
             setValues($(this).children("td:nth-child(1)").text());
         }
     });
-    $('#table4 tbody').on('click', 'tr', function () {
+    $('#table34 tbody').on('click', 'tr', function () {
         if ($(this).hasClass('selected')) {
             $(this).removeClass('selected');
             setClientValues();
         } else {
-            t4.$('tr.selected').removeClass('selected');
+            t34.$('tr.selected').removeClass('selected');
             $(this).addClass('selected');
             setClientValues($(this).children("td:nth-child(1)").text());
         }
     });
-    $('#table8 tbody').on('click', 'tr', function () {
+    $('#table33 tbody').on('click', 'tr', function () {
         if ($(this).hasClass('selected')) {
             $(this).removeClass('selected');
             setProductValues();
         } else {
-            t8.$('tr.selected').removeClass('selected');
+            t33.$('tr.selected').removeClass('selected');
             $(this).addClass('selected');
             setProductValues($(this).children("td:nth-child(1)").text());
         }
     });
     $(document).on("click", "#addProductbtn", function () {
-        if ($("#table8 tbody tr").hasClass('selected')) {
+        if ($("#table33 tbody tr").hasClass('selected')) {
             product_obj = undefined;
-            $("#table8 tbody tr").removeClass('selected');
+            $("#table33 tbody tr").removeClass('selected');
         }
         $("#customerorder_unitrate").val(undefined);
         $("#customerorder_quntity").val(undefined);
@@ -486,7 +493,7 @@ $(function () {
         setValues(undefined);
         addmoddel = "add";
         $("#customerorder_code").val(genaratecode());
-        $("#table9 tbody tr").removeClass('selected');
+        $("#table32 tbody tr").removeClass('selected');
         enablefillin("#customerorder_quntity");
         enablefillin("#customerorder_remark");
         enablefillin("#customerbtn");

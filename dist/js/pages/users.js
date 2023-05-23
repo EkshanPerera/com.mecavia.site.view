@@ -9,16 +9,16 @@ let usr_contactobj = userClassesInstence.user_contacts;
 let grp_col = usergroupClassesInstence.usr_grp_service;
 let usr_grpobj = usergroupClassesInstence.usr_grp;
 let usr_roleobj = usergroupClassesInstence.user_role;
-var addmoddel;
-var selectedcode;
-var selectedaddrcode;
-var selectedcontcode;
-var selectedgrpcode;
-var selectedrolecode;
-var t = $("#table1").DataTable({
+var addmoddel = undefined;
+var selectedcode = undefined;
+var selectedaddrcode = undefined;
+var selectedcontcode = undefined;
+var selectedgrpcode = undefined;
+var selectedrolecode = undefined;
+var t7 = $("#table7").DataTable({
     "order": [[ 0, "desc" ]]
 });
-var t3 = $("#table3").DataTable({
+var t8 = $("#table8").DataTable({
     "order": [[ 0, "desc" ]]
 });
 var t4 = $("#table4").DataTable({
@@ -376,8 +376,10 @@ $(function () {
 
     //definded functions
     function refreshtable() {
+        fadepageloder();
         usr_col.clear()
         addmoddel = undefined;
+        selectedcode = undefined;
         selectedaddrcode = undefined;
         selectedcontcode = undefined;
         t4.clear().draw(false);
@@ -397,38 +399,39 @@ $(function () {
                     t4.row.add([item.code, item.firstname, item.lastname, item.email]).draw(false);
                 });
                 setValues();
+                fadepageloder();
                 var $tableRow = $("#table4 tr td:contains('" + selectedcode + "')").closest("tr");
                 $tableRow.trigger("click");
                 refresheusrgrouptable();
-
+            },
+            error:function(xhr, status, error){
+                fadepageloder();
             }
         });
 
     }
     function refresheusrgrouptable() {
-        t.clear().draw(false);
+        t7.clear().draw(false);
         grp_col.clear();
         $.ajax({
             url: "http://localhost:8080/api/usergroupctrl/getusergroups",
             dataType: "JSON",
             success: function (data) {
                 $.each(data.content, function (i, item) {
-                    $.each(item.userslist, function (i, item) {
-                        if (item.status = "ACTIVE") grp_col.addUsertoArry(item.code, item.firstname, item.lastname, item.email, item.role, item.status);
-                    });
                     $.each(item.roleslist, function (i, item) {
                         grp_col.addRoletoArry(item.id, item.description, item.code, item.status);
                     });
-                    grp_col.addUsrGrptoArray(item.id, item.code, item.description, item.status);
-                    t.row.add([item.code, item.description]).draw(false);
+                    if (item.status = "ACTIVE")grp_col.addUsrGrptoArray(item.id, item.code, item.description, item.status);
+                    t7.row.add([item.code, item.description]).draw(false);
                     
                 })
-                var $tableRow = $("#table1 tr td:contains('" + selectedcode + "')").closest("tr");
+                var $tableRow = $("#table7 tr td:contains('" + selectedcode + "')").closest("tr");
                 $tableRow.trigger("click");
             }
         })
     }
     function submit() {
+        showpageloder();
         var url;
         var method;
         var token = localStorage.getItem("jwt_token");
@@ -613,12 +616,12 @@ $(function () {
         }
     }
     function setUserGrpValues(code) {
-        t3.clear().draw(false);
+        t8.clear().draw(false);
         $("#modal-grouplist").modal("hide");
         if (code) {
             usr_grpobj = grp_col.getUsrGrp(code);
             $.each(usr_grpobj.roleslist, function (i, item) {
-                t3.row.add([item.code, item.description]).draw(false);
+                if (item.status == "ACTIVE") t8.row.add([item.code, item.description]).draw(false);
             })
             $("#user_userGroupid").val(usr_grpobj.code + " - " + usr_grpobj.description);
             setRoleValues();
@@ -645,27 +648,27 @@ $(function () {
     }
     //end of functions
     //triggers
-    $('#table1 tbody').on('click', 'tr', function () {
+    $('#table7 tbody').on('click', 'tr', function () {
         if ($(this).hasClass('selected')) {
             $(this).removeClass('selected');
             setUserGrpValues();
             selectedgrpcode = "";
         } else {
-            t.$('tr.selected').removeClass('selected');
+            t7.$('tr.selected').removeClass('selected');
             $(this).addClass('selected');
             selectedgrpcode = $(this).children("td:nth-child(1)").text();
             setUserGrpValues($(this).children("td:nth-child(1)").text());
 
         }
     });
-    $('#table3 tbody').on('click', 'tr', function () {
+    $('#table8 tbody').on('click', 'tr', function () {
         if (usr_grpobj.roleslist.length != 0) {
             if ($(this).hasClass('selected')) {
                 $(this).removeClass('selected');
                 setRoleValues();
                 selectedrolecode = "";
             } else {
-                t3.$('tr.selected').removeClass('selected');
+                t8.$('tr.selected').removeClass('selected');
                 $(this).addClass('selected');
                 selectedrolecode = $(this).children("td:nth-child(1)").text();
                 setRoleValues(selectedgrpcode, $(this).children("td:nth-child(1)").text());

@@ -9,21 +9,21 @@ $(function () {
     let purchaseRequisitionMaterialsobjarr = [];
     let goodsReceivedNoteMaterialsobjarr = [];
     var outstangingcount = 0;
-    var addmoddel;
-    var selectedcode;
-    var selectedpomcode;
+    var addmoddel = undefined;
+    var selectedcode = undefined;
+    var selectedpomcode = undefined;
 
-    var t10 = $("#table10").DataTable({
+    var t25 = $("#table25").DataTable({
         "order": [[0, "desc"]],
         pageLength: 5,
         dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>'
     });
-    var t11 = $("#table11").DataTable({
+    var t26 = $("#table26").DataTable({
         "order": [[0, "desc"]],
         pageLength: 5,
         dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>'
     });
-    var t12 = $("#table12").DataTable({
+    var t27 = $("#table27").DataTable({
         "order": [[0, "desc"]],
         pageLength: 5,
         dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>'
@@ -106,7 +106,7 @@ $(function () {
                         var date = day + "/" + (parseInt(month) + 1) + "/" + year;
                         let index = goodsreceivednote_col.getGRNsByPOCode(selectedcode).length
                         let prcode = purchaserequisitionobj.prcode;
-                        let grncode = new GoodsRecevedNoteSerial().genarateGRNCode(index,prcode);
+                        let grncode = grnClassesInstence.GoodsRecevedNoteSerial.genarateGRNCode(index,prcode);
                         var invoicenumber = $("#grn_invoiceno").val();
                         var invocedate = $("#grn_invoicedate").val();
                         var code = grncode;
@@ -135,8 +135,8 @@ $(function () {
         purchaserequisition_col.clear();
         goodsreceivednote_col.clear();
         addmoddel = undefined;
-        t10.clear().draw(false);
-        t11.clear().draw(false);
+        t25.clear().draw(false);
+        t26.clear().draw(false);
         $.ajax({
             url: "http://localhost:8080/api/purchaserequisitionctrl/getpurchaserequisitions",
             dataType: "JSON",
@@ -160,22 +160,31 @@ $(function () {
                             goodsreceivednote_col.addGRNtoArray(item.id, item.invoicenumber, item.invocedate, item.code, item.mradate, item.mrano, item.enterddate, item.remark, item.status, item.purchaseRequisition, item.goodsReceivedNoteMaterials, item.printeddate);
                         });
                         setValues(selectedcode);
+                        fadepageloder();
+                    },
+                    error:function(xhr, status, error){
+                        fadepageloder();
                     }
                 })
 
+                fadepageloder();
+            },
+            error:function(xhr, status, error){
+                fadepageloder();
             }
         })
 
     }
     function refreshgrnmtable(){
-        t12.clear().draw(false);
+        t27.clear().draw(false);
         let grnmlist = goodsreceivednote_col.allNewGRNNMaterials();
         $.each(grnmlist,function(i,item){
-            t12.row.add([item.code,item.ordercode,item.arrivedCount,item.prmaterial.material.uomid.scode]).draw(false);
+            t27.row.add([item.code,item.ordercode,item.arrivedCount,item.prmaterial.material.uomid.scode]).draw(false);
         })
     }
     //definded functions
     function submit() {
+        showpageloder();
         var url;
         var method;
         var token = localStorage.getItem("jwt_token");
@@ -199,7 +208,7 @@ $(function () {
     }
     function setPOMValues(ordercode) {
         if (ordercode) {
-            t11.clear().draw(false);
+            t26.clear().draw(false);
             goodsReceivedNoteMaterialsobjarr = [];
             goodsReceivedNoteMaterialsobjarr = goodsreceivednote_col.allGRNsByOrderCode(ordercode).GRNMs;
             setOutstanding(ordercode);
@@ -209,12 +218,12 @@ $(function () {
             if (goodsReceivedNoteMaterialsobjarr.length != 0) {
                 $.each(goodsReceivedNoteMaterialsobjarr, function (i, item) {
                     if (item.id != undefined)
-                        t11.row.add([item.goodsReceivedNote.code, item.code, item.arrivedCount, item.prmaterial.material.uomid.scode, item.goodsReceivedNote.enterddate,
+                        t26.row.add([item.goodsReceivedNote.code, item.code, item.arrivedCount, item.prmaterial.material.uomid.scode, item.goodsReceivedNote.enterddate,
                         item.goodsReceivedNote.invoicenumber, item.goodsReceivedNote.invocedate, item.goodsReceivedNote.mrano, item.goodsReceivedNote.mradate]).draw(false);
                 })
             }
         } else {
-            t11.clear().draw(false);
+            t26.clear().draw(false);
             goodsReceivedNoteMaterialsobjarr = [];
             $("#grn_outstanding").val(undefined);
             $("#grn_orderno").val(undefined);
@@ -272,9 +281,9 @@ $(function () {
                     $("#purchaserequisition_supplierid").val(purchaserequisitionobj.supplierid.code + " - " + purchaserequisitionobj.supplierid.firstname + " " + purchaserequisitionobj.supplierid.lastname);
                 }
                 if (purchaserequisitionobj.purchaseRequisitionMaterials) {
-                    t10.clear().draw(false);
+                    t25.clear().draw(false);
                     $.each(purchaserequisitionobj.purchaseRequisitionMaterials, function (i, item) {
-                        t10.row.add([item.code, item.material.description, item.quantity, item.material.uomid.scode]).draw(false);
+                        t25.row.add([item.code, item.material.description, item.quantity, item.material.uomid.scode]).draw(false);
 
                     })
                 }
@@ -283,8 +292,8 @@ $(function () {
             }
 
         } else {
-            t10.clear().draw(false);
-            t12.clear().draw(false);
+            t25.clear().draw(false);
+            t27.clear().draw(false);
             prmobj = null;
             goodsreceivednoteobj = null;
             goodsReceivedNoteMaterialsobjarr = [];
@@ -328,14 +337,14 @@ $(function () {
     }
     //end of functions
     //triggers
-    $('#table10 tbody').on('click', 'tr', function () {
+    $('#table25 tbody').on('click', 'tr', function () {
         if (purchaseRequisitionMaterialsobjarr.length != 0 &&  addmoddel == "add") {
             if ($(this).hasClass('selected')) {
                 $(this).removeClass('selected');
                 setPOMValues();
                 selectedpomcode = undefined;
             } else {
-                t10.$('tr.selected').removeClass('selected');
+                t25.$('tr.selected').removeClass('selected');
                 $(this).addClass('selected');
                 selectedpomcode = $(this).children("td:nth-child(1)").text();
                 setPOMValues($(this).children("td:nth-child(1)").text());

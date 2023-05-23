@@ -4,9 +4,9 @@ $(function () {
     let grp_col = usergroupClassesInstence.usr_grp_service;
     let usr_grpobj = usergroupClassesInstence.usr_grp;
     let usr_roleobj = usergroupClassesInstence.user_role;
-    var addmoddel;
-    var selectedcode;
-    var selectedrolecode;
+    var addmoddel = undefined;
+    var selectedcode = undefined;
+    var selectedrolecode = undefined;
     var t = $("#table1").DataTable({
         "order": [[ 0, "desc" ]],
         pageLength: 5,
@@ -190,6 +190,7 @@ $(function () {
     function refreshtable() {
         grp_col.clear()
         addmoddel = undefined;
+        selectedcode = undefined;
         selectedrolecode = undefined;
         t.clear().draw(false);
         $.ajax({
@@ -208,12 +209,19 @@ $(function () {
                     t.row.add([item.code, item.description]).draw(false);
                 })
                 setValues();
+                fadepageloder();
                 var $tableRow = $("#table1 tr td:contains('" + selectedcode + "')").closest("tr");
                 $tableRow.trigger("click");
+               
+            },
+            error:function(xhr, status, error){
+                fadepageloder();
             }
         })
+
     }
     function submit() {
+        showpageloder();
         var url;
         var method;
         var token = localStorage.getItem("jwt_token");
@@ -330,6 +338,7 @@ $(function () {
             $(this).addClass('selected');
             selectedcode = $(this).children("td:nth-child(1)").text();
             setValues($(this).children("td:nth-child(1)").text());
+
         }
     });
     $('#table3 tbody').on('click', 'tr', function () {

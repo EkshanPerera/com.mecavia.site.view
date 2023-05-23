@@ -1,11 +1,10 @@
 !$(function () {
     // Initial content to load
     // $("#content").load("dashboard.html");
-
     // Login form submit event handler
     $("#login-form").submit(function (event) {
+        
         event.preventDefault();
-
         // Perform login validation and redirect to index.html
         // Replace the code below with your login validation logic
         var username = $("#username").val();
