@@ -721,6 +721,16 @@ $(function () {
             }
         }
     });
+    $(document).off("click", "#addUserbtn");
+    $(document).off("click", "#addUserAddrbtn");
+    $(document).off("click", "#addUserContbtn");
+    $(document).off("click", "#setUserbtn");
+    $(document).off("click", "#setUserAddrbtn");
+    $(document).off("click", "#setUserContbtn");
+    $(document).off("click", "#removeUserbtn");
+    $(document).off("click", "#removeUserAddrbtn");
+    $(document).off("click", "#removeUserContbtn");
+    
     $(document).on("click", "#addUserbtn", function () {
         selectedcode = "";
         setValues();
@@ -741,7 +751,6 @@ $(function () {
         setPsw();
         $("#user_status").val("ACTIVE");
     });
-
     $(document).on("click", "#addUserAddrbtn", function () {
         if (selectedcode) {
             let addrcode = userClassesInstence.UsrSerial.genarateUserAddrCode(usr_obj.addresses.length, usr_obj.code);

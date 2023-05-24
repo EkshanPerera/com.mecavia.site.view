@@ -148,7 +148,6 @@ class materialRequisition_service {
         this.newGoodsReceivedNotMaterials = [];
     }
 }
-
 class billofmaterial_service {
     constructor() {
         this.billofmaterials = [];

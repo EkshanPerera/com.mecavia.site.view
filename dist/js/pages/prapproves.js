@@ -207,6 +207,8 @@ $(function () {
     }
     //end of functions
     //triggers
+    $(document).off("click", "#btnprm");
+
     $(document).on("click", "#btnprm", function () {
         selectedcode = $("#purchaserequisition_code").val();
         refreshtable();

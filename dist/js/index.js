@@ -16,6 +16,7 @@
             alert("Invalid credentials!");
         }
     });
+    
     // Usergroup click event handler
     $("#lnkusergroup").click(function () {
         $("#content").load("pages/corporate/usergroups.html");
@@ -71,10 +72,6 @@
     // Usergroup click event handler
     $("#lnkfgin").click(function () {
         $("#content").load("pages/corporate/fgin.html");
-    });
-    // PR click event handler
-    $("#pr").click(function () {
-        $(".content").load("pr.html");
     });
     // GRN click event handler
     $("#grn").click(function () {

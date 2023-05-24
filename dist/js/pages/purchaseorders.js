@@ -33,7 +33,6 @@ $(function () {
     // $.validator.setDefaults({ 
     // });
     // Get the input element
-
     $('#quickForm8').validate({
         rules: {
             purchaserequisitionremark: {
@@ -242,6 +241,7 @@ $(function () {
     }
     //end of functions
     //triggers
+    $(document).off("click", "#btnprmpo");
     $(document).on("click", "#btnprmpo", function () {
         selectedcode = $("#purchaseorder_code").val();
         refreshtable();
@@ -249,7 +249,7 @@ $(function () {
 
     //end of triggers
     $("#podiv").hide();
-formctrl();
-refreshtable();
+    formctrl();
+    refreshtable();
 });
 

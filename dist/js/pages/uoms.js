@@ -224,6 +224,10 @@ $(function () {
             setValues($(this).children("td:nth-child(1)").text());
         }
     });
+    $(document).off("click", "#addUOMs");
+    $(document).off("click", "#setUOMs");
+    $(document).off("click", "#removaUOMs");
+    
     $(document).on("click", "#addUOMs", function () {
         selectedcode = "";
         setValues(undefined);

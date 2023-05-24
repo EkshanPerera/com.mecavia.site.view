@@ -329,6 +329,12 @@ $(function () {
             setMatarialalues($(this).children("td:nth-child(1)").text());
         }
     });
+    
+    $(document).off("click", "#addMaterialbtn");
+    $(document).off("click", "#btnprm");
+    $(document).off("click", "#purchaserequisition_unitrate");
+    $(document).off("click", "#purchaserequisition_quntity");
+
     $(document).on("click", "#addMaterialbtn", function () {
         if ($("#table38 tbody tr").hasClass('selected')) {
             material_obj = undefined;

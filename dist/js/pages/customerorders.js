@@ -480,6 +480,14 @@ $(function () {
             setProductValues($(this).children("td:nth-child(1)").text());
         }
     });
+
+    $(document).off("click", "#addProductbtn");
+    $(document).off("click", "#addCustomerOrders");
+    $(document).off("click", "#setCustomerOrders");
+    $(document).off("click", "#removaCustomerOrders");
+    $(document).off("click", "#customerorder_unitrate");
+    $(document).off("click", "#customerorder_quntity");
+    
     $(document).on("click", "#addProductbtn", function () {
         if ($("#table33 tbody tr").hasClass('selected')) {
             product_obj = undefined;
@@ -643,18 +651,6 @@ $(function () {
             value = parts.join('.');
         }
         $('#customerorder_unitrate').val(value);
-    });
-    $(document).on('input', '#customerorder_unitrate', function () {
-        var value = $('#customerorder_unitrate').val();
-        value = value.replace(/[^\d.]/g, '');
-        value = value.replace(/\.{2,}/g, '.');
-        value = value.replace(/^0+(?=\d)/, '');
-        var parts = value.split('.');
-        if (parts.length > 1) {
-            parts[1] = parts[1].slice(0, 2);
-            value = parts.join('.');
-        }
-
     });
     $(document).on('input', '#customerorder_quntity', function () {
         var value = $('#customerorder_quntity').val();

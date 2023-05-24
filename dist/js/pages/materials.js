@@ -291,6 +291,11 @@ $(function () {
             setUOMValues($(this).children("td:nth-child(1)").text());
         }
     });
+    
+    $(document).off("click", "#addMaterials");
+    $(document).off("click", "#setMaterials");
+    $(document).off("click", "#removaMaterials");
+
     $(document).on("click", "#addMaterials", function () {
         selectedcode = "";
         setValues(undefined);

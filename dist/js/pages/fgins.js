@@ -229,7 +229,6 @@ $(function () {
             $("#fgin_outstanding").val(undefined);
         }
     }
-
     function setGRMValues() {
         setOutstanding(selectedcopcode);
         var index = finishedgoodsinnote_col.getFGINNProductsByOrderCode(selectedcopcode).length;
@@ -336,7 +335,11 @@ $(function () {
         }
 
     });
-    
+
+    $(document).off("click", "#btncoppo");
+    $(document).off("click", "#addFGIN");
+    $(document).off("click", "#addCOP");
+
     $(document).on("click", "#btncoppo", function () {
         selectedcode = $("#purchaseorder_code").val();
         refreshtable();

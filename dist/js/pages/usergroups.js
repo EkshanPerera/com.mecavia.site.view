@@ -356,6 +356,14 @@ $(function () {
             }
         }
     });
+
+    $(document).off("click", "#addUserGroups");
+    $(document).off("click", "#addUserRoles");
+    $(document).off("click", "#setUserGroups");
+    $(document).off("click", "#setUserRoles");
+    $(document).off("click", "#removaUserGroups");
+    $(document).off("click", "#removaUserRoles");
+    
     $(document).on("click", "#addUserGroups", function () {
         selectedcode = "";
         setValues(undefined);
@@ -387,6 +395,7 @@ $(function () {
         }
     });
     $(document).on("click", "#setUserGroups", function () {
+        console.log("test")
         if (selectedcode) {
             setValues(selectedcode);
             addmoddel = "mod";

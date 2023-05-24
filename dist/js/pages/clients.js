@@ -322,8 +322,6 @@ $(function () {
                 }
             }
         });
-
-
         //definded functions
         function refreshtable() {
             cli_col.clear()
@@ -357,7 +355,6 @@ $(function () {
             });
 
         }
-
         function submit() {
             showpageloder();
             var url;
@@ -394,7 +391,6 @@ $(function () {
         function formctrl() {
             $(".formfillin").prop("disabled", true);
         }
-
         function enablefillin(fillinid) {
             $(fillinid).prop("disabled", false);
         }
@@ -576,6 +572,16 @@ $(function () {
                 }
             }
         });
+        $(document).off("click", "#addClientbtn");
+        $(document).off("click", "#addClientAddrbtn");
+        $(document).off("click", "#addClientContbtn");
+        $(document).off("click", "#setClientbtn");
+        $(document).off("click", "#setClientAddrbtn");
+        $(document).off("click", "#setClientContbtn");
+        $(document).off("click", "#removeClientbtn");
+        $(document).off("click", "#removeClientAddrbtn");
+        $(document).off("click", "#removeClientContbtn");
+
         $(document).on("click", "#addClientbtn", function () {
             selectedcode = "";
             setValues();
@@ -594,7 +600,6 @@ $(function () {
 
             $("#client_status").val("ACTIVE");
         });
-
         $(document).on("click", "#addClientAddrbtn", function () {
             if (selectedcode) {
                 let addrcode = clientClassesInstence.CliSerial().genarateClientAddrCode(cli_obj.addresses.length, cli_obj.code);

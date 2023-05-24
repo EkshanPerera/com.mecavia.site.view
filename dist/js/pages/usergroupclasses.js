@@ -51,6 +51,7 @@ class usr_grp_service {
         this.usrs.push(user_arritem);
     }
     allUsrGrp() {
+        
         return this.usr_grps;
     }
     getUsrGrp(code) {

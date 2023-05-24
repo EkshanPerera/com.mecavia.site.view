@@ -22,7 +22,6 @@ class purchaseRequisitionMaterials{
         this.quantity = quantity;
     }
 }
-    
 class purchaserequisition_service {
     constructor() {
         this.purchaserequisitions = [];

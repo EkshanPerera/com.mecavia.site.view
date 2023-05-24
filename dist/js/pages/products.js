@@ -313,7 +313,6 @@ $(function () {
         productobj.pricelist.push(productpriceobj);
 
     }
-
     function resetform(element) {
         $(element).find(".invalid-feedback").remove();
         $(element).find(".is-invalid").removeClass("is-invalid");
@@ -335,6 +334,11 @@ $(function () {
             setValues($(this).children("td:nth-child(1)").text());
         }
     });
+    
+    $(document).off("click", "#addProducts");
+    $(document).off("click", "#addProductPrice");
+    $(document).off("click", "#setProducts");
+    $(document).off("click", "#removaProducts");
 
     $(document).on("click", "#addProducts", function () {
         selectedcode = "";
@@ -361,7 +365,6 @@ $(function () {
         $("#product_price_code").val(productcode);
         $("#product_price_status").val("ACTIVE");
     });
-    
     $(document).on("click", "#setProducts", function () {
         if (selectedcode) {
             setValues(selectedcode);

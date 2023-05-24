@@ -141,7 +141,6 @@ $(function () {
     function formctrl() {
         $(".formfillin").prop("disabled", true);
     }
-
     function setValues(code) {
         formctrl();
         addmoddel = undefined;
@@ -213,6 +212,7 @@ $(function () {
     }
     //end of functions
     //triggers
+    $(document).off("click", "#btnprm");
     $(document).on("click", "#btnprm", function () {
         selectedcode = $("#customerorder_code").val();
         refreshtable();

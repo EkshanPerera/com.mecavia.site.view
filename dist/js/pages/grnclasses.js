@@ -22,7 +22,6 @@ class purchaseRequisitionMaterial {
         this.quantity = quantity;
     }
 }
-
 class goodsreceivednote {
     constructor(id, invoicenumber, invocedate, code, mradate, mrano, enterddate, remark, status, purchaseRequisition, goodsReceivedNoteMaterials, printeddate) {
         this.id = id;
@@ -153,7 +152,6 @@ class goodsReceivedNote_service {
         this.newGoodsReceivedNotMaterials = [];
     }
 }
-
 class purchaserequisition_service {
     constructor() {
         this.purchaserequisitions = [];

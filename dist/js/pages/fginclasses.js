@@ -25,7 +25,6 @@ class customerOrderProduct {
         this.unitrate = unitrate;
     }
 }
-
 class finishedgoodsinnote {
     constructor(id, code,panumber,padate, enterddate, remark, status, customerOrder, finishedGoodsInNoteProducts, printeddate) {
         this.id = id;
@@ -157,7 +156,6 @@ class finishedGoodsInNote_service {
         this.newFinishedGoodsInNotProducts = [];
     }
 }
-
 class customerorder_service {
     constructor() {
         this.customerorders = [];

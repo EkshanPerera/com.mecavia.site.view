@@ -352,7 +352,10 @@ $(function () {
         }
 
     });
-    
+    $(document).off("click", "#btnprmpo");
+    $(document).off("click", "#addGRN");
+    $(document).off("click", "#addPOM");
+
     $(document).on("click", "#btnprmpo", function () {
         selectedcode = $("#purchaseorder_code").val();
         refreshtable();
