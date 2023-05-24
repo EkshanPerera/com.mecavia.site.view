@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>AdminLTE 3 | DataTables</title>
+    <title>Salse and Inventory Trust Environment</title>
 
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet"
@@ -38,7 +38,7 @@
             opacity: 75%;
         }
 
-        
+
         .dark-mode .pageloader {
             background-color: #454d55 !important;
             color: #fff;
@@ -98,7 +98,7 @@
     </style>
 </head>
 
-<body class="hold-transition sidebar-mini layout-navbar-fixed layout-footer-fixed layout-fixed">
+<body class="sidebar-mini layout-navbar-fixed layout-fixed layout-footer-fixed text-sm">
     <div class="wrapper">
         <!-- Navbar -->
         <nav class="main-header navbar navbar-expand navbar-white navbar-light">
@@ -246,44 +246,25 @@
         <!-- Main Sidebar Container -->
         <aside class="main-sidebar sidebar-dark-navy elevation-4">
             <!-- Brand Logo -->
-            <a href="index3.html" class="brand-link">
-                <img src="dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
-                    style="opacity: .8">
-                <span class="brand-text font-weight-light">AdminLTE 3</span>
+            <a href="#" class="brand-link">
+                <i class="nav-icon fas fa-globe" style="font-size: 55px;"></i> 
+                <span class="brand-text font-weight-light" style="font-size: 30px;"><b>SITE 1.5</b></span>
             </a>
 
             <!-- Sidebar -->
             <div class="sidebar">
                 <!-- Sidebar user (optional) -->
                 <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-                    <div class="image">
-                        <img src="dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
-                    </div>
-                    <div class="info">
-                        <a href="#" class="d-block">Alexander Pierce</a>
-                    </div>
+                    
+                    
                 </div>
-
-                <!-- SidebarSearch Form -->
-                <div class="form-inline">
-                    <div class="input-group" data-widget="sidebar-search">
-                        <input class="form-control form-control-sidebar" type="search" placeholder="Search"
-                            aria-label="Search">
-                        <div class="input-group-append">
-                            <button class="btn btn-sidebar">
-                                <i class="fas fa-search fa-fw"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Sidebar Menu -->
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column nav-child-indent" data-widget="treeview"
                         role="menu" data-accordion="false">
                         <li class="nav-item">
                             <a href="#" class="nav-link active">
-                                <i class="nav-icon  fas fa-building"></i>
+                                <i class="nav-icon  fas fa-shopping-bag"></i>
                                 <p>
                                     Procurements
                                     <i class="fas fa-angle-left right"></i>
@@ -305,237 +286,237 @@
                                                 <p>Create</p>
                                             </a>
                                         </li>
-                                        <li class="nav-item" id="lnkprintpr"></li>
-                                        <a href="#" class="nav-link">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p>Print</p>
-                                        </a>
+                                        <li class="nav-item" id="lnkprintpr">
+                                            <a href="#" class="nav-link">
+                                                <i class="far fa-circle nav-icon"></i>
+                                                <p>Print</p>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link">
+                                        <i class="nav-icon fas fa-circle"></i>
+                                        <p>
+                                            Purchase Order
+                                            <i class="right fas fa-angle-left"></i>
+                                        </p>
+                                    </a>
+                                    <ul class="nav nav-treeview" style="display: none;">
+                                        <li class="nav-item" id="lnkprapprove">
+                                            <a href="#" class="nav-link">
+                                                <i class="far fa-circle nav-icon"></i>
+                                                <p>PR Approve</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item" id="lnkprintpo">
+                                            <a href="#" class="nav-link">
+                                                <i class="far fa-circle nav-icon"></i>
+                                                <p>Print</p>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link">
+                                        <i class="nav-icon fas fa-circle"></i>
+                                        <p>
+                                            GRN
+                                            <i class="right fas fa-angle-left"></i>
+                                        </p>
+                                    </a>
+                                    <ul class="nav nav-treeview" style="display: none;">
+                                        <li class="nav-item" id="lnkgrn">
+                                            <a href="#" class="nav-link">
+                                                <i class="far fa-circle nav-icon"></i>
+                                                <p>GRN width PO</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item" id="lnkprintgrn">
+                                            <a href="#" class="nav-link">
+                                                <i class="far fa-circle nav-icon"></i>
+                                                <p>Print</p>
+                                            </a>
+                                        </li>
+                                    </ul>
                                 </li>
                             </ul>
                         </li>
                         <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-circle"></i>
+                            <a href="#" class="nav-link active">
+                                <i class="nav-icon  fas fa-warehouse"></i>
                                 <p>
-                                    Purchase Order
-                                    <i class="right fas fa-angle-left"></i>
+                                    Genaral Store
+                                    <i class="fas fa-angle-left right"></i>
                                 </p>
                             </a>
-                            <ul class="nav nav-treeview" style="display: none;">
-                                <li class="nav-item" id="lnkprapprove">
-                                    <a href="#" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>PR Approve</p>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item" id="lnkmr">
+                                    <a href="#" class="nav-link ">
+                                        <i class="nav-icon fas fa-circle"></i>
+                                        <p>Material Requisition</p>
                                     </a>
                                 </li>
-                                <li class="nav-item" id="lnkprintpo">
+                                <li class="nav-item" id="mron">
                                     <a href="#" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Print</p>
+                                        <i class="nav-icon fas fa-circle"></i>
+                                        <p>Material Out Note</p>
                                     </a>
                                 </li>
                             </ul>
                         </li>
                         <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-circle"></i>
+                            <a href="#" class="nav-link active">
+                                <i class="nav-icon  fas fa-luggage-cart"></i>
                                 <p>
-                                    GRN
-                                    <i class="right fas fa-angle-left"></i>
+                                    Sales
+                                    <i class="fas fa-angle-left right"></i>
                                 </p>
                             </a>
-                            <ul class="nav nav-treeview" style="display: none;">
-                                <li class="nav-item" id="lnkgrn">
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item" id="lnkcreatejob">
                                     <a href="#" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>GRN width PO</p>
+                                        <i class="nav-icon fas fa-circle"></i>
+                                        <p>Job Creation</p>
                                     </a>
                                 </li>
-                                <li class="nav-item" id="lnkprintgrn">
+                                <li class="nav-item" id="lnkbom">
+                                    <a href="#" class="nav-link ">
+                                        <i class="nav-icon fas fa-circle"></i>
+                                        <p>BOM Details</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link ">
+                                        <i class="nav-icon fas fa-circle"></i>
+                                        <p>FGO Note</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
                                     <a href="#" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Print</p>
+                                        <i class="nav-icon fas fa-circle"></i>
+                                        <p>Invoice</p>
                                     </a>
                                 </li>
                             </ul>
                         </li>
-                    </ul>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link active">
-                            <i class="nav-icon  fas fa-building"></i>
-                            <p>
-                                Genaral Store
-                                <i class="fas fa-angle-left right"></i>
-                            </p>
-                        </a>
-                        <ul class="nav nav-treeview">
-                            <li class="nav-item" id="lnkmr">
-                                <a href="#" class="nav-link ">
-                                    <i class="fa fa-users nav-icon"></i>
-                                    <p>Material Requisition</p>
-                                </a>
-                            </li>
-                            <li class="nav-item" id="mron">
-                                <a href="#" class="nav-link">
-                                    <i class="fa fa-users nav-icon"></i>
-                                    <p>Material Out Note</p>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link active">
-                            <i class="nav-icon  fas fa-building"></i>
-                            <p>
-                                Sales
-                                <i class="fas fa-angle-left right"></i>
-                            </p>
-                        </a>
-                        <ul class="nav nav-treeview">
-                            <li class="nav-item" id="lnkcreatejob">
-                                <a href="#" class="nav-link">
-                                    <i class="fa fa-users nav-icon"></i>
-                                    <p>Job Creation</p>
-                                </a>
-                            </li>
-                            <li class="nav-item" id="lnkbom">
-                                <a href="#" class="nav-link ">
-                                    <i class="fa fa-users nav-icon"></i>
-                                    <p>BOM Details</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="#" class="nav-link ">
-                                    <i class="fa fa-users nav-icon"></i>
-                                    <p>FGO Note</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="#" class="nav-link">
-                                    <i class="fa fa-users nav-icon"></i>
-                                    <p>Invoice</p>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link active">
-                            <i class="nav-icon  fas fa-building"></i>
-                            <p>Production
-                                <i class="fas fa-angle-left right"></i>
-                            </p>
-                        </a>
-                        <ul class="nav nav-treeview">
-                            <li class="nav-item" id="lnkcreatejobid">
-                                <a href="#" class="nav-link ">
-                                    <i class="fa fa-users nav-icon"></i>
-                                    <p>Job ID cration</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="#" class="nav-link">
-                                    <i class="fa fa-users nav-icon"></i>
-                                    <p>Print Order Form</p>
-                                </a>
-                            </li>
-                            <li class="nav-item" id="lnkfgin">
-                                <a href="#" class="nav-link">
-                                    <i class="fa fa-users nav-icon"></i>
-                                    <p>FGI Note</p>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link active">
-                            <i class="nav-icon  fas fa-building "></i>
-                            <p>
-                                Corporate Data
-                                <i class="fas fa-angle-left right"></i>
-                            </p>
-                        </a>
-                        <ul class="nav nav-treeview">
-                            <li class="nav-item" id="lnkusergroup">
-                                <a href="#" class="nav-link ">
-                                    <i class="fa fa-users nav-icon"></i>
-                                    <p>User Groups</p>
-                                </a>
-                            </li>
-                            <li class="nav-item" id="lnkuser">
-                                <a href="#" class="nav-link">
-                                    <i class="fa fa-users nav-icon"></i>
-                                    <p>User</p>
-                                </a>
-                            </li>
-                            <li class="nav-item" id="lnkclient">
-                                <a href="#" class="nav-link">
-                                    <i class="fa fa-users nav-icon"></i>
-                                    <p>Client</p>
-                                </a>
-                            </li>
-                            <li class="nav-item" id="lnkmaterial">
-                                <a href="#" class="nav-link">
-                                    <i class="fa fa-users nav-icon"></i>
-                                    <p>Material</p>
-                                </a>
-                            </li>
-                            <li class="nav-item" id="lnkproduct">
-                                <a href="#" class="nav-link">
-                                    <i class="fa fa-users nav-icon"></i>
-                                    <p>Product</p>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link active">
-                            <i class="nav-icon  fas fa-building"></i>
-                            <p>
-                                Administration
-                                <i class="fas fa-angle-left right"></i>
-                            </p>
-                        </a>
-                        <ul class="nav nav-treeview">
-                            <li class="nav-item">
-                                <a href="#" class="nav-link">
-                                    <i class="nav-icon fas fa-circle"></i>
-                                    <p>
-                                        Manager`s Screen
-                                        <i class="right fas fa-angle-left"></i>
-                                    </p>
-                                </a>
-                                <ul class="nav nav-treeview" style="display: none;">
-                                    <li class="nav-item">
-                                        <a href="#" class="nav-link">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p>General Store</p>
-                                        </a>
-                                        <a href="#" class="nav-link">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p>Stock and Inventory</p>
-                                        </a>
-                                        <a href="#" class="nav-link">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p>Client Order query</p>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li class="nav-item">
-                                <a href="#" class="nav-link">
-                                    <i class="fa fa-users nav-icon"></i>
-                                    <p>Access Config</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="#" class="nav-link">
-                                    <i class="fa fa-users nav-icon"></i>
-                                    <p>Report Center</p>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link active">
+                                <i class="nav-icon  fas fa-industry"></i>
+                                <p>Production
+                                    <i class="fas fa-angle-left right"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item" id="lnkcreatejobid">
+                                    <a href="#" class="nav-link ">
+                                        <i class="nav-icon fas fa-circle"></i>
+                                        <p>Job ID cration</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link">
+                                        <i class="nav-icon fas fa-circle"></i>
+                                        <p>Print Order Form</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item" id="lnkfgin">
+                                    <a href="#" class="nav-link">
+                                        <i class="nav-icon fas fa-circle"></i>
+                                        <p>FGI Note</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link active">
+                                <i class="nav-icon  fas fa-building "></i>
+                                <p>
+                                    Corporate Data
+                                    <i class="fas fa-angle-left right"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item" id="lnkusergroup">
+                                    <a href="#" class="nav-link ">
+                                        <i class="nav-icon fas fa-circle"></i>
+                                        <p>User Groups</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item" id="lnkuser">
+                                    <a href="#" class="nav-link">
+                                        <i class="nav-icon fas fa-circle"></i>
+                                        <p>User</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item" id="lnkclient">
+                                    <a href="#" class="nav-link">
+                                        <i class="nav-icon fas fa-circle"></i>
+                                        <p>Client</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item" id="lnkmaterial">
+                                    <a href="#" class="nav-link">
+                                        <i class="nav-icon fas fa-circle"></i>
+                                        <p>Material</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item" id="lnkproduct">
+                                    <a href="#" class="nav-link">
+                                        <i class="nav-icon fas fa-circle"></i>
+                                        <p>Product</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link active">
+                                <i class="nav-icon far fa-file"></i>
+                                <p>
+                                    Administration
+                                    <i class="fas fa-angle-left right"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link">
+                                        <i class="nav-icon fas fa-circle"></i>
+                                        <p>
+                                            Manager`s Screen
+                                            <i class="right fas fa-angle-left"></i>
+                                        </p>
+                                    </a>
+                                    <ul class="nav nav-treeview" style="display: none;">
+                                        <li class="nav-item">
+                                            <a href="#" class="nav-link">
+                                                <i class="far fa-circle nav-icon"></i>
+                                                <p>General Store</p>
+                                            </a>
+                                            <a href="#" class="nav-link">
+                                                <i class="far fa-circle nav-icon"></i>
+                                                <p>Stock and Inventory</p>
+                                            </a>
+                                            <a href="#" class="nav-link">
+                                                <i class="far fa-circle nav-icon"></i>
+                                                <p>Client Order query</p>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link">
+                                        <i class="nav-icon fas fa-circle"></i>
+                                        <p>Access Config</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link">
+                                        <i class="nav-icon fas fa-circle"></i>
+                                        <p>Report Center</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
                     </ul>
                 </nav>
                 <!-- /.sidebar-menu -->
