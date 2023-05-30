@@ -1,4 +1,4 @@
-$(function () { 
+$(function () {
     //variables
     var purchaserequisitionClassesInstence = purchaserequisitionClasses.purchaserequisitionClassesInstence();
     let purchaserequisition_col = purchaserequisitionClassesInstence.purchaserequisition_service;
@@ -10,24 +10,67 @@ $(function () {
     var clientClassesInstence = clientClasses.clientClassesInstence();
     let cli_col = clientClassesInstence.cli_service;
     let cli_obj = clientClassesInstence.client;
-
+    var materialhash;
     var addmoddel = undefined;
     var selectedcode = undefined;
     var t17 = $("#table17").DataTable({
-        "order": [[ 0, "desc" ]],
+        "order": [[0, "desc"]],
         pageLength: 5,
         dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>'
     });
     var t21 = $("#table21").DataTable({
-        "order": [[ 0, "desc" ]],
+        "autoWidth": false,
+        "order": [[0, "desc"]],
         pageLength: 5,
-        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>'
+        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+        columns: [
+            null,
+            null,
+            {
+                render: function (data, type, row, meta) {
+                    if (type === 'display') {
+                        var symbol = "Rs. ";
+                        var num = $.fn.dataTable.render.number(',', '.', 2, symbol).display(data);
+                        return '<div style="text-align: right;">' + num + '</div>';
+                    } else {
+                        return data;
+                    }
+                    
+                },
+                
+            },
+            {
+                render: function (data, type, row, meta) {
+                    if (type === 'display') {
+                        var num = $.fn.dataTable.render.number(',', '.', 2).display(data);
+                        return '<div style="text-align: right;">' + num + '</div>';
+                    } else {
+                        return data;
+                    }
+                    
+                },
+                
+            },
+            null
+        ]
     });
     var t20 = $("#table20").DataTable({
-        "order": [[ 0, "desc" ]]
+        "autoWidth": false,
+        "columns": [
+            { "width": "30%" },
+            null,
+        ],
+        pageLength: 5,
+        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body popup"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
     });
     var t19 = $("#table19").DataTable({
-        "order": [[ 0, "desc" ]]
+        "autoWidth": false,
+        "columns": [
+            { "width": "30%" },
+            null,
+        ],
+        pageLength: 5,
+        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body popup"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
     });
     var Toast = Swal.mixin({
         toast: true,
@@ -47,13 +90,18 @@ $(function () {
         rules: {
             purchaserequisitionremark: {
                 required: true
+            },
+            purchaserequisitionquotationno:{
+                required:true
             }
-
         },
         messages: {
             purchaserequisitionremark: {
                 required: "Please fillout the remark!"
             },
+            purchaserequisitionquotationno:{
+                required: "Please fillout the quatation number!"
+            }
         },
         errorElement: 'span',
         errorPlacement: function (error, element) {
@@ -81,7 +129,9 @@ $(function () {
                             switch (addmoddel) {
                                 case "add":
                                     var code = genaratecode();
+                                    selectedcode = code;
                                     var remark = $("#purchaserequisition_remark").val()
+                                    var quotationno = $("#purchaserequisition_quotationno").val()
                                     var totalamount = 0;
                                     $.each(purchaseRequisitionMaterialsobjarr, function (i, item) {
                                         totalamount += parseFloat(item.unitrate) * parseFloat(item.quantity);
@@ -91,43 +141,30 @@ $(function () {
                                     var supplierid;
                                     if (cli_obj) supplierid = cli_obj;
                                     else supplierid = undefined;
-                                    setNewValues(code, remark, totalamount, status, supplierid, purchaseRequisitionMaterials);
+                                    setNewValues(code, remark, totalamount, status, supplierid, purchaseRequisitionMaterials,quotationno);
                                     submit();
-                                    Swal.fire(
-                                        'Added!',
-                                        'New record has been added.',
-                                        'success'
-                                    )
                                     break;
                                 case "mod":
                                     var code = undefined;
                                     var remark = undefined;
+                                    var quotationno = undefined;
                                     var totalamount = undefined;
                                     var status = "SUBMIT";
                                     var supplierid = undefined;
                                     var purchaseRequisitionMaterials = undefined;
-                                    setNewValues(code, remark, totalamount, status, supplierid, purchaseRequisitionMaterials);
+                                    setNewValues(code, remark, totalamount, status, supplierid, purchaseRequisitionMaterials,quotationno);
                                     submit();
-                                    Swal.fire(
-                                        'Submitted!',
-                                        'The PR has been submitted for approval.',
-                                        'success'
-                                    )
                                     break;
                                 case "del":
                                     var code = undefined;
                                     var remark = undefined;
+                                    var quotationno = undefined;
                                     var totalamount = undefined;
                                     var status = "EXPIRE";
                                     var supplierid = undefined;
                                     var purchaseRequisitionMaterials = undefined;
-                                    setNewValues(code, remark, totalamount, status, supplierid, purchaseRequisitionMaterials);
+                                    setNewValues(code, remark, totalamount, status, supplierid, purchaseRequisitionMaterials,quotationno);
                                     submit();
-                                    Swal.fire(
-                                        'Expired!',
-                                        'The PR has been expired.',
-                                        'success'
-                                    )
                                     break;
                                 default:
                                     Swal.fire({
@@ -228,31 +265,56 @@ $(function () {
         $.ajax({
             url: "http://localhost:8080/api/purchaserequisitionctrl/getpurchaserequisitions",
             dataType: "JSON",
+            headers: {
+                "Authorization": jwt
+            },
             success: function (data) {
                 $.each(data.content, function (i, item) {
-                    purchaserequisition_col.addPurchaseRequisitiontoArray(item.id, item.prcode, item.pocode, item.supplierid, item.status, item.remark, item.totalAmount, item.purchaseRequisitionMaterials);
-                    t17.row.add([item.prcode, item.pocode, item.supplierid.code, item.supplierid.firstname + " " + item.supplierid.lastname, item.status]).draw(false);
-                    setValues();
-                    var $tableRow = $("#table17 tr td:contains('" + selectedcode + "')").closest("tr");
-                    $tableRow.trigger("click");
+                    purchaserequisition_col.addPurchaseRequisitiontoArray(item.id, item.prcode, item.pocode, item.supplierid, item.status, item.remark, item.totalAmount, item.purchaseRequisitionMaterials, item.quotationno);
+                    t17.row.add([item.prcode, item.pocode,item.quotationno, item.supplierid.code, item.supplierid.firstname + " " + item.supplierid.lastname, item.status]).draw(false);
                 });
+                setValues();
+                var $tableRow = $("#table17 tr td:contains('" + selectedcode + "')").closest("tr");
+                $tableRow.trigger("click");
                 refreshmatarialtable();
                 fadepageloder();
             },
-            error:function(xhr, status, error){
+            error: function (xhr, status, error) {
                 fadepageloder();
             }
         })
+    }
+    function commaSeparateNumber(val){
+        while (/(\d+)(\d{3})/.test(val.toString())){
+          val = val.toString().replace(/(\d+)(\d{3})/, '$1'+','+'$2');
+        }
+        if (val != "") {
+            if (val.indexOf('.') == -1) {
+                val = val + ".00";
+            }else{
+                val = val;
+            }
+        }else{
+            val = val;
+        }
+        return val;
+
     }
     function refreshprmatarialtable() {
         purchaseRequisitionMaterialsobjarr = purchaserequisition_col.allPurchaseRequisitionMaterials();
         t21.clear().draw(false);
         var total = 0;
         $.each(purchaseRequisitionMaterialsobjarr, function (i, item) {
-            t21.row.add([i + 1, item.material.description, item.unitrate, item.quantity, item.material.uomid.scode]).draw(false);
+            var hashval;
+            if(item.hash==undefined){
+                hashval+=i
+            }else{
+                hashval = item.hash
+            }
+            t21.row.add([hashval, item.material.description, item.unitrate, item.quantity, item.material.uomid.scode]).draw(false);
             total += parseFloat(item.unitrate) * parseFloat(item.quantity);
         })
-        $('#purchaserequisition_totalamount').val(total);
+        $('#purchaserequisition_totalamount').val(commaSeparateNumber(total));
     }
     function refreshmatarialtable() {
         material_col.clear()
@@ -260,10 +322,13 @@ $(function () {
         $.ajax({
             url: "http://localhost:8080/api/materialctrl/getmaterials",
             dataType: "JSON",
+            headers: {
+                "Authorization": jwt
+            },
             success: function (data) {
                 $.each(data.content, function (i, item) {
-                    if (item.materialType == "ROW" && item.status == "ACTIVE") {
-                        material_col.addMaterialtoArray(item.id, item.code, item.description, item.materialType, item.uomid, item.status,item.price);
+                    material_col.addMaterialtoArray(item.id, item.code, item.description, item.materialType, item.uomid, item.status, item.price);
+                    if (item.status == "ACTIVE") {
                         t20.row.add([item.code, item.description]).draw(false);
                     }
                 })
@@ -279,6 +344,9 @@ $(function () {
         $.ajax({
             url: "http://localhost:8080/api/clientctrl/getclients",
             dataType: "JSON",
+            headers: {
+                "Authorization": jwt
+            },
             success: function (data) {
                 $.each(data.content, function (i, item) {
                     if (item.businessRole == "SUPPLIER" && item.status == "ACTIVE") {
@@ -293,12 +361,11 @@ $(function () {
 
     }
     //definded functions
-
     function submit() {
         showpageloder();
         var url;
         var method;
-        var token = localStorage.getItem("jwt_token");
+
         switch (addmoddel) {
             case "add":
                 url = "http://localhost:8080/api/purchaserequisitionctrl/savepurchaserequisition";
@@ -309,18 +376,46 @@ $(function () {
                 url = "http://localhost:8080/api/purchaserequisitionctrl/updatepurchaserequisition";
                 method = "PUT";
                 break;
-            // case "del":
-            //     url = "http://localhost:8080/api/purchaserequisitionctrl/activeinactivepurchaserequisition";
-            //     method = "POST";
-            //     break;
         }
         $.ajax({
             url: url,
             method: method,
             data: JSON.stringify(purchaserequisitionobj),
             contentType: 'application/json',
+            headers: {
+                "Authorization": jwt
+            },
             success: function (data) {
+                switch (addmoddel) {
+                    case "add":
+                        Swal.fire(
+                            'Added!',
+                            'New record has been added.',
+                            'success'
+                        )
+                        break;
+                    case "mod":
+                        Swal.fire(
+                            'Submitted!',
+                            'The PR has been submitted for approval.',
+                            'success'
+                        )
+                        break;
+                    case "del":
+                        Swal.fire(
+                            'Expired!',
+                            'The PR has been expired.',
+                            'success'
+                        )
+                        break;
+                }
                 refreshtable();
+            },error:function(xhr,error,status){
+                Swal.fire(
+                    'Error!',
+                    'Please contact the Administator',
+                    'error'
+                )
             }
         })
     }
@@ -341,7 +436,8 @@ $(function () {
             $("#purchaserequisition_unitrate").val(purchaserequisitionobj.unitrate)
             $("#purchaserequisition_quntity").val(purchaserequisitionobj.quntity)
             $("#purchaserequisition_remark").val(purchaserequisitionobj.remark)
-            $("#purchaserequisition_totalamount").val(purchaserequisitionobj.totalAmount);
+            $("#purchaserequisition_quotationno").val(purchaserequisitionobj.quotationno)
+            $("#purchaserequisition_totalamount").val(commaSeparateNumber(purchaserequisitionobj.totalAmount));
             $("#purchaserequisition_status").val(purchaserequisitionobj.status);
             if (purchaserequisitionobj.supplierid) {
                 cli_obj = purchaserequisitionobj.supplierid;
@@ -364,11 +460,13 @@ $(function () {
             purchaserequisition_col.clearprm();
             purchaseRequisitionMaterialsobjarr = [];
             total = undefined;
+            materialhash = undefined;
             $("#purchaserequisition_code").val(undefined);
             $("#purchaseorder_code").val(undefined);
             $("#purchaserequisition_unitrate").val(undefined)
             $("#purchaserequisition_quntity").val(undefined)
             $("#purchaserequisition_remark").val(undefined)
+            $("#purchaserequisition_quotationno").val(undefined)
             $("#purchaserequisition_totalamount").val(undefined);
             $("#purchaserequisition_status").val(undefined);
             $("#purchaserequisition_supplierid").val(undefined);
@@ -392,15 +490,15 @@ $(function () {
         $("#modal-matariallist").modal("hide");
         if (code) {
             material_obj = material_col.getMaterial(code);
-            $("#purchaserequisition_matarialid").val(material_obj.code + " - " + material_obj.description);
+            $("#pr_material_code").text(material_obj.uomid.scode);
 
         } else {
             material_obj = undefined;
-            $("#purchaserequisition_matarialid").val(undefined);
+            $("#pr_material_code").text(" ");
 
         }
     }
-    function setNewValues(code, remark, totalamount, status, supplierid, purchaseRequisitionMaterials) {
+    function setNewValues(code, remark, totalamount, status, supplierid, purchaseRequisitionMaterials,quotationno) {
         if (purchaserequisitionobj) {
             if (code) purchaserequisitionobj.prcode = code;
             if (remark) purchaserequisitionobj.remark = remark;
@@ -408,9 +506,11 @@ $(function () {
             if (status) purchaserequisitionobj.status = status;
             if (supplierid) purchaserequisitionobj.supplierid = supplierid;
             if (purchaseRequisitionMaterials) purchaserequisitionobj.purchaseRequisitionMaterials = purchaseRequisitionMaterials;
+            if (quotationno) purchaserequisitionobj.quotationno = quotationno;
+
         } else {
             purchaserequisitionobj = purchaserequisitionClassesInstence.purchaserequisition;
-            setNewValues(code, remark, totalamount, status, supplierid, purchaseRequisitionMaterials);
+            setNewValues(code, remark, totalamount, status, supplierid, purchaseRequisitionMaterials,quotationno);
         }
     }
     function resetform(element) {
@@ -422,6 +522,25 @@ $(function () {
         let purchaserequisitionlist = purchaserequisition_col.allPurchaseRequisition()
         let purchaserequisitioncode = purchaserequisitionClassesInstence.PurchaseRequisitionSerial.genaratePurchaseRequisitionCode(purchaserequisitionlist.length);
         return purchaserequisitioncode;
+    }
+    function fillter(type) {
+        if (type != "") {
+            t20.clear().draw(false);
+            var fillteredarry = material_col.allMaterial().filter(material => (material.materialType == type));
+            $.each(fillteredarry, function (i, item) {
+                if (item.status == "ACTIVE") {
+                    t20.row.add([item.code, item.description]).draw(false);
+                }
+            })
+        } else {
+            t20.clear().draw(false);
+            var fillteredarry = material_col.allMaterial()
+            $.each(fillteredarry, function (i, item) {
+                if (item.status == "ACTIVE") {
+                    t20.row.add([item.code, item.description]).draw(false);
+                }
+            })
+        }
     }
     //end of functions
     //triggers
@@ -458,12 +577,30 @@ $(function () {
             setMatarialalues($(this).children("td:nth-child(1)").text());
         }
     });
+    $('#table21 tbody').on('click', 'tr', function () {
+        if ($(this).hasClass('selected')) {
+            $(this).removeClass('selected');
+            materialhash = "";
+        } else {
+            t21.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+            materialhash = $(this).children("td:nth-child(1)").text();
+        }
+    });
+
     $(document).off("click", "#addMaterialbtn");
+    $(document).off("click", "#removeMaterialbtn");
     $(document).off("click", "#addPurchaseRequisitions");
     $(document).off("click", "#setPurchaseRequisitions");
     $(document).off("click", "#removaPurchaseRequisitions");
-    $(document).off("click", "#purchaserequisition_unitrate");
-    $(document).off("click", "#purchaserequisition_quntity");
+    $(document).off("input", "#purchaserequisition_unitrate");
+    $(document).off("focusout", "#purchaserequisition_unitrate");
+    $(document).off("focusout", "#purchaserequisition_quntity");
+    $(document).off("input", "#purchaserequisition_quntity");
+    $(document).off("click", "#filter_material_type");
+    $(document).off("click", "#cancelPR");
+    
+
     $(document).on("click", "#addMaterialbtn", function () {
         if ($("#table20 tbody tr").hasClass('selected')) {
             material_obj = undefined;
@@ -471,6 +608,10 @@ $(function () {
         }
         $("#purchaserequisition_unitrate").val(undefined);
         $("#purchaserequisition_quntity").val(undefined);
+    })
+    $(document).on("click", "#removeMaterialbtn", function () {
+        purchaserequisition_col.removepurchaseRequisitionMaterialsfromArray(materialhash);
+        refreshprmatarialtable();
     })
     $(document).on("click", "#addPurchaseRequisitions", function () {
         selectedcode = "";
@@ -481,9 +622,11 @@ $(function () {
         enablefillin("#purchaserequisition_unitrate");
         enablefillin("#purchaserequisition_quntity");
         enablefillin("#purchaserequisition_remark");
+        enablefillin("#purchaserequisition_quotationno");
         enablefillin("#supplierbtn");
         enablefillin("#matarialbtn");
         enablefillin("#addMaterialbtn");
+        enablefillin("#removeMaterialbtn");
         $("#purchaserequisition_status").val("PENDING");
     });
     $(document).on("click", "#setPurchaseRequisitions", function () {
@@ -546,7 +689,7 @@ $(function () {
     });
     $(document).on("click", "#removaPurchaseRequisitions", function () {
         if (selectedcode) {
-            if (purchaserequisitionobj.status == "PENDING") {
+            if (purchaserequisitionobj.status == "PENDING" || purchaserequisitionobj.status == "INITIATED") {
                 setValues(selectedcode);
                 addmoddel = "del";
                 $("#purchaserequisition_status").val("EXPIRE");
@@ -615,6 +758,19 @@ $(function () {
         }
         $('#purchaserequisition_unitrate').val(value);
     });
+    $(document).on('focusout', '#purchaserequisition_unitrate', function () {
+        var value = $('#purchaserequisition_unitrate').val();
+        if (value != "") {
+            if (value.indexOf('.') == -1) {
+                value = value + ".00";
+            }else{
+                value = value;
+            }
+        }else{
+            value = value;
+        }
+        $('#purchaserequisition_unitrate').val(value);
+    });
     $(document).on('input', '#purchaserequisition_quntity', function () {
         var value = $('#purchaserequisition_quntity').val();
         value = value.replace(/[^\d.]/g, '');
@@ -627,9 +783,30 @@ $(function () {
         }
         $('#purchaserequisition_quntity').val(value);
     });
+    $(document).on('focusout', '#purchaserequisition_quntity', function () {
+        var value = $('#purchaserequisition_quntity').val();
+        if (value != "") {
+            if (value.indexOf('.') == -1) {
+                value = value + ".00";
+            }else{
+                value = value;
+            }
+        }else{
+            value = value;
+        }
+        $('#purchaserequisition_quntity').val(value);
+    });
+    $(document).on("click", "#filter_material_type", function () {
+        fillter($("#filter_material_type").val());
+    });
+    $(document).on("click", "#cancelPR", function () {
+        selectedcode = "";
+        setValues();
+    });
+
     //end of triggers
     formctrl();
     refreshtable();
- 
+
 });
 

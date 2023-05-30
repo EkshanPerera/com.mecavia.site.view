@@ -106,6 +106,9 @@ $(function () {
         $.ajax({
             url: "http://localhost:8080/api/customerorderctrl/getcustomerorders",
             dataType: "JSON",
+            headers: {
+                "Authorization": jwt
+            },
             success: function (data) {
                 $.each(data.content, function (i, item) {
                     if (item.status == "SUBMIT" || item.status == "ACCEPTED" || item.status == "PRINTED") {
@@ -125,7 +128,7 @@ $(function () {
         showpageloder();
         var url;
         var method;
-        var token = localStorage.getItem("jwt_token");
+
         url = "http://localhost:8080/api/customerorderctrl/updatecustomerorder";
         method = "PUT";
         $.ajax({
@@ -133,6 +136,9 @@ $(function () {
             method: method,
             data: JSON.stringify(customerorderobj),
             contentType: 'application/json',
+            headers: {
+                "Authorization": jwt
+            },
             success: function (data) {
                 refreshtable();
             }

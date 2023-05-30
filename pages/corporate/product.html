@@ -1,12 +1,11 @@
-
 <head>
     <style>
         .usr-card-body {
-            min-height: 310px;
+            min-height: 530px;
         }
 
-        .usr-card-body.met {
-            min-height: 370px;
+        .usr-card-body.popup {
+            min-height: 310px;
         }
     </style>
 </head>
@@ -17,7 +16,7 @@
             <div class="bar"></div>
             <div class="bar"></div>
             <div class="bar"></div>
-          </div>
+        </div>
     </div>
     <div class="wrapper">
         <!-- Content Header (Page header) -->
@@ -70,7 +69,7 @@
                                 <div class="card-header">
                                     <h3 class="card-title">Product Settings</h3>
                                 </div>
-                                <div class="card-body usr-card-body met">
+                                <div class="card-body">
                                     <div class="row">
                                         <div class="col-lg-6">
                                             <div class="form-group">
@@ -143,6 +142,9 @@
                                     <div class="float-right">
                                         <button type="submit" class="btn btn-success formbtn" id="submitProducts">
                                             <i class="far fa-save"></i> Save</button>
+                                        <button type="button" class="btn btn-default formbtn" data-dismiss="modal"
+                                            id="cancelProduct">
+                                            <i class="fa fa-times" aria-hidden="true"></i> Cancel</button>
                                     </div>
                                 </div>
                                 <!-- /.card-footer -->
@@ -227,8 +229,15 @@
                                 <div class="form-group">
                                     <label for="product_price_amt" class="col-form-label">Amount(Rs.)</label>
                                     <div class="col-sm-10">
-                                        <input type="input" name="productpriceamt" class="form-control formfillin"
-                                            id="product_price_amt" placeholder="">
+                                        <div class="input-group mb-3">
+                                            <div class="input-group-append">
+                                                <div class="input-group-text">
+                                                    <span>Rs. </span>
+                                                </div>
+                                            </div>
+                                            <input type="input" name="productpriceamt" class="form-control formfillin"
+                                                id="product_price_amt" placeholder="">
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -266,4 +275,3 @@
     <script src="../../dist/js/pages/productclasses.js"></script>
     <script src="../../dist/js/pages/products.js"></script>
 </body>
-

@@ -16,7 +16,7 @@
             <div class="bar"></div>
             <div class="bar"></div>
             <div class="bar"></div>
-          </div>
+        </div>
     </div>
     <div class="wrapper">
         <!-- Content Header (Page header) -->
@@ -24,7 +24,7 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1>Print Purchase Order</h1>
+                        <h1>Print Order Requisition</h1>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
@@ -55,17 +55,6 @@
                                             <div class="row">
                                                 <div class="col-sm-6">
                                                     <div class="form-group">
-                                                        <label for="purchaserequisition_code" class="col-form-label">PR
-                                                            Number</label>
-                                                        <div class="col-sm-10">
-                                                            <input type="input" name="purchaserequisitionid"
-                                                                class="form-control formfillin"
-                                                                id="purchaserequisition_code" placeholder="">
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sm-6">
-                                                    <div class="form-group">
                                                         <label for="purchaseorder_code" class="col-form-label">PO
                                                             Number</label>
                                                         <div class="col-sm-10">
@@ -77,6 +66,17 @@
                                                                         class="btn btn-info btn-flat ">Select</button>
                                                                 </span>
                                                             </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-6">
+                                                    <div class="form-group">
+                                                        <label for="purchaserequisition_code"
+                                                            class="col-form-label">PR Number</label>
+                                                        <div class="col-sm-10">
+                                                            <input type="input" name="purchaserequisitionquotationno"
+                                                                class="form-control formfillin"
+                                                                id="purchaserequisition_code" placeholder="">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -108,6 +108,17 @@
                                                 </div>
                                             </div>
                                             <div class="row">
+                                                <div class="col-lg-6">
+                                                    <div class="form-group">
+                                                        <label for="purchaserequisition_quotationno"
+                                                            class="col-form-label">Quotation Number</label>
+                                                        <div class="col-sm-10">
+                                                            <input type="input" name="purchaserequisitionquotationno"
+                                                                class="form-control formfillin"
+                                                                id="purchaserequisition_quotationno" placeholder="">
+                                                        </div>
+                                                    </div>
+                                                </div>
                                                 <div class="col-lg-6">
                                                     <div class="form-group">
                                                         <label for="purchaserequisition_status"
@@ -145,15 +156,22 @@
 
                                                     </div>
                                                 </div>
-
                                                 <div class="col-lg-6">
                                                     <div class="form-group">
                                                         <div class="float-right">
                                                             <label for="purchaserequisition_totalamount"
                                                                 class="col-form-label">Net Amount (Rs.)</label>
-                                                            <input type="input" name="purchaserequisitiontotalamount"
-                                                                class="form-control formfillin"
-                                                                id="purchaserequisition_totalamount" placeholder="">
+                                                            <div class="input-group mb-3">
+                                                                <div class="input-group-append">
+                                                                    <div class="input-group-text">
+                                                                        <span>Rs. </span>
+                                                                    </div>
+                                                                </div>
+                                                                <input type="input"
+                                                                    name="purchaserequisitiontotalamount"
+                                                                    class="form-control formfillin"
+                                                                    id="purchaserequisition_totalamount" placeholder="">
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -169,6 +187,8 @@
                                             id="acceptPurchaseRequisitions">
                                             <i class="fas fa-check-circle"></i>
                                             Print</button>
+                                            <button type="button" class="btn btn-default formbtn" data-dismiss="modal" id="cancelPOPrint">
+                                            <i class="fa fa-times" aria-hidden="true"></i> Cancel</button>
                                     </div>
                                 </div>
                                 <!-- /.card-footer -->
@@ -202,7 +222,7 @@
                         <div class="col-12">
                             <h2 class="page-header">
                                 <i class="fa-globe"></i> G R S Garment & Industries(PVT)Ltd.
-                                <small class="float-right"><span id="podate"></span></small>
+                                <small class="float-right"><span>Purchase Order</span></small>
                             </h2>
                         </div>
                         <!-- /.col -->
@@ -210,9 +230,9 @@
                     <!-- info row -->
                     <div class="row invoice-info">
                         <div class="col-sm-4 invoice-col">
-                            From
+                            Ship To
                             <address>
-                                <strong>G R S Garment</strong><br>
+                                <!-- <strong>G R S Garment</strong><br> -->
                                 No 56,<br>
                                 Maragasmulla Rd,<br>
                                 Rajagiriya,<br>
@@ -222,7 +242,7 @@
                         </div>
                         <!-- /.col -->
                         <div class="col-sm-4 invoice-col">
-                            To
+                            From
                             <address>
                                 <strong><span id="suppliername"></span></strong><br>
                                 <span id="supplieraddline01"></span><br>
@@ -237,6 +257,7 @@
                             <br>
                             <h4 id="coppyornot"></h4>
                             <b>PO Number :</b> <span id="pono"></span><br>
+                            <b>Quotation Number :</b> <span id="qoano"></span><br>
                             <b>Printed Date :</b> <span id="printeddate"></span><br>
                             <b>Reprint Date :</b> <span id="reprintdate"></span><br>
                         </div>
@@ -252,9 +273,15 @@
                                     <tr>
                                         <th>No.</th>
                                         <th>Material</th>
-                                        <th>Unit Rate(Rs.)</th>
-                                        <th>Quntity</th>
-                                        <th>Subtotal</th>
+                                        <th>
+                                            <div style="text-align: right;">Unit Rate(Rs.)</div>
+                                        </th>
+                                        <th>
+                                            <div style="text-align: right;">Quntity </div>
+                                        </th>
+                                        <th>
+                                            <div style="text-align: right;">Subtotal</div>
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody id="potablebody">
@@ -269,15 +296,7 @@
                     <div class="row">
                         <!-- accepted payments column -->
                         <div class="col-6">
-                            <!-- <p class="lead">Payment Methods:</p>
-                      <img src="../../dist/img/credit/visa.png" alt="Visa">
-                      <img src="../../dist/img/credit/mastercard.png" alt="Mastercard">
-                      <img src="../../dist/img/credit/american-express.png" alt="American Express">
-              
-                      <p class="text-muted well well-sm shadow-none" style="margin-top: 10px;">
-                        Etsy doostang zoodles disqus groupon greplin oooj voxy zoodles, weebly ning heekya handango imeem plugg dopplr
-                        jibjab, movity jajah plickers sifteo edmodo ifttt zimbra.
-                      </p> -->
+
                         </div>
                         <!-- /.col -->
                         <div class="col-6">
@@ -287,15 +306,21 @@
                                     <tbody>
                                         <tr>
                                             <th style="width:50%">Subtotal:</th>
-                                            <td>Rs.<span id="nettotal"></span></td>
+                                            <td>
+                                                <div style="text-align: right;">Rs.<span id="nettotal"></div></span>
+                                            </td>
                                         </tr>
                                         <tr>
                                             <th>Tax (<span class="tax"></span>)</th>
-                                            <td><span class="tax"></span></td>
+                                            <td>
+                                                <div style="text-align: right;"><span class="tax"></div></span>
+                                            </td>
                                         </tr>
                                         <tr>
                                             <th>Total:</th>
-                                            <td>Rs.<span id="grosstotal"></span></td>
+                                            <td>
+                                                <div style="text-align: right;">Rs.<span id="grosstotal"></div></span>
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -304,6 +329,32 @@
                         <!-- /.col -->
                     </div>
                     <!-- /.row -->
+                    <footer class="main-footer">
+                        <br>
+                        <br>
+                        <br>
+                        <br>
+                        <table style="
+                            width: 100%;
+                            ">
+                            <tbody>
+                                <tr>
+                                    <td style="
+                                        width: 50%;
+                                    "> </td>
+                                    <td>................................................................</td>
+                                </tr>
+                                <tr>
+                                    <td style="
+                                        width: 50%;
+                                        "> </td>
+                                    <td>Sign above</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <br>
+                        <br>
+                    </footer>
                 </section>
                 <!-- /.content -->
             </div>

@@ -7,7 +7,6 @@ $(function () {
     var selectedcode = undefined;
     var t16 = $("#table16").DataTable({
         "order": [[ 0, "desc" ]],
-        pageLength: 5,
         dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>'
     });
     //end of variables
@@ -64,13 +63,9 @@ $(function () {
                                 var scode = $("#uom_scode").val();
                                 var description = $("#uom_description").val();
                                 var status = "ACTIVE";
+                                selectedcode = code;
                                 setNewValues(code, scode, description, status);
                                 submit();
-                                Swal.fire(
-                                    'Added!',
-                                    'New record has been added.',
-                                    'success'
-                                )
                                 break;
                             case "mod":
                                 var code = undefined;
@@ -79,11 +74,7 @@ $(function () {
                                 var status = undefined;
                                 setNewValues(code, scode, description, status);
                                 submit();
-                                Swal.fire(
-                                    'Modified!',
-                                    'The record has been modified.',
-                                    'success'
-                                )
+                               
                                 break;
                             case "del":
                                 var code = undefined;
@@ -92,11 +83,7 @@ $(function () {
                                 var status = "INACTIVE";
                                 setNewValues(code, scode, description, status);
                                 submit();
-                                Swal.fire(
-                                    'Deleted!',
-                                    'The record has been deleted.',
-                                    'success'
-                                )
+                                
                                 break;
                             default:
                                 Swal.fire({
@@ -120,19 +107,21 @@ $(function () {
     function refreshtable() {
         uom_col.clear()
         addmoddel = undefined;
-        selectedcode = undefined;
         t16.clear().draw(false);
         $.ajax({
             url: "http://localhost:8080/api/uomctrl/getuoms",
             dataType: "JSON",
+            headers: {
+                "Authorization": jwt
+            },
             success: function (data) {
                 $.each(data.content, function (i, item) {
                     uom_col.addUOMtoArray(item.id, item.code, item.scode, item.description, item.status);
-                    t16.row.add([item.code, item.scode, item.description]).draw(false);
-                    setValues();
-                    var $tableRow = $("#table16 tr td:contains('" + selectedcode + "')").closest("tr");
-                    $tableRow.trigger("click");
+                    if (item.status == "ACTIVE")t16.row.add([item.code, item.scode, item.description]).draw(false);
                 })
+                setValues();
+                var $tableRow = $("#table16 tr td:contains('" + selectedcode + "')").closest("tr");
+                $tableRow.trigger("click");
                 fadepageloder();
             },
             error:function(xhr, status, error){
@@ -144,7 +133,7 @@ $(function () {
         showpageloder();
         var url;
         var method;
-        var token = localStorage.getItem("jwt_token");
+
         switch (addmoddel) {
             case "add":
                 url = "http://localhost:8080/api/uomctrl/saveuom";
@@ -164,8 +153,40 @@ $(function () {
             method: method,
             data: JSON.stringify(uomobj),
             contentType: 'application/json',
+            headers: {
+                "Authorization": jwt
+            },
             success: function (data) {
+                switch (addmoddel) {
+                    case "add":
+                        Swal.fire(
+                            'Added!',
+                            'New record has been added.',
+                            'success'
+                        )
+                        break;
+                    case "mod":
+                        Swal.fire(
+                            'Modified!',
+                            'The record has been modified.',
+                            'success'
+                        )
+                        break;
+                    case "del":
+                        Swal.fire(
+                            'Deleted!',
+                            'The record has been deleted.',
+                            'success'
+                        )
+                        break;
+                }
                 refreshtable();
+            },error:function(xhr,status,error){
+                Swal.fire(
+                    'Error!',
+                    'Please contact the Administator',
+                    'error'
+                )
             }
         })
     }
@@ -227,6 +248,7 @@ $(function () {
     $(document).off("click", "#addUOMs");
     $(document).off("click", "#setUOMs");
     $(document).off("click", "#removaUOMs");
+    $(document).off("click", "#cancelUOM");
     
     $(document).on("click", "#addUOMs", function () {
         selectedcode = "";
@@ -234,7 +256,6 @@ $(function () {
         addmoddel = "add";
         let uomlist = uom_col.allUOM()
         let uomcode = uomClassesInstence.UOMSerial.genarateUOMCode(uomlist.length);
-        console.log(uom_col.allUOM());
         $("#uom_code").val(uomcode);
         $("#table16 tbody tr").removeClass('selected');
         enablefillin("#uom_scode");
@@ -276,6 +297,11 @@ $(function () {
             })
         }
     });
+    $(document).on("click", "#cancelUOM", function () {
+        selectedcode = "";
+        setValues();
+    });
+    
     //end of triggers
     formctrl();
     refreshtable();

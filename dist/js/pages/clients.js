@@ -33,7 +33,7 @@ $(function () {
                 },
                 email: {
                     required: true,
-                    email: true
+                    email: true,
                 },
                 businessrole: {
                     required: true
@@ -48,7 +48,7 @@ $(function () {
                 },
                 email: {
                     required: "Please fillout email!",
-                    email: "Please enter a valid email address."
+                    email: "Please enter a valid email address.",
 
                 },
                 businessrole: {
@@ -326,14 +326,16 @@ $(function () {
         function refreshtable() {
             cli_col.clear()
             addmoddel = undefined;
-            selectedcode = undefined;
             selectedaddrcode = undefined;
             selectedcontcode = undefined;
             t9.clear().draw(false);
             $.ajax({
                 url: "http://localhost:8080/api/clientctrl/getclients",
                 dataType: "JSON",
-                success: function (data) {
+                headers: {
+                "Authorization": jwt
+            },
+            success: function (data) {
                     $.each(data.content, function (i, item) {
                         $.each(item.addresses, function (i, item) {
                             cli_col.addAddresstoArry(item.id, item.code, item.line01, item.line02, item.line03, item.line04, item.isdef, item.status);
@@ -342,7 +344,7 @@ $(function () {
                             cli_col.addContactstoArry(item.id, item.code, item.description, item.tpno, item.isdef, item.status);
                         });
                         cli_col.addClitoArray(item.id, item.code, item.firstname, item.middlename, item.lastname, item.email, item.businessRole, item.status, item.clientGroupid, item.roleid);
-                        t9.row.add([item.code, item.firstname, item.lastname, item.email]).draw(false);
+                        t9.row.add([item.code, item.firstname, item.lastname, item.email,item.businessRole]).draw(false);
                     });
                     setValues();
                     fadepageloder();
@@ -359,7 +361,7 @@ $(function () {
             showpageloder();
             var url;
             var method;
-            var token = localStorage.getItem("jwt_token");
+    
             switch (addmoddel) {
                 case "add":
                     url = "http://localhost:8080/api/clientctrl/saveclient";
@@ -377,14 +379,18 @@ $(function () {
                     method = "POST";
                     break;
             }
-
+            
             $.ajax({
                 url: url,
                 method: method,
                 data: JSON.stringify(cli_obj),
                 contentType: 'application/json',
-                success: function (data) {
+                headers: {
+                "Authorization": jwt
+            },
+            success: function (data) {
                     refreshtable();
+
                 }
             })
         }
@@ -485,7 +491,6 @@ $(function () {
                 if (client_email) cli_obj.email = client_email;
                 if (client_brole) cli_obj.businessRole = client_brole;
                 if (status) cli_obj.status = status;
-
             } else {
                 cli_obj = clientClassesInstence.client;
                 setNewValues(client_code, client_firstname, client_lastname, client_email, client_brole, status);
@@ -587,7 +592,7 @@ $(function () {
             setValues();
             addmoddel = "add";
             let clilist = cli_col.allClients()
-            let clicode = clientClassesInstence.CliSerial().genarateClientCode(clilist.length);
+            let clicode = clientClassesInstence.CliSerial.genarateClientCode(clilist.length);
             $("#client_code").val(clicode);
             $("#table9 tbody tr").removeClass('selected');
             enablefillin("#client_firstname");
@@ -602,7 +607,7 @@ $(function () {
         });
         $(document).on("click", "#addClientAddrbtn", function () {
             if (selectedcode) {
-                let addrcode = clientClassesInstence.CliSerial().genarateClientAddrCode(cli_obj.addresses.length, cli_obj.code);
+                let addrcode = clientClassesInstence.CliSerial.genarateClientAddrCode(cli_obj.addresses.length, cli_obj.code);
                 selectedaddrcode = "";
                 setAddressValues();
                 addmoddel = "modaddr";
@@ -623,7 +628,7 @@ $(function () {
         });
         $(document).on("click", "#addClientContbtn", function () {
             if (selectedcode) {
-                let contcode = clientClassesInstence.CliSerial().genarateClientContCode(cli_obj.contactNumbers.length, cli_obj.code);
+                let contcode = clientClassesInstence.CliSerial.genarateClientContCode(cli_obj.contactNumbers.length, cli_obj.code);
                 selectedcontcode = "";
                 setContactValues();
                 addmoddel = "modcont";
@@ -751,6 +756,11 @@ $(function () {
                     text: 'Please select a contact number!',
                 })
             }
+        });
+        $(document).on('input', '#cli_cont_tpno', function () {
+            var value = $('#cli_cont_tpno').val();
+            value = value.replace(/\D/g, '').substring(0, 10);
+            $('#cli_cont_tpno').val(value);
         });
 
         //end of triggers

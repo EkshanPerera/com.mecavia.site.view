@@ -39,13 +39,14 @@ class goodsreceivednote {
     }
 }
 class goodsReceivedNoteMaterial {
-    constructor(id, code, ordercode, goodsReceivedNote, prmaterial, arrivedCount) {
+    constructor(id, code, ordercode, goodsReceivedNote, prmaterial, arrivedCount, hash) {
         this.id = id;
         this.code = code;
         this.ordercode = ordercode;
         this.goodsReceivedNote = goodsReceivedNote;
         this.prmaterial = prmaterial;
         this.arrivedCount = arrivedCount;
+        this.hash = hash;
     }
 }
 class goodsReceivedNote_service {
@@ -55,7 +56,7 @@ class goodsReceivedNote_service {
         this.goodsreceivednote;
         this.goodsReceivedNoteMaterial;
         this.newGoodsReceivedNotMaterials = []; 
-
+        this.hash = 0;
     }
     addGRNtoArray(id, invoicenumber, invocedate, code, mradate, mrano, enterddate, remark, status, purchaseRequisition, goodsReceivedNoteMaterials, printeddate) {
         let goodsreceivednote_arritem = new goodsreceivednote(id, invoicenumber, invocedate, code, mradate, mrano, enterddate, remark, status, purchaseRequisition, goodsReceivedNoteMaterials, printeddate);
@@ -66,23 +67,23 @@ class goodsReceivedNote_service {
         this.goodsReceivedNoteMaterials.push(goodsreceivednotematerials_arritem);
     }
     addNewGRNMaterialstoArray(id, code, ordercode, goodsReceivedNote, prmaterial, arrivedCount,outstandingcount) {
+        this.hash += 1;
         var arrivedCount = parseInt(arrivedCount)
-        let goodsReceivedNoteMaterials = [];
-        let goodsreceivednotematerials_arritem = new goodsReceivedNoteMaterial(id, code, ordercode, goodsReceivedNote, prmaterial, arrivedCount);
-        goodsReceivedNoteMaterials = this.newGoodsReceivedNotMaterials;
-        if (goodsReceivedNoteMaterials.length != 0){
-            goodsReceivedNoteMaterials = goodsReceivedNoteMaterials.filter(goodsReceivedNoteMaterial => goodsReceivedNoteMaterial.ordercode == ordercode);
+        let newgoodsReceivedNoteMaterials = [];
+        let goodsreceivednotematerials_arritem = new goodsReceivedNoteMaterial(id, code, ordercode, goodsReceivedNote, prmaterial, arrivedCount, this.hash);
+        newgoodsReceivedNoteMaterials = this.newGoodsReceivedNotMaterials;
+        if (newgoodsReceivedNoteMaterials.length != 0){
+            newgoodsReceivedNoteMaterials = newgoodsReceivedNoteMaterials.filter(newgoodsReceivedNoteMaterials => newgoodsReceivedNoteMaterials.ordercode == ordercode);
             let totArrivedCount = 0; 
-            for (let i = 0; i < goodsReceivedNoteMaterials.length; i++) {
-                totArrivedCount += parseInt(goodsReceivedNoteMaterials[i].arrivedCount);
+            for (let i = 0; i < newgoodsReceivedNoteMaterials.length; i++) {
+                totArrivedCount += parseInt(newgoodsReceivedNoteMaterials[i].arrivedCount);
             }
             if (outstandingcount >= (totArrivedCount + arrivedCount)){
-
                 this.newGoodsReceivedNotMaterials.push(goodsreceivednotematerials_arritem);
-                
                 return true;
             }
             else{
+                this.hash -= 1;
                 return false;
             }
         }else{
@@ -90,10 +91,14 @@ class goodsReceivedNote_service {
                 this.newGoodsReceivedNotMaterials.push(goodsreceivednotematerials_arritem);
                 return true;
             }else{
+                this.hash -= 1;
                 return false;
             }
         }
         
+    }
+    removeNewGRNMaterialstoArray(hash){
+        this.newGoodsReceivedNotMaterials = this.newGoodsReceivedNotMaterials.filter(newgoodsReceivedNoteMaterials => newgoodsReceivedNoteMaterials.hash != hash);
     }
     allGRN() {
         return this.goodsreceivednotes;

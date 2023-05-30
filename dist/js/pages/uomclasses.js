@@ -32,7 +32,6 @@ class uom_service {
     clear() {
         this.uoms = [];
         this.uom = undefined;
-
     }
 }
 class UOMSerial {

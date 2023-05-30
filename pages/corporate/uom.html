@@ -2,12 +2,13 @@
 <head>
     <style>
         .usr-card-body {
-            min-height: 310px;
+            min-height: 530px;
         }
 
-        .usr-card-body.uom {
-            min-height: 370px;
+        .usr-card-body.popup {
+            min-height: 310px;
         }
+        
     </style>
 </head>
 
@@ -71,7 +72,7 @@
                                 <div class="card-header">
                                     <h3 class="card-title">Units of Measurements Settings</h3>
                                 </div>
-                                <div class="card-body usr-card-body uom">
+                                <div class="card-body">
                                     <div class="row">
                                         <div class="col-lg-6">
                                             <div class="form-group">
@@ -128,6 +129,8 @@
                                     <div class="float-right">
                                         <button type="submit" class="btn btn-success formbtn" id="submitUOMs">
                                             <i class="far fa-save"></i> Save</button>
+                                        <button type="button" class="btn btn-default formbtn" data-dismiss="modal" id="cancelUOM">
+                                            <i class="fa fa-times" aria-hidden="true"></i> Cancel</button>
                                     </div>
                                 </div>
                                 <!-- /.card-footer -->

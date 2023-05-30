@@ -10,11 +10,16 @@ $(function () {
     var selectedcode = undefined;
     var t12 = $("#table12").DataTable({
         "order": [[ 0, "desc" ]],
-        pageLength: 5,
         dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>'
     });
     var t13 = $("#table13").DataTable({
-        "order": [[ 0, "desc" ]]
+        "autoWidth": false,
+        "columns": [
+            { "width": "30%" },
+            null,
+        ],
+        pageLength: 5,
+        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body popup"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>'
     });
     //end of variables
     //functions
@@ -51,8 +56,7 @@ $(function () {
         unhighlight: function (element, errorClass, validClass) {
             $(element).removeClass('is-invalid');
         }, submitHandler: function () {
-            if (uomobj.id) {
-                console.log(uomobj);
+            if (uomobj) {
                 if (addmoddel) {
                     Swal.fire({
                         title: 'Are you sure?',
@@ -71,15 +75,12 @@ $(function () {
                                     var description = $("#material_description").val();
                                     var status = "ACTIVE";
                                     var uomid;
+                                    selectedcode = code;
                                     if (uomobj) uomid = uomobj;
                                     else uomid = undefined;
                                     setNewValues(code, materialType, description, uomid, status);
                                     submit();
-                                    Swal.fire(
-                                        'Added!',
-                                        'New record has been added.',
-                                        'success'
-                                    )
+                                    
                                     break;
                                 case "mod":
                                     var code = undefined;
@@ -91,11 +92,7 @@ $(function () {
                                     else uomid = undefined;
                                     setNewValues(code, materialType, description, uomid, status);
                                     submit();
-                                    Swal.fire(
-                                        'Modified!',
-                                        'The record has been modified.',
-                                        'success'
-                                    )
+                                    
                                     break;
                                 case "del":
                                     var code = undefined;
@@ -105,11 +102,6 @@ $(function () {
                                     var uomid = undefined;
                                     setNewValues(code, materialType, description, uomid, status);
                                     submit();
-                                    Swal.fire(
-                                        'Deleted!',
-                                        'The record has been deleted.',
-                                        'success'
-                                    )
                                     break;
                                 default:
                                     Swal.fire({
@@ -137,20 +129,21 @@ $(function () {
         }
     });
     //definded functions
-    
     function refreshtable() {
         material_col.clear();
         uom_col.clear();
         addmoddel = undefined;
-        selectedcode = undefined;
         t12.clear().draw(false);
         $.ajax({
             url: "http://localhost:8080/api/materialctrl/getmaterials",
             dataType: "JSON",
+            headers: {
+                "Authorization": jwt
+            },
             success: function (data) {
                 $.each(data.content, function (i, item) {
                     material_col.addMaterialtoArray(item.id, item.code, item.description, item.materialType, item.uomid, item.status,item.price);
-                    t12.row.add([item.code, item.description]).draw(false);
+                    if(item.status == "ACTIVE") t12.row.add([item.code, item.description]).draw(false);
                 })
                 setValues();
                 fadepageloder();
@@ -172,10 +165,15 @@ $(function () {
         $.ajax({
             url: "http://localhost:8080/api/uomctrl/getuoms",
             dataType: "JSON",
+            headers: {
+                "Authorization": jwt
+            },
             success: function (data) {
                 $.each(data.content, function (i, item) {
                     uom_col.addUOMtoArray(item.id, item.code, item.scode, item.description, item.status);
-                    t13.row.add([item.code, item.scode]).draw(false);
+                    if(item.status == "ACTIVE"){
+                        t13.row.add([item.code, item.scode]).draw(false);
+                    }
                 })
             }
         })
@@ -184,7 +182,6 @@ $(function () {
         showpageloder();
         var url;
         var method;
-        var token = localStorage.getItem("jwt_token");
         switch (addmoddel) {
             case "add":
                 url = "http://localhost:8080/api/materialctrl/savematerial";
@@ -199,13 +196,46 @@ $(function () {
                 method = "POST";
                 break;
         }
+        
         $.ajax({
             url: url,
             method: method,
             data: JSON.stringify(materialobj),
             contentType: 'application/json',
+            headers: {
+                "Authorization": jwt
+            },
             success: function (data) {
+                switch (addmoddel) {
+                    case "add":
+                        Swal.fire(
+                            'Added!',
+                            'New record has been added.',
+                            'success'
+                        )
+                        break;
+                    case "mod":
+                        Swal.fire(
+                            'Modified!',
+                            'The record has been modified.',
+                            'success'
+                        )
+                        break;
+                    case "del":
+                        Swal.fire(
+                            'Deleted!',
+                            'The record has been deleted.',
+                            'success'
+                        )
+                        break;
+                }
                 refreshtable();
+            },error:function(xhr,status,error){
+                Swal.fire(
+                    'Error!',
+                    'Please contact the Administator',
+                    'error'
+                )
             }
         })
     }
@@ -229,7 +259,9 @@ $(function () {
                 $("#material_uomid").val(materialobj.uomid.scode + " - " + materialobj.uomid.description);
             }
         } else {
+
             materialobj = undefined;
+            uomobj = undefined;
             $("#material_code").val(undefined);
             $("#material_type").val(undefined);
             $("#material_uomid").val(undefined);
@@ -266,6 +298,25 @@ $(function () {
         $(element).find(".is-invalid").removeClass("is-invalid");
         $(element).find(".is-valid").removeClass("is-valid");
     }
+    function fillter(type){
+        if(type!=""){
+            t12.clear().draw(false);
+            var fillteredarry = material_col.allMaterial().filter(material => (material.materialType == type));
+            $.each(fillteredarry, function (i, item) {
+                if(item.status == "ACTIVE"){
+                t12.row.add([item.code, item.description]).draw(false);
+                }
+            })
+        }else{
+            t12.clear().draw(false);
+            var fillteredarry = material_col.allMaterial()
+            $.each(fillteredarry, function (i, item) {
+                if(item.status == "ACTIVE"){
+                t12.row.add([item.code, item.description]).draw(false);
+                }
+            })
+        }
+    }
     //end of functions
     //triggers
     $('#table12 tbody').on('click', 'tr', function () {
@@ -295,6 +346,8 @@ $(function () {
     $(document).off("click", "#addMaterials");
     $(document).off("click", "#setMaterials");
     $(document).off("click", "#removaMaterials");
+    $(document).off("click", "#cancelMat");
+    $(document).off("click", "#filter_material_type");
 
     $(document).on("click", "#addMaterials", function () {
         selectedcode = "";
@@ -302,7 +355,6 @@ $(function () {
         addmoddel = "add";
         let materiallist = material_col.allMaterial()
         let materialcode = materialClassesInstence.MaterialSerial.genarateMaterialCode(materiallist.length);
-        console.log(material_col.allMaterial());
         $("#material_code").val(materialcode);
         $("#table12 tbody tr").removeClass('selected');
         enablefillin("#material_type");
@@ -345,6 +397,13 @@ $(function () {
                 text: 'Please select a material!',
             })
         }
+    });
+    $(document).on("click", "#cancelMat", function () {
+        selectedcode = "";
+        setValues();
+    });
+    $(document).on("click", "#filter_material_type", function () {
+        fillter($("#filter_material_type").val());
     });
     //end of triggers
     formctrl();

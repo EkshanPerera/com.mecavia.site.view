@@ -17,7 +17,38 @@ $(function () {
     var t18 = $("#table18").DataTable({
         "order": [[ 0, "desc" ]],
         pageLength: 5,
-        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>'
+        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+        "autoWidth": false,
+        columns: [
+            null,
+            null,
+            {
+                render: function (data, type, row, meta) {
+                    if (type === 'display') {
+                        var symbol = "Rs. ";
+                        var num = $.fn.dataTable.render.number(',', '.', 2, symbol).display(data);
+                        return '<div style="text-align: right;">' + num + '</div>';
+                    } else {
+                        return data;
+                    }
+                    
+                },
+                
+            },
+            {
+                render: function (data, type, row, meta) {
+                    if (type === 'display') {
+                        var num = $.fn.dataTable.render.number(',', '.', 2).display(data);
+                        return '<div style="text-align: right;">' + num + '</div>';
+                    } else {
+                        return data;
+                    }
+                    
+                },
+                
+            },
+            null
+        ]
     });
 
     var Toast = Swal.mixin({
@@ -99,10 +130,13 @@ $(function () {
         $.ajax({
             url: "http://localhost:8080/api/purchaserequisitionctrl/getpurchaserequisitions",
             dataType: "JSON",
+            headers: {
+                "Authorization": jwt
+            },
             success: function (data) {
                 $.each(data.content, function (i, item) {
                     if (item.status == "SUBMIT" || item.status == "APPROVED" || item.status == "PRINTED") {
-                        purchaserequisition_col.addPurchaseRequisitiontoArray(item.id, item.prcode, item.pocode, item.supplierid, item.status, item.remark, item.totalAmount, item.purchaseRequisitionMaterials, item.printeddate);
+                        purchaserequisition_col.addPurchaseRequisitiontoArray(item.id, item.prcode, item.pocode, item.supplierid, item.status, item.remark, item.totalAmount, item.purchaseRequisitionMaterials, item.printeddate,item.quotationno);
                     }
                 });
                 
@@ -120,7 +154,7 @@ $(function () {
         showpageloder();
         var url;
         var method;
-        var token = localStorage.getItem("jwt_token");
+
         url = "http://localhost:8080/api/purchaserequisitionctrl/updatepurchaserequisition";
         method = "PUT";
         $.ajax({
@@ -128,6 +162,9 @@ $(function () {
             method: method,
             data: JSON.stringify(purchaserequisitionobj),
             contentType: 'application/json',
+            headers: {
+                "Authorization": jwt
+            },
             success: function (data) {
                 refreshtable();
             }
@@ -136,20 +173,36 @@ $(function () {
     function formctrl() {
         $(".formfillin").prop("disabled", true);
     }
+    function commaSeparateNumber(val){
+        while (/(\d+)(\d{3})/.test(val.toString())){
+          val = val.toString().replace(/(\d+)(\d{3})/, '$1'+','+'$2');
+        }
+        if (val != "") {
+            if (val.indexOf('.') == -1) {
+                val = val + ".00";
+            }else{
+                val = val;
+            }
+        }else{
+            val = val;
+        }
+        return val;
 
+    }
     function setValues(code) {
         formctrl();
         addmoddel = undefined;
         if (code) {
             purchaserequisitionobj = purchaserequisition_col.getPurchaseOrder(code);
-            if (purchaserequisitionobj) {
+            if (purchaserequisitionobj!=undefined) {
                 purchaseRequisitionMaterialsobjarr = purchaserequisitionobj.purchaseRequisitionMaterials;
                 $("#purchaserequisition_code").val(purchaserequisitionobj.prcode);
                 $("#purchaseorder_code").val(purchaserequisitionobj.pocode);
                 $("#purchaserequisition_unitrate").val(purchaserequisitionobj.unitrate)
                 $("#purchaserequisition_quntity").val(purchaserequisitionobj.quntity)
                 $("#purchaserequisition_remark").val(purchaserequisitionobj.remark)
-                $("#purchaserequisition_totalamount").val(purchaserequisitionobj.totalAmount);
+                $("#purchaserequisition_quotationno").val(purchaserequisitionobj.quotationno)
+                $("#purchaserequisition_totalamount").val(commaSeparateNumber(purchaserequisitionobj.totalAmount));
                 $("#purchaserequisition_status").val(purchaserequisitionobj.status);
                 var year = new Date().getFullYear();
                 var month = new Date().getMonth();
@@ -192,24 +245,37 @@ $(function () {
             if (purchaserequisitionobj.purchaseRequisitionMaterials) {
                 t18.clear().draw(false);
                 var dataset = "";
+                var icont = 1;
                 $.each(purchaserequisitionobj.purchaseRequisitionMaterials, function (i, item) {
+                    icont += 1; 
                     t18.row.add([i + 1, item.material.description, item.unitrate, item.quantity, item.material.uomid.scode]).draw(false);
-                    dataset+="<tr><td>"+i + 1+"</td><td>"+item.material.description+"</td><td>"+item.unitrate+"</td><td>"+item.quantity + item.material.uomid.scode +"</td><td>"+item.unitrate*item.quantity+"</td></tr>";
-
+                    dataset += "<tr><td>" + (i + 1) + "</td><td>" + item.material.description + "</td><td> <div style=\"text-align: right;\"> Rs. " + commaSeparateNumber(item.unitrate) + "</div></td><td><div style=\"text-align: right;\">" + commaSeparateNumber(item.quantity) + item.material.uomid.scode + "</div></td><td><div style=\"text-align: right;\">Rs. " + commaSeparateNumber(item.unitrate * item.quantity) + "</div></td></tr>";
                 })
+                do {
+                    dataset+="<tr><td>"+ icont + "</td><td> </td><td> </td><td> </td><td> </td></tr>"
+                    icont ++;
+                  }
+                  while (icont < 17);
+          
                 $("#potablebody").html(dataset);
             }
             $("#printeddate").text(date);
             $("#pono").text(purchaserequisitionobj.pocode);
+            $("#qoano").text(purchaserequisitionobj.quotationno);
             if (purchaserequisitionobj.status =="PRINTED") {
                 $("#coppyornot").text("TRUE COPY");
                 $("#printeddate").text(purchaserequisitionobj.printeddate);
                 $("#reprintdate").text(date);
             }
             $("#nettotal").text(purchaserequisitionobj.totalAmount);
-            $(".tax").text(14.5)
-            $("#grosstotal").text((purchaserequisitionobj.totalAmount) * (100 + 14.5) / 100);
+            $(".tax").text("0.0%")
+            $("#grosstotal").text((purchaserequisitionobj.totalAmount) * (100 + 0.0) / 100);
         } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Please enter the valid PR number!',
+            });
             setValues();
         }
 
@@ -219,10 +285,12 @@ $(function () {
         purchaserequisition_col.clearprm();
         purchaseRequisitionMaterialsobjarr = [];
         total = undefined;
+        $("#purchaseorder_code").val(undefined);
         $("#purchaserequisition_code").val(undefined);
         $("#purchaserequisition_unitrate").val(undefined)
         $("#purchaserequisition_quntity").val(undefined)
         $("#purchaserequisition_remark").val(undefined)
+        $("#purchaserequisition_quotationno").val(undefined)
         $("#purchaserequisition_totalamount").val(undefined);
         $("#purchaserequisition_status").val(undefined);
         $("#purchaserequisition_supplierid").val(undefined);
@@ -242,9 +310,14 @@ $(function () {
     //end of functions
     //triggers
     $(document).off("click", "#btnprmpo");
+    $(document).off("click", "#cancelPOPrint");
     $(document).on("click", "#btnprmpo", function () {
         selectedcode = $("#purchaseorder_code").val();
         refreshtable();
+    })
+    $(document).on("click", "#cancelPOPrint", function () {
+        selectedcode = "";
+        setValues();
     })
 
     //end of triggers

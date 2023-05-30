@@ -140,6 +140,9 @@ $(function () {
         $.ajax({
             url: "http://localhost:8080/api/billofmaterialctrl/getbillofmaterials",
             dataType: "JSON",
+            headers: {
+                "Authorization": jwt
+            },
             success: function (data) {
                 $.each(data.content, function (i, item) {
                     if (item.status == "PRINTED") {
@@ -152,7 +155,10 @@ $(function () {
                 $.ajax({
                     url: "http://localhost:8080/api/materialrequisitionctrl/getmaterialrequisitions",
                     dataType: "JSON",
-                    success: function (data) {
+                    headers: {
+                "Authorization": jwt
+            },
+            success: function (data) {
                         $.each(data.content, function (i, item) {
                             $.each(item.materialRequisitionMaterials, function (i, item) {
                                 materialrequisition_col.addMRMaterialstoArray(item.id, item.code, item.ordercode, item.materialRequisition, item.prmaterial, item.arrivedCount);
@@ -187,7 +193,7 @@ $(function () {
         showpageloder();
         var url;
         var method;
-        var token = localStorage.getItem("jwt_token");
+
         url = "http://localhost:8080/api/materialrequisitionctrl/savematerialrequisition";
         method = "POST";
         $.ajax({
@@ -195,6 +201,9 @@ $(function () {
             method: method,
             data: JSON.stringify(materialrequisitionobj),
             contentType: 'application/json',
+            headers: {
+                "Authorization": jwt
+            },
             success: function (data) {
                 refreshtable();
             }

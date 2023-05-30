@@ -1,7 +1,7 @@
 var purchaseorderClasses = (function(){
 //classescodematerial
 class purchaserequisition {
-    constructor(id,prcode,pocode,supplierid,status,remark,totalAmount,purchaseRequisitionMaterials,printeddate) {
+    constructor(id,prcode,pocode,supplierid,status,remark,totalAmount,purchaseRequisitionMaterials,printeddate,quotationno) {
     this.id = id;
 	this.prcode = prcode;
 	this.pocode = pocode;
@@ -11,6 +11,7 @@ class purchaserequisition {
 	this.status = status;
     this.purchaseRequisitionMaterials = purchaseRequisitionMaterials;
     this.printeddate = printeddate;
+    this.quotationno = quotationno;
     }
 }
 class purchaseRequisitionMaterials{
@@ -29,8 +30,8 @@ class purchaserequisition_service {
         this.purchaserequisition;
 
     }
-    addPurchaseRequisitiontoArray(id,prcode,pocode,supplierid,status,remark,totalAmount,purchaseRequisitionMaterials,printeddate) {
-        let purchaserequisition_arritem = new purchaserequisition(id,prcode,pocode,supplierid,status,remark,totalAmount,purchaseRequisitionMaterials,printeddate);
+    addPurchaseRequisitiontoArray(id,prcode,pocode,supplierid,status,remark,totalAmount,purchaseRequisitionMaterials,printeddate,quotationno) {
+        let purchaserequisition_arritem = new purchaserequisition(id,prcode,pocode,supplierid,status,remark,totalAmount,purchaseRequisitionMaterials,printeddate,quotationno);
         this.purchaserequisitions.push(purchaserequisition_arritem);
     }
     addpurchaseRequisitionMaterialstoArray(id,hash,material,unitrate,quntity) {

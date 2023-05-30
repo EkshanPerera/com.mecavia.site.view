@@ -1,7 +1,7 @@
 var purchaserequisitionClasses = (function(){
 //classescodematerial
 class purchaserequisition {
-    constructor(id,prcode,pocode,supplierid,status,remark,totalAmount,purchaseRequisitionMaterials) {
+    constructor(id,prcode,pocode,supplierid,status,remark,totalAmount,purchaseRequisitionMaterials,quotationno) {
     this.id = id;
 	this.prcode = prcode;
 	this.pocode = pocode;
@@ -10,15 +10,18 @@ class purchaserequisition {
     this.totalAmount = totalAmount;
 	this.status = status;
     this.purchaseRequisitionMaterials = purchaseRequisitionMaterials;
+	this.quotationno = quotationno;
+
     }
 }
 class purchaseRequisitionMaterials{
-    constructor(id,hash,material,unitrate,quantity){
+    constructor(id,code,material,unitrate,quantity,hash){
         this.id = id;
-        this.code  = hash;
+        this.code  = code;
         this.material = material;
         this.unitrate = unitrate;
         this.quantity = quantity;
+        this.hash = hash;
     }
 }
     
@@ -27,15 +30,20 @@ class purchaserequisition_service {
         this.purchaserequisitions = [];
         this.purchaseRequisitionMaterials = [];
         this.purchaserequisition;
+        this.hash = 0;
 
     }
-    addPurchaseRequisitiontoArray(id,prcode,pocode,supplierid,status,remark,totalAmount,purchaseRequisitionMaterials) {
-        let purchaserequisition_arritem = new purchaserequisition(id,prcode,pocode,supplierid,status,remark,totalAmount,purchaseRequisitionMaterials);
+    addPurchaseRequisitiontoArray(id,prcode,pocode,supplierid,status,remark,totalAmount,purchaseRequisitionMaterials,quotationno) {
+        let purchaserequisition_arritem = new purchaserequisition(id,prcode,pocode,supplierid,status,remark,totalAmount,purchaseRequisitionMaterials,quotationno);
         this.purchaserequisitions.push(purchaserequisition_arritem);
     }
-    addpurchaseRequisitionMaterialstoArray(id,hash,material,unitrate,quntity) {
-        let purchaserequisitionmaterials_arritem = new purchaseRequisitionMaterials(id,hash,material,unitrate,quntity);
+    addpurchaseRequisitionMaterialstoArray(id,code,material,unitrate,quntity) {
+        this.hash += 1;
+        let purchaserequisitionmaterials_arritem = new purchaseRequisitionMaterials(id,code,material,unitrate,quntity,this.hash);
         this.purchaseRequisitionMaterials.push(purchaserequisitionmaterials_arritem);
+    }
+    removepurchaseRequisitionMaterialsfromArray(hash){
+        this.purchaseRequisitionMaterials = this.purchaseRequisitionMaterials.filter(purchaseRequisitionMaterial => purchaseRequisitionMaterial.hash != hash)
     }
     allPurchaseRequisition() {
         return this.purchaserequisitions;

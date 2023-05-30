@@ -236,6 +236,9 @@ $(function () {
         $.ajax({
             url: "http://localhost:8080/api/customerorderctrl/getcustomerorders",
             dataType: "JSON",
+            headers: {
+                "Authorization": jwt
+            },
             success: function (data) {
                 $.each(data.content, function (i, item) {
                     customerorder_col.addCustomerOrdertoArray(item.id,item.code,item.jobID,item.jobNumber,item.customerid,item.totalAmount,item.grossAmount,item.remark,item.customerOrderProducts,item.printeddate,item.status);
@@ -270,6 +273,9 @@ $(function () {
         $.ajax({
             url: "http://localhost:8080/api/productctrl/getproducts",
             dataType: "JSON",
+            headers: {
+                "Authorization": jwt
+            },
             success: function (data) {
                 $.each(data.content, function (i, item) {
                     if (item.status == "ACTIVE") {
@@ -289,6 +295,9 @@ $(function () {
         $.ajax({
             url: "http://localhost:8080/api/clientctrl/getclients",
             dataType: "JSON",
+            headers: {
+                "Authorization": jwt
+            },
             success: function (data) {
                 $.each(data.content, function (i, item) {
                     if (item.businessRole == "CUSTOMER" && item.status == "ACTIVE") {
@@ -308,7 +317,7 @@ $(function () {
         showpageloder();
         var url;
         var method;
-        var token = localStorage.getItem("jwt_token");
+
         switch (addmoddel) {
             case "add":
                 url = "http://localhost:8080/api/customerorderctrl/savecustomerorder";
@@ -330,6 +339,9 @@ $(function () {
             method: method,
             data: JSON.stringify(customerorderobj),
             contentType: 'application/json',
+            headers: {
+                "Authorization": jwt
+            },
             success: function (data) {
                 refreshtable();
             }

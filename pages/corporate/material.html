@@ -2,11 +2,10 @@
 <head>
     <style>
         .usr-card-body {
-            min-height: 310px;
+            min-height: 530px;
         }
-
-        .usr-card-body.met {
-            min-height: 370px;
+        .usr-card-body.popup {
+            min-height: 310px;
         }
     </style>
 </head>
@@ -26,13 +25,13 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1>User Groups</h1>
+                        <h1>Materials</h1>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
                             <li class="breadcrumb-item"><a href="#">Home</a></li>
                             <li class="breadcrumb-item ">Corporate Data</li>
-                            <li class="breadcrumb-item active">User Groups</li>
+                            <li class="breadcrumb-item active">UoM</li>
                         </ol>
                     </div>
                 </div>
@@ -49,7 +48,18 @@
                                 <h3 class="card-title">Material Details</h3>
                             </div>
                             <!-- /.card-header -->
+                            
                             <div class="card-body">
+                                <div class="col-sm-3" style="
+                                margin-bottom: 12px;
+                                "> Filter : 
+                                    <select class="form-control " id="filter_material_type"
+                                        name="filter_material_type">
+                                        <option></option>
+                                        <option>ROW</option>
+                                        <option>PRODUCTION</option>
+                                    </select>
+                                </div>
                                 <table id="table12" class="table table-bordered table-striped">
                                     <thead>
                                         <tr>
@@ -71,7 +81,7 @@
                                 <div class="card-header">
                                     <h3 class="card-title">Material Settings</h3>
                                 </div>
-                                <div class="card-body usr-card-body met">
+                                <div class="card-body">
                                     <div class="row">
                                         <div class="col-lg-6">
                                             <div class="form-group">
@@ -146,7 +156,6 @@
                                 <div class="card-footer">
                                     <button type="button" class="btn btn-primary formbtn" id="addMaterials"><i
                                             class="fa fa-plus" aria-hidden="true"></i> Add</button>
-
                                     <button type="button" class="btn btn-warning formbtn" id="setMaterials"> <i
                                             class="far fa-edit"></i> Modify</button>
                                     <button type="button" class="btn btn-danger formbtn" id="removaMaterials"> <i
@@ -154,6 +163,8 @@
                                     <div class="float-right">
                                         <button type="submit" class="btn btn-success formbtn" id="submitMaterials">
                                             <i class="far fa-save"></i> Save</button>
+                                        <button type="button" class="btn btn-default" data-dismiss="modal" id="cancelMat">
+                                            <i class="fa fa-times" aria-hidden="true"></i> Cancel</button>
                                     </div>
                                 </div>
                                 <!-- /.card-footer -->
@@ -186,7 +197,7 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">User groups</h4>
+                    <h4 class="modal-title">List of UoM</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>

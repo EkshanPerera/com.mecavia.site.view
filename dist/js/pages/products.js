@@ -8,21 +8,33 @@ $(function () {
     var selectedcode = undefined;
     var t15 = $("#table15").DataTable({
         "order": [[ 0, "desc" ]],
-        pageLength: 5,
         dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>'
     });
     var t14 = $("#table14").DataTable({
         "order": [[ 0, "desc" ]],
         pageLength: 5,
-        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>'
+        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body popup"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+        columns: [
+            null,
+            { 
+              render: function(data, type, row, meta){
+                 if(type === 'display'){
+                    var symbol = "Rs. ";   
+                    var num = $.fn.dataTable.render.number(',', '.', 2, symbol).display(data);              
+                    return '<div style="text-align: right;">' + num + '</div>';
+                 } else {
+                    return data;
+                 }
+              }
+            },
+            null,
+            null
+          ]
     });
-
     //end of variables
     //functions
     //defalt functions
 
-    // $.validator.setDefaults({ 
-    // });
     $('#quickForm7').validate({
         rules: {
             productdescription: {
@@ -38,7 +50,7 @@ $(function () {
                 required: "Please fillout description!"
             },
             productname: {
-                required: "Please select the type"
+                required: "Please product name"
             },
         },
         errorElement: 'span',
@@ -69,13 +81,10 @@ $(function () {
                                     var name = $("#product_name").val();
                                     var description = $("#product_description").val();
                                     var status = "ACTIVE";
+                                    selectedcode = code;
                                     setNewValues(code, name, description, status);
                                     submit();
-                                    Swal.fire(
-                                        'Added!',
-                                        'New record has been added.',
-                                        'success'
-                                    )
+                                    
                                     break;
                                 case "mod":
                                     var code = undefined;
@@ -84,11 +93,7 @@ $(function () {
                                     var status = undefined;
                                     setNewValues(code, name, description, status);
                                     submit();
-                                    Swal.fire(
-                                        'Modified!',
-                                        'The record has been modified.',
-                                        'success'
-                                    )
+                                    
                                     break;
                                 case "del":
                                     var code = undefined;
@@ -97,11 +102,7 @@ $(function () {
                                     var status = "INACTIVE";
                                     setNewValues(code, name, description, status);
                                     submit();
-                                    Swal.fire(
-                                        'Deleted!',
-                                        'The record has been deleted.',
-                                        'success'
-                                    )
+                                    
                                     break;
                                 default:
                                     Swal.fire({
@@ -163,11 +164,7 @@ $(function () {
                                     var status = "ACTIVE";
                                     setNewPriceValues(code,price,effectiveDate,status);
                                     submit();
-                                    Swal.fire(
-                                        'Addes!',
-                                        'The price list of the product has been updated.',
-                                        'success'
-                                    )
+                                    
                                     break;
                                 default:
                                     Swal.fire({
@@ -188,19 +185,20 @@ $(function () {
         }
     });
     //definded functions
-    
     function refreshtable() {
         product_col.clear();
-        selectedcode =undefined;
         addmoddel = undefined;
         t15.clear().draw(false);
         $.ajax({
             url: "http://localhost:8080/api/productctrl/getproducts",
             dataType: "JSON",
+            headers: {
+                "Authorization": jwt
+            },
             success: function (data) {
                 $.each(data.content, function (i, item) {
                     product_col.addProducttoArray(item.id,item.code,item.desc,item.name,item.status,item.pricelist);
-                    t15.row.add([item.code, item.name]).draw(false);
+                    if(item.status == "ACTIVE")t15.row.add([item.code, item.name]).draw(false);
                 });
                 setValues();
                 fadepageloder();
@@ -214,12 +212,11 @@ $(function () {
         })
     }
     //definded functions
- 
     function submit() {
         showpageloder();
         var url;
         var method;
-        var token = localStorage.getItem("jwt_token");
+
         switch (addmoddel) {
             case "add":
                 url = "http://localhost:8080/api/productctrl/saveproduct";
@@ -240,8 +237,47 @@ $(function () {
             method: method,
             data: JSON.stringify(productobj),
             contentType: 'application/json',
+            headers: {
+                "Authorization": jwt
+            },
             success: function (data) {
+                switch (addmoddel) {
+                    case "add":
+                        Swal.fire(
+                            'Added!',
+                            'New record has been added.',
+                            'success'
+                        )
+                        break;
+                    case "mod":
+                        Swal.fire(
+                            'Modified!',
+                            'The record has been modified.',
+                            'success'
+                        )
+                        break;
+                    case "addprice":
+                        Swal.fire(
+                            'Addes!',
+                            'The price list of the product has been updated.',
+                            'success'
+                        )
+                        break;
+                    case "del":
+                        Swal.fire(
+                            'Deleted!',
+                            'The record has been deleted.',
+                            'success'
+                        )
+                        break;
+                }
                 refreshtable();
+            },error:function(xhr,status,error){
+                Swal.fire(
+                    'Error!',
+                    'Please contact the Administator',
+                    'error'
+                )
             }
         })
     }
@@ -339,6 +375,10 @@ $(function () {
     $(document).off("click", "#addProductPrice");
     $(document).off("click", "#setProducts");
     $(document).off("click", "#removaProducts");
+    $(document).off("click", "#cancelProduct");
+    $(document).off("input", "#product_price_amt");
+    $(document).off("focusout", "#product_price_amt");
+
 
     $(document).on("click", "#addProducts", function () {
         selectedcode = "";
@@ -353,17 +393,26 @@ $(function () {
         $("#product_status").val("ACTIVE");
     });
     $(document).on("click", "#addProductPrice", function () {
-        addmoddel = "addprice";
-        setProductpricevalues();
-        let productcode = productClassesInstence.ProductSerial.genarateProductPriceCode(productobj.pricelist.length,productobj.code);
-        enablefillin("#product_price_amt");
-        var year = new Date().getFullYear();
-        var month =  new Date().getMonth();
-        var day = new Date().getDate();
-        var date = day + "/" + (parseInt(month) + 1) + "/" + year;
-        $("#product_price_eff").val(date);
-        $("#product_price_code").val(productcode);
-        $("#product_price_status").val("ACTIVE");
+        if (selectedcode) {
+            addmoddel = "addprice";
+            setProductpricevalues();
+            let productcode = productClassesInstence.ProductSerial.genarateProductPriceCode(productobj.pricelist.length,productobj.code);
+            enablefillin("#product_price_amt");
+            var year = new Date().getFullYear();
+            var month =  new Date().getMonth();
+            var day = new Date().getDate();
+            var date = day + "/" + (parseInt(month) + 1) + "/" + year;
+            $("#product_price_eff").val(date);
+            $("#product_price_code").val(productcode);
+            $("#product_price_status").val("ACTIVE");
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Please select a product!',
+            })
+        }
+        
     });
     $(document).on("click", "#setProducts", function () {
         if (selectedcode) {
@@ -401,6 +450,33 @@ $(function () {
             })
         }
     });
+    $(document).on('input', '#product_price_amt', function () {
+        var value = $('#product_price_amt').val();
+        value = value.replace(/[^\d.]/g, '');
+        value = value.replace(/\.{2,}/g, '.');
+        value = value.replace(/^0+(?=\d)/, '');
+        var parts = value.split('.');
+        if (parts.length > 1) {
+            parts[1] = parts[1].slice(0, 2);
+            value = parts.join('.');
+        }
+        $('#product_price_amt').val(value);
+    });
+    $(document).on('focusout', '#product_price_amt', function () {
+        var value = $('#product_price_amt').val();
+        if(value != ""){
+            if (value.indexOf('.')== -1) {
+                value = value + ".00";
+            }
+            $('#product_price_amt').val(value);
+        }
+    });
+    $(document).on('click', '#cancelProduct', function () {
+        selectedcode = "";
+        refreshtable();
+    });
+    
+
     //end of triggers
     formctrl();
     refreshtable();

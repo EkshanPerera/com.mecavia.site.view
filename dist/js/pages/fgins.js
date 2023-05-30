@@ -35,6 +35,7 @@ $(function () {
         showConfirmButton: false,
         timer: 3000
     });
+    $('#fgin_padate').datepicker({ dateFormat: 'dd/mm/yy'});
     //end of variables
     //functions
     //defalt functions
@@ -127,6 +128,9 @@ $(function () {
         $.ajax({
             url: "http://localhost:8080/api/customerorderctrl/getcustomerorders",
             dataType: "JSON",
+            headers: {
+                "Authorization": jwt
+            },
             success: function (data) {
                 $.each(data.content, function (i, item) {
                     if (item.status == "ACCEPTED") {
@@ -139,7 +143,10 @@ $(function () {
                 $.ajax({
                     url: "http://localhost:8080/api/finishedgoodsinnotectrl/getfinishedgoodsinnotes",
                     dataType: "JSON",
-                    success: function (data) {
+                    headers: {
+                "Authorization": jwt
+            },
+            success: function (data) {
                         $.each(data.content, function (i, item) {
                             $.each(item.finishedGoodsInNoteProducts, function (i, item) {
                                 finishedgoodsinnote_col.addFGINProductstoArray(item.id,item.code,item.cordercode,item.finishedGoodsInNoteDto,item.coproduct,item.finishedCount);
@@ -174,7 +181,7 @@ $(function () {
         showpageloder();
         var url;
         var method;
-        var token = localStorage.getItem("jwt_token");
+
         url = "http://localhost:8080/api/finishedgoodsinnotectrl/savefinishedgoodsinnote";
         method = "POST";
         $.ajax({
@@ -182,6 +189,9 @@ $(function () {
             method: method,
             data: JSON.stringify(finishedgoodsinnoteobj),
             contentType: 'application/json',
+            headers: {
+                "Authorization": jwt
+            },
             success: function (data) {
                 refreshtable();
             }
@@ -252,7 +262,6 @@ $(function () {
         }
 
     }
-
     function setValues(code) {
         formctrl();
         addmoddel = undefined;
@@ -353,7 +362,6 @@ $(function () {
             $("#fgin_code").val(fgincode);
             enablefillin("#fgin_finishedcount");
             enablefillin("#fgin_pano");
-            enablefillin("#fgin_padate");
             enablefillin("#fgin_remark");
         }
 

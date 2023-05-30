@@ -172,6 +172,9 @@ $(function () {
         $.ajax({
             url: "http://localhost:8080/api/customerorderctrl/getcustomerorders",
             dataType: "JSON",
+            headers: {
+                "Authorization": jwt
+            },
             success: function (data) {
                 $.each(data.content, function (i, item) {
                     if (item.status == "SUBMIT" || item.status == "ACCEPTED" || item.status == "PRINTED" || item.status == "INITIATED" || item.status == "PENDING") {
@@ -196,6 +199,9 @@ $(function () {
         $.ajax({
             url: "http://localhost:8080/api/materialctrl/getmaterials",
             dataType: "JSON",
+            headers: {
+                "Authorization": jwt
+            },
             success: function (data) {
                 $.each(data.content, function (i, item) {
                     if (item.materialType == "ROW" && item.status == "ACTIVE") {
@@ -224,7 +230,7 @@ $(function () {
         showpageloder();
         var url;
         var method;
-        var token = localStorage.getItem("jwt_token");
+
         url = "http://localhost:8080/api/billofmaterialctrl/savebillofmaterial";
         method = "POST";
         $.ajax({
@@ -232,6 +238,9 @@ $(function () {
             method: method,
             data: JSON.stringify(billofmaterialobj),
             contentType: 'application/json',
+            headers: {
+                "Authorization": jwt
+            },
             success: function (data) {
                 refreshtable();
             }

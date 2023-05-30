@@ -35,6 +35,14 @@ var t6 = $("#table6").DataTable({
 //functions
 //defalt functions
 $(function () {
+    $.validator.addMethod("checkEmailExistence", function(value, element) {
+        // User object list
+        var userList = usr_col.allUsers();
+        // Check if email exists in the user object list
+        return userList.every(function(user) {
+          return user.email !== value;
+        });
+      });
     $('#quickForm03').validate({
         rules: {
             firstname: {
@@ -45,7 +53,8 @@ $(function () {
             },
             email: {
                 required: true,
-                email: true
+                email: true,
+                checkEmailExistence: true 
             },
             businessrole: {
                 required: true
@@ -60,8 +69,8 @@ $(function () {
             },
             email: {
                 required: "Please fillout email!",
-                email: "Please enter a valid email address."
-
+                email: "Please enter a valid email address.",
+                checkEmailExistence : "Email is already exists"
             },
             businessrole: {
                 required: "Please fillout business role!"
@@ -372,20 +381,20 @@ $(function () {
             }
         }
     });
-
-
     //definded functions
     function refreshtable() {
         fadepageloder();
         usr_col.clear()
         addmoddel = undefined;
-        selectedcode = undefined;
         selectedaddrcode = undefined;
         selectedcontcode = undefined;
         t4.clear().draw(false);
         $.ajax({
             url: "http://localhost:8080/api/userctrl/getusers",
             dataType: "JSON",
+            headers: {
+                "Authorization": jwt
+            },
             success: function (data) {
                 $.each(data.content, function (i, item) {
                     $.each(item.addresses, function (i, item) {
@@ -416,6 +425,9 @@ $(function () {
         $.ajax({
             url: "http://localhost:8080/api/usergroupctrl/getusergroups",
             dataType: "JSON",
+            headers: {
+                "Authorization": jwt
+            },
             success: function (data) {
                 $.each(data.content, function (i, item) {
                     $.each(item.roleslist, function (i, item) {
@@ -434,7 +446,7 @@ $(function () {
         showpageloder();
         var url;
         var method;
-        var token = localStorage.getItem("jwt_token");
+
         switch (addmoddel) {
             case "add":
                 url = "http://localhost:8080/api/userctrl/saveuser";
@@ -457,6 +469,9 @@ $(function () {
             method: method,
             data: JSON.stringify(usr_obj),
             contentType: 'application/json',
+            headers: {
+                "Authorization": jwt
+            },
             success: function (data) {
                 refreshtable();
             }
@@ -906,7 +921,11 @@ $(function () {
             })
         }
     });
-
+    $(document).on('input', '#usr_cont_tpno', function () {
+        var value = $('#usr_cont_tpno').val();
+        value = value.replace(/\D/g, '').substring(0, 10);
+        $('#usr_cont_tpno').val(value);
+    });
     //end of triggers
     formctrl();
     refreshtable();   

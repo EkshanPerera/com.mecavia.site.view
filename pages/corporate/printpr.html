@@ -1,4 +1,3 @@
-
 <head>
     <style>
         .usr-card-body {
@@ -12,12 +11,12 @@
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed">
-    <div class="pageloader content-wrapper">
+    <div class="pageloader content-wrapper ">
         <div class="load-bar">
             <div class="bar"></div>
             <div class="bar"></div>
             <div class="bar"></div>
-          </div>
+        </div>
     </div>
     <div class="wrapper">
         <!-- Content Header (Page header) -->
@@ -25,7 +24,7 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1>Approve Purchase Requisition</h1>
+                        <h1>Print Purchase Requisition</h1>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
@@ -60,24 +59,13 @@
                                                             Number</label>
                                                         <div class="col-sm-10">
                                                             <div class="input-group input-group-sm">
-                                                                <input type="text" name="purchaserequisitionid"
+                                                                <input type="text" name="purchaseorderid"
                                                                     class="form-control" id="purchaserequisition_code">
                                                                 <span class="input-group-append">
-                                                                    <button type="button" id="btnprm"
+                                                                    <button type="button" id="btnprmpo"
                                                                         class="btn btn-info btn-flat ">Select</button>
                                                                 </span>
                                                             </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sm-6">
-                                                    <div class="form-group">
-                                                        <label for="purchaseorder_code" class="col-form-label">PO
-                                                            Number</label>
-                                                        <div class="col-sm-10">
-                                                            <input type="input" name="purchaseorderid"
-                                                                class="form-control formfillin" id="purchaseorder_code"
-                                                                placeholder="">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -136,7 +124,7 @@
                                         <div class="col-lg-6 table-bordered ">
                                             <div class="row">
                                                 <div class="card-body">
-                                                    <table id="table19" class="table table-bordered table-striped">
+                                                    <table id="table18" class="table table-bordered table-striped">
                                                         <thead>
                                                             <tr>
                                                                 <th>#</th>
@@ -157,7 +145,6 @@
 
                                                     </div>
                                                 </div>
-
                                                 <div class="col-lg-6">
                                                     <div class="form-group">
                                                         <div class="float-right">
@@ -185,12 +172,12 @@
                                 <!-- /.card-body -->
                                 <div class="card-footer">
                                     <div class="float-right">
-                                        <button type="submit" class="btn btn-success formbtn"
+                                        <button type="submit" class="btn btn-default formbtn"
                                             id="acceptPurchaseRequisitions">
                                             <i class="fas fa-check-circle"></i>
-                                            Approve</button>
-                                            <button type="button" class="btn btn-default formbtn" data-dismiss="modal" id="cancelPRapprove">
-                                                <i class="fa fa-times" aria-hidden="true"></i> Cancel</button>
+                                            Print</button>
+                                            <button type="button" class="btn btn-default formbtn" data-dismiss="modal" id="cancelPRPrint">
+                                            <i class="fa fa-times" aria-hidden="true"></i> Cancel</button>
                                     </div>
                                 </div>
                                 <!-- /.card-footer -->
@@ -210,13 +197,162 @@
             <!-- /.container-fluid -->
         </section>
         <!-- /.content -->
-    </div>
+        <!-- Control Sidebar -->
+        <aside class="control-sidebar control-sidebar-dark">
+            <!-- Control sidebar content goes here -->
+        </aside>
+        <!-- /.control-sidebar -->
+        <div id="podiv">
+            <div class="wrapper">
+                <!-- Main content -->
+                <section class="invoice">
+                    <!-- title row -->
+                    <div class="row">
+                        <div class="col-12">
+                            <h2 class="page-header">
+                                <i class="fa-globe"></i> G R S Garment & Industries(PVT)Ltd.
+                                <small class="float-right"><span>Purchase Requisition</span></small>
+                            </h2>
+                        </div>
+                        <!-- /.col -->
+                    </div>
+                    <!-- info row -->
+                    <div class="row invoice-info">
+                        <div class="col-sm-4 invoice-col">
+
+                            <address>
+                                <!-- <strong>G R S Garment</strong><br> -->
+                                No 56,<br>
+                                Maragasmulla Rd,<br>
+                                Rajagiriya,<br>
+                                Phone: 0773750654<br>
+                                Email: rangagomes56@gmail.com
+                            </address>
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-sm-4 invoice-col">
+                            From
+                            <address>
+                                <strong><span id="suppliername"></span></strong><br>
+                                <span id="supplieraddline01"></span><br>
+                                <span id="supplieraddline02"></span><br>
+                                <span id="supplieraddline03"></span><br>
+                                <sapn id="supplercontact"></sapn><br>
+                                <span id="supplieremail"></span>
+                            </address>
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-sm-4 invoice-col">
+                            <br>
+                            <h4 id="coppyornot"></h4>
+                            <b>PR Number :</b> <span id="pono"></span><br>
+                            <b>Quotation Number :</b> <span id="qoano"></span><br>
+                            <b>Printed Date :</b> <span id="prprinteddate"></span><br>
+                            <b>Reprint Date :</b> <span id="reprintdate"></span><br>
+                        </div>
+                        <!-- /.col -->
+                    </div>
+                    <!-- /.row -->
+
+                    <!-- Table row -->
+                    <div class="row">
+                        <div class="col-12 table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>No.</th>
+                                        <th>Material</th>
+                                        <th>
+                                            <div style="text-align: right;">Unit Rate(Rs.)</div>
+                                        </th>
+                                        <th>
+                                            <div style="text-align: right;">Quntity </div>
+                                        </th>
+                                        <th>
+                                            <div style="text-align: right;">Subtotal</div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="potablebody">
+
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- /.col -->
+                    </div>
+                    <!-- /.row -->
+
+                    <div class="row">
+                        <!-- accepted payments column -->
+                        <div class="col-6">
+
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-6">
+
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <tbody>
+                                        <tr>
+                                            <th style="width:50%">Subtotal:</th>
+                                            <td>
+                                                <div style="text-align: right;">Rs.<span id="nettotal"></div></span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>Tax (<span class="tax"></span>)</th>
+                                            <td>
+                                                <div style="text-align: right;"><span class="tax"></div></span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>Total:</th>
+                                            <td>
+                                                <div style="text-align: right;">Rs.<span id="grosstotal"></div></span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- /.col -->
+                    </div>
+                    <!-- /.row -->
+                    <footer class="main-footer">
+                        <br>
+                        <br>
+                        <br>
+                        <br>
+                        <table style="
+                            width: 100%;
+                            ">
+                            <tbody>
+                                <tr>
+                                    <td style="
+                                        width: 50%;
+                                    ">................................................................</td>
+                                    <td>................................................................</td>
+                                </tr>
+                                <tr>
+                                    <td style="
+                                        width: 50%;
+                                        ">Employee Signeture</td>
+                                    <td>Manager Signature</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <br>
+                        <br>
+                    </footer>
+                </section>
+                <!-- /.content -->
+            </div>
+        </div>
     </div>
     <!-- ./wrapper -->
-    <!-- Page specific script -->
     <script src="../../dist/js/pages/clientclasses.js"></script>
     <script src="../../dist/js/pages/materialclasses.js"></script>
-    <script src="../../dist/js/pages/purchaserequisitionclasses.js"></script>
-    <script src="../../dist/js/pages/prapproves.js"></script>
-</body>
+    <script src="../../dist/js/pages/prprintclasses.js"></script>
+    <script src="../../dist/js/pages/printpr.js"></script>
 
+</body>
