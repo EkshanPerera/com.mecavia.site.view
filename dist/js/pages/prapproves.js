@@ -192,7 +192,7 @@ $(function () {
                 $("#purchaserequisition_quntity").val(purchaserequisitionobj.quntity)
                 $("#purchaserequisition_quotationno").val(purchaserequisitionobj.quotationno);
                 $("#purchaserequisition_remark").val(purchaserequisitionobj.remark)
-                $("#purchaserequisition_totalamount").val(commaSeparateNumber(purchaserequisitionobj.totalAmount));
+                $("#purchaserequisition_totalamount").val(commaSeparateNumber(String(purchaserequisitionobj.totalAmount)));
                 $("#purchaserequisition_status").val(purchaserequisitionobj.status);
                 if (purchaserequisitionobj.supplierid) {
                     cli_obj = purchaserequisitionobj.supplierid;

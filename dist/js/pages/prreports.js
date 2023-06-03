@@ -1,8 +1,8 @@
 $(function () {
     //variables
-    var GeneralStoreDtosInstence = genaralStoreClasses.genaralStoreClassesInstence();
-    let GeneralStoreDtos_col = GeneralStoreDtosInstence.GeneralStoreDto_service;
-    let GeneralStoreDtosarr = [];
+    var purchaserequisitionClassesInstence = purchaserequisitionClasses.purchaserequisitionClassesInstence();
+    let purchaserequisition_col = purchaserequisitionClassesInstence.purchaserequisition_service;
+    let purchaserequisitioarr = [];
     var total = 0;
     var t18 = $("#table18").DataTable({
         "order": [[0, "desc"]],
@@ -105,20 +105,21 @@ $(function () {
     function refreshtable() {
         t18.clear().draw(false);
         $.ajax({
-            url: "http://localhost:8080/api/generalstorectrl/getgeneralstorelist",
+            url: "http://localhost:8080/api/purchaserequisitionctrl/getpurchaserequisitions",
             dataType: "JSON",
             headers: {
                 "Authorization": jwt
             },
             success: function (data) {
                 $.each(data.content, function (i, item) {
-                    GeneralStoreDtos_col.addGeneralStoreDtostoArray(item.id,item.materialid,item.itemcount,item.status);
+                    purchaserequisition_col.addPurchaseEequisitiontoArray(item.id,item.prcode,item.pocode,item.supplierid,item.status, item.remark,item.totalAmount,item.purchaseRequisitionMaterials,item.quotationno,item.printeddate);
                 });
                 setValues();
                 fadepageloder();
             }
         })
     }
+    
     //definded functions
     function commaSeparateNumber(val){
         while (/(\d+)(\d{3})/.test(val.toString())){
@@ -138,23 +139,32 @@ $(function () {
     }
     function setValues() {
         total = 0;
-        GeneralStoreDtosarr = GeneralStoreDtos_col.allGeneralStoreDtos();
-        console.log(GeneralStoreDtosarr);
+        purchaserequisitioarr = purchaserequisition_col.allPurchaseEequisitions();
+        console.log(purchaserequisitioarr);
         t18.clear().draw(false);
         var dataset = "";
-        $.each(GeneralStoreDtosarr, function (i, item) {
-            if(item.materialid.status == "ACTIVE"){
-            t18.row.add([item.materialid.code, item.materialid.description, item.itemcount, item.materialid.uomid.scode, item.materialid.price, item.itemcount*item.materialid.price]).draw(false);
-            dataset += "<tr><td>" + (i+1) + "</td><td>" + item.materialid.code + "</td><td>" + item.materialid.description + "</td><td> <div style=\"text-align: right;\"> " + commaSeparateNumber(String(item.itemcount)) + "</div></td><td>" +  item.materialid.uomid.scode+ "</td><td><div style=\"text-align: right;\">Rs. " + commaSeparateNumber(String(item.materialid.price)) + "</div></td><td><div style=\"text-align: right;\">Rs. " + commaSeparateNumber(String(item.itemcount * item.materialid.price)) + "</div></td></tr>";
-            }
-            total+=(item.itemcount * item.materialid.price);
+        $.each(purchaserequisitioarr, function (i, item) {
+            // if(item.materialid.status == "ACTIVE"){
+            // t18.row.add([item.materialid.code, item.materialid.description, item.itemcount, item.materialid.uomid.scode, item.materialid.price, item.itemcount*item.materialid.price]).draw(false);
+            var prmdataset = "";
+            var totarrivedcoutset = ""; 
+            var quantityset = ""; 
+            var brset;
+            $.each(item.purchaseRequisitionMaterials,function(i,itemprm){
+                if((i+1) < item.purchaseRequisitionMaterials.length) brset = "<br>";
+                else brset = ""; 
+                prmdataset += itemprm.material.code + brset;
+                quantityset += commaSeparateNumber(String(itemprm.quantity)) + itemprm.material.uomid.scode  + brset;
+                totarrivedcoutset += commaSeparateNumber(String(itemprm.totArrivedCount)) + itemprm.material.uomid.scode + brset;
+            })
+            dataset += "<tr><td>" + (i+1) + "</td><td>" + item.prcode + "</td><td>" + item.pocode + "</td><td>" + item.supplierid.firstname + " " + item.supplierid.lastname + "</td><td>" + prmdataset + "</td><td><div style=\"text-align: right;\"> " + quantityset + "</div></td><td><div style=\"text-align: right;\">" + totarrivedcoutset + "</div></td><td>" + item.printeddate + "</td></td><td>" + item.status + "</td></tr>";
         })
         var year = new Date().getFullYear();
         var month = new Date().getMonth();
         var day = new Date().getDate();
         var date = day + "/" + (parseInt(month) + 1) + "/" + year;
         $("#totamt").text(commaSeparateNumber(String(total)));
-        $("#reportdate").text(date)
+        $("#todate").text(date)
         $("#potablebody").html(dataset);
         total = 0
     }

@@ -314,7 +314,7 @@ $(function () {
             t21.row.add([hashval, item.material.description, item.unitrate, item.quantity, item.material.uomid.scode]).draw(false);
             total += parseFloat(item.unitrate) * parseFloat(item.quantity);
         })
-        $('#purchaserequisition_totalamount').val(commaSeparateNumber(total));
+        $('#purchaserequisition_totalamount').val(commaSeparateNumber(String(total)));
     }
     function refreshmatarialtable() {
         material_col.clear()
@@ -437,7 +437,7 @@ $(function () {
             $("#purchaserequisition_quntity").val(purchaserequisitionobj.quntity)
             $("#purchaserequisition_remark").val(purchaserequisitionobj.remark)
             $("#purchaserequisition_quotationno").val(purchaserequisitionobj.quotationno)
-            $("#purchaserequisition_totalamount").val(commaSeparateNumber(purchaserequisitionobj.totalAmount));
+            $("#purchaserequisition_totalamount").val(commaSeparateNumber(String(purchaserequisitionobj.totalAmount)));
             $("#purchaserequisition_status").val(purchaserequisitionobj.status);
             if (purchaserequisitionobj.supplierid) {
                 cli_obj = purchaserequisitionobj.supplierid;

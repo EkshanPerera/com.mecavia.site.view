@@ -1,8 +1,8 @@
 $(function () {
     //variables
-    var GeneralStoreDtosInstence = genaralStoreClasses.genaralStoreClassesInstence();
-    let GeneralStoreDtos_col = GeneralStoreDtosInstence.GeneralStoreDto_service;
-    let GeneralStoreDtosarr = [];
+    var customerorderClassesInstence = customerorderClasses.customerorderClassesInstence()
+    let customerorder_col = customerorderClassesInstence.customerorder_service;
+    let customerorderobjarr = [];
     var total = 0;
     var t18 = $("#table18").DataTable({
         "order": [[0, "desc"]],
@@ -105,20 +105,21 @@ $(function () {
     function refreshtable() {
         t18.clear().draw(false);
         $.ajax({
-            url: "http://localhost:8080/api/generalstorectrl/getgeneralstorelist",
+            url: "http://localhost:8080/api/customerorderctrl/getcustomerorders",
             dataType: "JSON",
             headers: {
                 "Authorization": jwt
             },
             success: function (data) {
                 $.each(data.content, function (i, item) {
-                    GeneralStoreDtos_col.addGeneralStoreDtostoArray(item.id,item.materialid,item.itemcount,item.status);
+                    customerorder_col.addCustomerOrdertoArray(item.id,item.code,item.jobID,item.jobNumber,item.customerid,item.totalAmount,item.grossAmount,item.remark,item.customerOrderProducts,item.printeddate,item.status);
                 });
                 setValues();
                 fadepageloder();
             }
         })
     }
+    
     //definded functions
     function commaSeparateNumber(val){
         while (/(\d+)(\d{3})/.test(val.toString())){
@@ -138,23 +139,32 @@ $(function () {
     }
     function setValues() {
         total = 0;
-        GeneralStoreDtosarr = GeneralStoreDtos_col.allGeneralStoreDtos();
-        console.log(GeneralStoreDtosarr);
+        customerorderobjarr = customerorder_col.allCustomerOrder();
+        console.log(customerorderobjarr);
         t18.clear().draw(false);
         var dataset = "";
-        $.each(GeneralStoreDtosarr, function (i, item) {
-            if(item.materialid.status == "ACTIVE"){
-            t18.row.add([item.materialid.code, item.materialid.description, item.itemcount, item.materialid.uomid.scode, item.materialid.price, item.itemcount*item.materialid.price]).draw(false);
-            dataset += "<tr><td>" + (i+1) + "</td><td>" + item.materialid.code + "</td><td>" + item.materialid.description + "</td><td> <div style=\"text-align: right;\"> " + commaSeparateNumber(String(item.itemcount)) + "</div></td><td>" +  item.materialid.uomid.scode+ "</td><td><div style=\"text-align: right;\">Rs. " + commaSeparateNumber(String(item.materialid.price)) + "</div></td><td><div style=\"text-align: right;\">Rs. " + commaSeparateNumber(String(item.itemcount * item.materialid.price)) + "</div></td></tr>";
-            }
-            total+=(item.itemcount * item.materialid.price);
+        $.each(customerorderobjarr, function (i, item) {
+            // if(item.materialid.status == "ACTIVE"){
+            // t18.row.add([item.materialid.code, item.materialid.description, item.itemcount, item.materialid.uomid.scode, item.materialid.price, item.itemcount*item.materialid.price]).draw(false);
+            var copdataset = "";
+            // var totfinishedcoutset = ""; 
+            var quantityset = ""; 
+            var brset;
+            $.each(item.customerOrderProducts,function(i,itemcop){
+                if((i+1) < item.customerOrderProducts.length) brset = "<br>";
+                else brset = ""; 
+                copdataset += itemcop.product.code + brset;
+                quantityset += commaSeparateNumber(String(itemcop.quantity))  + brset;
+                // totfinishedcoutset += commaSeparateNumber(String(itemprm.totArrivedCount)) + itemprm.material.uomid.scode + brset;
+            })
+            dataset += "<tr><td>" + (i+1) + "</td><td>" + item.code + "</td><td>" + item.jobID + "</td><td>" + item.jobNumber + "</td><td>" + item.customerid.firstname + " " + item.customerid.lastname + "</td><td>" + copdataset + "</td><td><div style=\"text-align: right;\"> " + quantityset + "</div></td><td><div style=\"text-align: right;\"> Rs." + commaSeparateNumber(String(item.totalAmount)) + "</div></td><td>" + item.printeddate + "</td></td><td>" + item.status + "</td></tr>";
         })
         var year = new Date().getFullYear();
         var month = new Date().getMonth();
         var day = new Date().getDate();
         var date = day + "/" + (parseInt(month) + 1) + "/" + year;
         $("#totamt").text(commaSeparateNumber(String(total)));
-        $("#reportdate").text(date)
+        $("#todate").text(date)
         $("#potablebody").html(dataset);
         total = 0
     }

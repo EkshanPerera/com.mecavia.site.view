@@ -70,6 +70,15 @@
     $("#lnkgsreports").click(function () {
         $("#content").load("../pages/corporate/gsreports.html");
     });
+    $("#lnkprreports").click(function () {
+        $("#content").load("../pages/corporate/prreports.html");
+    });
+    $("#lnkcoreports").click(function () {
+        $("#content").load("../pages/corporate/coreports.html");
+    });
+    $("#lnkgrnreports").click(function () {
+        $("#content").load("../pages/corporate/grnreports.html");
+    });
     // GRN click event handler
     $("#grn").click(function () {
         $(".content").load("grn.html");

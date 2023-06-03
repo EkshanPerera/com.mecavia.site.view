@@ -309,7 +309,7 @@ $(function () {
             var totarrived = goodsreceivednote_col.allGRNsByOrderCode(ordercode).totarrived;
             prmobj = purchaserequisition_col.getPRMsByOrderCode(ordercode);
             outstangingcount = prmobj.quantity - totarrived;
-            $("#grn_outstanding").val(commaSeparateNumber(outstangingcount));
+            $("#grn_outstanding").val(commaSeparateNumber(String(outstangingcount)));
         } else {
             outstangingcount = 0;
             $("#grn_outstanding").val(undefined);

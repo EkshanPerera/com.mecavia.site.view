@@ -202,7 +202,7 @@ $(function () {
                 $("#purchaserequisition_quntity").val(purchaserequisitionobj.quntity)
                 $("#purchaserequisition_remark").val(purchaserequisitionobj.remark)
                 $("#purchaserequisition_quotationno").val(purchaserequisitionobj.quotationno)
-                $("#purchaserequisition_totalamount").val(commaSeparateNumber(purchaserequisitionobj.totalAmount));
+                $("#purchaserequisition_totalamount").val(commaSeparateNumber(String(purchaserequisitionobj.totalAmount)));
                 $("#purchaserequisition_status").val(purchaserequisitionobj.status);
                 var year = new Date().getFullYear();
                 var month = new Date().getMonth();
@@ -249,7 +249,7 @@ $(function () {
                 $.each(purchaserequisitionobj.purchaseRequisitionMaterials, function (i, item) {
                     icont += 1; 
                     t18.row.add([i + 1, item.material.description, item.unitrate, item.quantity, item.material.uomid.scode]).draw(false);
-                    dataset += "<tr><td>" + (i + 1) + "</td><td>" + item.material.description + "</td><td> <div style=\"text-align: right;\"> Rs. " + commaSeparateNumber(item.unitrate) + "</div></td><td><div style=\"text-align: right;\">" + commaSeparateNumber(item.quantity) + item.material.uomid.scode + "</div></td><td><div style=\"text-align: right;\">Rs. " + commaSeparateNumber(item.unitrate * item.quantity) + "</div></td></tr>";
+                    dataset += "<tr><td>" + (i + 1) + "</td><td>" + item.material.description + "</td><td> <div style=\"text-align: right;\"> Rs. " + commaSeparateNumber(String(item.unitrate)) + "</div></td><td><div style=\"text-align: right;\">" + commaSeparateNumber(String(item.quantity)) + item.material.uomid.scode + "</div></td><td><div style=\"text-align: right;\">Rs. " + commaSeparateNumber(String(item.unitrate * item.quantity)) + "</div></td></tr>";
                 })
                 do {
                     dataset+="<tr><td>"+ icont + "</td><td> </td><td> </td><td> </td><td> </td></tr>"
