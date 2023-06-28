@@ -6,6 +6,8 @@ $(function () {
         if(username==="" || password ===""){
            alert("username or password can't be null")
         }else{
+            $(".login-box-msg").text("Sign in to start your session")
+            $(".login-box-msg").css("color","currentColor")
             $.ajax({
                 url: "http://localhost:8080/api/auth/authenticate",
                 method: "post",
@@ -17,6 +19,8 @@ $(function () {
                 },
                 error: function (xhr, status, error) {
                     localStorage.removeItem("jwt_token");
+                    $(".login-box-msg").text("Invalid username or password, Try agin!")
+                    $(".login-box-msg").css("color","red")
                     return false;
                 }
             })

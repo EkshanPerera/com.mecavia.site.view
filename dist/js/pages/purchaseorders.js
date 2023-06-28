@@ -285,7 +285,6 @@ $(function () {
         purchaserequisition_col.clearprm();
         purchaseRequisitionMaterialsobjarr = [];
         total = undefined;
-        $("#purchaseorder_code").val(undefined);
         $("#purchaserequisition_code").val(undefined);
         $("#purchaserequisition_unitrate").val(undefined)
         $("#purchaserequisition_quntity").val(undefined)

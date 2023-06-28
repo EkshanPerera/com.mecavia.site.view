@@ -16,12 +16,13 @@ class customerorder {
     }
 }
 class customerOrderProducts{
-    constructor(id,code,product,unitrate,quantity){
+    constructor(id,code,product,unitrate,quantity,hash){
         this.id = id; 
         this.code = code;
         this.product = product;
         this.quantity = quantity; 
 	    this.unitrate = unitrate;
+        this.hash = hash;
     }
 }
 class customerorder_service {
@@ -29,15 +30,19 @@ class customerorder_service {
         this.customerorders = [];
         this.customerOrderProducts = [];
         this.customerorder;
-
+        this.hash = 0;
     }
     addCustomerOrdertoArray(id,code,JobID,JobNumber,customerid,totalAmount,grossAmount,remark,customerOrderProducts,printeddate,status) {
         let customerorder_arritem = new customerorder(id,code,JobID,JobNumber,customerid,totalAmount,grossAmount,remark,customerOrderProducts,printeddate,status);
         this.customerorders.push(customerorder_arritem);
     }
     addcustomerOrderProductstoArray(id,code,product,unitrate,quantity) {
-        let customerordermaterials_arritem = new customerOrderProducts(id,code,product,unitrate,quantity);
+        this.hash += 1;
+        let customerordermaterials_arritem = new customerOrderProducts(id,code,product,unitrate,quantity,this.hash);
         this.customerOrderProducts.push(customerordermaterials_arritem);
+    }
+    removeCustomerOrderProductfromArray(hash){
+        this.customerOrderProducts = this.customerOrderProducts.filter(customerOrderProduct => customerOrderProduct.hash != hash);
     }
     allCustomerOrder() {
         return this.customerorders;

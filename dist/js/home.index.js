@@ -132,6 +132,11 @@ var indexjs = $(function () {
         $('.leaf-node a').removeClass('active');
         $(this).children().addClass('active');
     });
+    $("#lnkprintgrn").click(function () {
+        jwt = "Bearer " + localStorage.getItem("jwt_token");
+        $('.leaf-node a').removeClass('active');
+        $(this).children().addClass('active');
+    });
     // GRN click event handler
     $("#grn").click(function () {
         jwt = "Bearer " + localStorage.getItem("jwt_token");

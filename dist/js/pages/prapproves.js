@@ -210,6 +210,11 @@ $(function () {
                 }
             } else {
                 setValues();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Please enter a valid PR number!',
+                });
             }
 
         } else {

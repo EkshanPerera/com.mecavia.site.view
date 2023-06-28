@@ -79,6 +79,10 @@
     $("#lnkgrnreports").click(function () {
         $("#content").load("../pages/corporate/grnreports.html");
     });
+    $("#lnkprintgrn").click(function () {
+        $("#content").load("../pages/corporate/printgrn.html");
+    });
+    
     // GRN click event handler
     $("#grn").click(function () {
         $(".content").load("grn.html");

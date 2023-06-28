@@ -13,21 +13,54 @@ $(function () {
     var unitrate = undefined; 
     var addmoddel = undefined;
     var selectedcode = undefined;
+    var producthash;
     var t32 = $("#table32").DataTable({
+        "autoWidth": false,
         "order": [[ 0, "desc" ]],
         pageLength: 5,
         dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>'
     });
     var t31 = $("#table31").DataTable({
+        "autoWidth": false,
         "order": [[ 0, "desc" ]],
         pageLength: 5,
-        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>'
+        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+        columns: [
+            null,
+            null,
+            {
+                render: function (data, type, row, meta) {
+                    if (type === 'display') {
+                        var symbol = "Rs. ";
+                        var num = $.fn.dataTable.render.number(',', '.', 2, symbol).display(data);
+                        return '<div style="text-align: right;">' + num + '</div>';
+                    } else {
+                        return data;
+                    }
+                    
+                },
+                
+            },
+            null,
+        ]
     });
     var t33 = $("#table33").DataTable({
-        "order": [[ 0, "desc" ]]
+        "autoWidth": false,
+        "columns": [
+            { "width": "30%" },
+            null,
+        ],
+        pageLength: 5,
+        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body popup"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
     });
     var t34 = $("#table34").DataTable({
-        "order": [[ 0, "desc" ]]
+        "autoWidth": false,
+        "columns": [
+            { "width": "30%" },
+            null,
+        ],
+        pageLength: 5,
+        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body popup"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
     });
     var Toast = Swal.mixin({
         toast: true,
@@ -99,11 +132,6 @@ $(function () {
                                     else customerid = undefined;
                                     setNewValues(code, remark, totalamount, status, customerid, customerOrderProducts, jobno);
                                     submit();
-                                    Swal.fire(
-                                        'Added!',
-                                        'New record has been added.',
-                                        'success'
-                                    )
                                     break;
                                 case "mod":
                                     var code = undefined;
@@ -115,11 +143,6 @@ $(function () {
                                     var customerOrderProducts = undefined;
                                     setNewValues(code, remark, totalamount, status, customerid, customerOrderProducts, jobno);
                                     submit();
-                                    Swal.fire(
-                                        'Submitted!',
-                                        'The PR has been submitted for approval.',
-                                        'success'
-                                    )
                                     break;
                                 case "del":
                                     var code = undefined;
@@ -131,11 +154,6 @@ $(function () {
                                     var customerOrderProducts = undefined;
                                     setNewValues(code, remark, totalamount, status, customerid, customerOrderProducts, jobno);
                                     submit();
-                                    Swal.fire(
-                                        'Expired!',
-                                        'The PR has been expired.',
-                                        'success'
-                                    )
                                     break;
                                 default:
                                     Swal.fire({
@@ -245,10 +263,10 @@ $(function () {
                     t32.row.add([item.code, item.jobID, item.customerid.code, item.customerid.firstname + " " + item.customerid.lastname, item.status]).draw(false);
                 });
                 setValues();
-                fadepageloder();
                 var $tableRow = $("#table32 tr td:contains('" + selectedcode + "')").closest("tr");
                 $tableRow.trigger("click");
                 refreshproducttable();
+                fadepageloder();
                
             },
             error:function(xhr, status, error){
@@ -265,7 +283,7 @@ $(function () {
             total += parseFloat(item.unitrate) * parseFloat(item.quantity);
         })
 
-        $('#customerorder_totalamount').val(total);
+        $('#customerorder_totalamount').val(commaSeparateNumber(String(total)));
     }
     function refreshproducttable() {
         product_col.clear()
@@ -311,8 +329,23 @@ $(function () {
         });
 
     }
-    //definded functions
+    function commaSeparateNumber(val){
+        while (/(\d+)(\d{3})/.test(val.toString())){
+          val = val.toString().replace(/(\d+)(\d{3})/, '$1'+','+'$2');
+        }
+        if (val != "") {
+            if (val.indexOf('.') == -1) {
+                val = val + ".00";
+            }else{
+                val = val;
+            }
+        }else{
+            val = val;
+        }
+        return val;
 
+    }
+    //definded functions
     function submit() {
         showpageloder();
         var url;
@@ -323,11 +356,6 @@ $(function () {
                 url = "http://localhost:8080/api/customerorderctrl/savecustomerorder";
                 method = "POST";
                 break;
-            // case "mod":
-            // case "del":
-            //     url = "http://localhost:8080/api/customerorderctrl/updatecustomerorder";
-            //     method = "PUT";
-            //     break;
             case "mod":
             case "del":
                 url = "http://localhost:8080/api/customerorderctrl/activeinactivecustomerorder";
@@ -343,7 +371,36 @@ $(function () {
                 "Authorization": jwt
             },
             success: function (data) {
+                switch (addmoddel) {
+                    case "add":
+                        Swal.fire(
+                            'Added!',
+                            'New record has been added.',
+                            'success'
+                        )
+                        break;
+                    case "mod":
+                        Swal.fire(
+                            'Submitted!',
+                            'The Customer Order has been submitted for the production.',
+                            'success'
+                        )
+                        break;
+                    case "del":
+                        Swal.fire(
+                            'Expired!',
+                            'The Customer Order has been expired.',
+                            'success'
+                        )
+                        break;
+                }
                 refreshtable();
+            },error:function(xhr,error,status){
+                Swal.fire(
+                    'Error!',
+                    'Please contact the Administator',
+                    'error'
+                )
             }
         })
     }
@@ -365,15 +422,11 @@ $(function () {
             $("#customerorder_quntity").val(customerorderobj.quntity)
             $("#customerorder_remark").val(customerorderobj.remark);
             $("#customerorder_jobno").val(customerorderobj.jobNumber);
-            $("#customerorder_totalamount").val(customerorderobj.totalAmount);
+            $("#customerorder_totalamount").val(commaSeparateNumber(String(customerorderobj.totalAmount)));
             $("#customerorder_status").val(customerorderobj.status);
             if (customerorderobj.customerid) {
                 cli_obj = customerorderobj.customerid;
                 $("#customerorder_customerid").val(customerorderobj.customerid.code + " - " + customerorderobj.customerid.firstname + " " + customerorderobj.customerid.lastname);
-            }
-            if (customerorderobj.product) {
-                product_obj = customerorderobj.product;
-                $("#customerorder_productid").val(customerorderobj.product.code + " - " + customerorderobj.product.name);
             }
             if (customerorderobj.customerOrderProducts) {
                 t31.clear().draw(false);
@@ -388,6 +441,7 @@ $(function () {
             customerorder_col.clearcop();
             customerOrderProductsobjarr = [];
             total = undefined;
+            cli_obj = undefined;
             $("#customerorder_code").val(undefined);
             $("#customerorder_jobcode").val(undefined);
             $("#customerorder_unitrate").val(undefined);
@@ -397,7 +451,7 @@ $(function () {
             $("#customerorder_totalamount").val(undefined);
             $("#customerorder_status").val(undefined);
             $("#customerorder_customerid").val(undefined);
-            $("#customerorder_productid").val(undefined);
+            
 
         }
     }
@@ -422,14 +476,16 @@ $(function () {
                 if(proprice.price) unitrate = proprice.price;
                 else unitrate = undefined;
             }else unitrate = undefined;
-            $("#customerorder_unitrate").val(unitrate);
-            $("#customerorder_productid").val(product_obj.code + " - " + product_obj.name);
+            if(unitrate!=undefined){
+                $("#customerorder_unitrate").val(commaSeparateNumber(String(unitrate)));
+            }else{
+                $("#customerorder_unitrate").val(" ");
+            }
 
         } else {
             product_obj = undefined;
             unitrate =  undefined;
             $("#customerorder_unitrate").val(undefined);
-            $("#customerorder_productid").val(undefined);
 
         }
     }
@@ -492,14 +548,25 @@ $(function () {
             setProductValues($(this).children("td:nth-child(1)").text());
         }
     });
-
+    $('#table31 tbody').on('click', 'tr', function () {
+        if ($(this).hasClass('selected')) {
+            $(this).removeClass('selected');
+            producthash = "";
+        } else {
+            t31.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+            producthash = $(this).children("td:nth-child(1)").text();
+        }
+    });
     $(document).off("click", "#addProductbtn");
     $(document).off("click", "#addCustomerOrders");
     $(document).off("click", "#setCustomerOrders");
     $(document).off("click", "#removaCustomerOrders");
     $(document).off("click", "#customerorder_unitrate");
     $(document).off("click", "#customerorder_quntity");
+    $(document).off("click", "#removeProductbtn");
     
+
     $(document).on("click", "#addProductbtn", function () {
         if ($("#table33 tbody tr").hasClass('selected')) {
             product_obj = undefined;
@@ -507,6 +574,10 @@ $(function () {
         }
         $("#customerorder_unitrate").val(undefined);
         $("#customerorder_quntity").val(undefined);
+    })
+    $(document).on("click", "#removeProductbtn", function () {
+        customerorder_col.removeCustomerOrderProductfromArray(producthash);
+        refreshcoproducttable();
     })
     $(document).on("click", "#addCustomerOrders", function () {
         selectedcode = "";
@@ -519,6 +590,7 @@ $(function () {
         enablefillin("#customerbtn");
         enablefillin("#productbtn");
         enablefillin("#addProductbtn");
+        enablefillin("#removeProductbtn");
         enablefillin("#customerorder_jobno");
         $("#customerorder_status").val("PENDING");
     });
@@ -671,7 +743,7 @@ $(function () {
         value = value.replace(/^0+(?=\d)/, '');
         var parts = value.split('.');
         if (parts.length > 1) {
-            parts[1] = parts[1].slice(0, 2);
+            parts[1] = "00";
             value = parts.join('.');
         }
         $('#customerorder_quntity').val(value);

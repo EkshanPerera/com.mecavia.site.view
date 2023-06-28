@@ -119,7 +119,7 @@ $(function () {
             }
         })
     }
-    
+ 
     //definded functions
     function commaSeparateNumber(val){
         while (/(\d+)(\d{3})/.test(val.toString())){

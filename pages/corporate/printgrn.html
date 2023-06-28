@@ -24,7 +24,7 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1>Print Purchase Requisition</h1>
+                        <h1>Print Goods Received Note</h1>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
@@ -55,14 +55,14 @@
                                             <div class="row">
                                                 <div class="col-sm-6">
                                                     <div class="form-group">
-                                                        <label for="purchaserequisition_code" class="col-form-label">PR
-                                                            Number</label>
+                                                        <label for="goodsreceivednote_code" class="col-form-label">GRN
+                                                            ID</label>
                                                         <div class="col-sm-10">
                                                             <div class="input-group input-group-sm">
                                                                 <input type="text" name="purchaseorderid"
-                                                                    class="form-control" id="purchaserequisition_code">
+                                                                    class="form-control" id="goodsreceivednote_code">
                                                                 <span class="input-group-append">
-                                                                    <button type="button" id="btnprmpo"
+                                                                    <button type="button" id="btngrnno"
                                                                         class="btn btn-info btn-flat ">Select</button>
                                                                 </span>
                                                             </div>
@@ -71,14 +71,49 @@
                                                 </div>
                                             </div>
                                             <div class="row">
-                                                <div class="col-lg-12">
+                                                <div class="col-lg-6">
                                                     <div class="form-group">
-                                                        <label for="purchaserequisition_supplierid"
-                                                            class="col-form-label">Supplier</label>
+                                                        <label for="goodsreceivednote_invoiceno"
+                                                            class="col-form-label">Invoice Number</label>
                                                         <div class="col-sm-10">
-                                                            <input type="input" name="purchaserequisitionsupplier"
+                                                            <input type="input" name="goodsreceivednoteinvoiceno"
                                                                 class="form-control formfillin"
-                                                                id="purchaserequisition_supplierid" placeholder="">
+                                                                id="goodsreceivednote_invoiceno" placeholder="">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-6">
+                                                    <div class="form-group">
+                                                        <label for="goodsreceivednote_invoicedate"
+                                                            class="col-form-label">Invoice Date</label>
+                                                        <div class="col-sm-10">
+                                                            <input type="input" name="goodsreceivednoteinvoicedate"
+                                                                class="form-control formfillin"
+                                                                id="goodsreceivednote_invoicedate" placeholder="">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-lg-6">
+                                                    <div class="form-group">
+                                                        <label for="goodsreceivednote_mrano"
+                                                            class="col-form-label">MRA Number</label>
+                                                        <div class="col-sm-10">
+                                                            <input type="input" name="goodsreceivednotemrano"
+                                                                class="form-control formfillin"
+                                                                id="goodsreceivednote_mrano" placeholder="">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-6">
+                                                    <div class="form-group">
+                                                        <label for="goodsreceivednote_mradate"
+                                                            class="col-form-label">MRA Date</label>
+                                                        <div class="col-sm-10">
+                                                            <input type="input" name="goodsreceivednotemradate"
+                                                                class="form-control formfillin"
+                                                                id="goodsreceivednote_mradate" placeholder="">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -86,36 +121,12 @@
                                             <div class="row">
                                                 <div class="col-lg-12">
                                                     <div class="form-group">
-                                                        <label for="purchaserequisition_remark"
+                                                        <label for="goodsreceivednote_remark"
                                                             class="col-form-label">Remark</label>
                                                         <div class="col-sm-10">
-                                                            <input type="input" name="purchaserequisitionremark"
+                                                            <input type="input" name="goodsreceivednoteremark"
                                                                 class="form-control formfillin"
-                                                                id="purchaserequisition_remark" placeholder="">
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-lg-6">
-                                                    <div class="form-group">
-                                                        <label for="purchaserequisition_quotationno"
-                                                            class="col-form-label">Quotation Number</label>
-                                                        <div class="col-sm-10">
-                                                            <input type="input" name="purchaserequisitionquotationno"
-                                                                class="form-control formfillin"
-                                                                id="purchaserequisition_quotationno" placeholder="">
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-lg-6">
-                                                    <div class="form-group">
-                                                        <label for="purchaserequisition_status"
-                                                            class="col-form-label">Status</label>
-                                                        <div class="col-sm-10">
-                                                            <input type="input" name="purchaserequisitionstatus"
-                                                                class="form-control formfillin"
-                                                                id="purchaserequisition_status" placeholder="">
+                                                                id="goodsreceivednote_remark" placeholder="">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -131,40 +142,15 @@
                                                             <tr>
                                                                 <th>#</th>
                                                                 <th>Material</th>
-                                                                <th>Unit Rate(Rs.)</th>
-                                                                <th>Quntity</th>
+                                                                <th>GRNM Code</th>
+                                                                <th>Bulck Code</th>
+                                                                <th>Arrived Count</th>
                                                                 <th>UoM</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
                                                         </tbody>
                                                     </table>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-lg-6" style="padding : 35px;">
-                                                    <div class="form-group">
-
-                                                    </div>
-                                                </div>
-                                                <div class="col-lg-6">
-                                                    <div class="form-group">
-                                                        <div class="float-right">
-                                                            <label for="purchaserequisition_totalamount"
-                                                                class="col-form-label">Net Amount (Rs.)</label>
-                                                            <div class="input-group mb-3">
-                                                                <div class="input-group-append">
-                                                                    <div class="input-group-text">
-                                                                        <span>Rs. </span>
-                                                                    </div>
-                                                                </div>
-                                                                <input type="input"
-                                                                    name="purchaserequisitiontotalamount"
-                                                                    class="form-control formfillin"
-                                                                    id="purchaserequisition_totalamount" placeholder="">
-                                                            </div>
-                                                        </div>
-                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -178,7 +164,7 @@
                                             id="acceptPurchaseRequisitions">
                                             <i class="fas fa-check-circle"></i>
                                             Print</button>
-                                            <button type="button" class="btn btn-default formbtn" data-dismiss="modal" id="cancelPRPrint">
+                                            <button type="button" class="btn btn-default formbtn" data-dismiss="modal" id="cancelGRNPrint">
                                             <i class="fa fa-times" aria-hidden="true"></i> Cancel</button>
                                     </div>
                                 </div>
@@ -213,7 +199,7 @@
                         <div class="col-12">
                             <h2 class="page-header">
                                 <i class="fa-globe"></i> G R S Garment & Industries(PVT)Ltd.
-                                <small class="float-right"><span>Purchase Requisition</span></small>
+                                <small class="float-right"><span>Goods Recived Note</span></small>
                             </h2>
                         </div>
                         <!-- /.col -->
@@ -233,7 +219,8 @@
                         </div>
                         <!-- /.col -->
                         <div class="col-sm-4 invoice-col">
-                            From
+
+                            <!-- From
                             <address>
                                 <strong><span id="suppliername"></span></strong><br>
                                 <span id="supplieraddline01"></span><br>
@@ -241,16 +228,17 @@
                                 <span id="supplieraddline03"></span><br>
                                 <sapn id="supplercontact"></sapn><br>
                                 <span id="supplieremail"></span>
-                            </address>
+                            </address> -->
                         </div>
                         <!-- /.col -->
                         <div class="col-sm-4 invoice-col">
                             <br>
                             <h4 id="coppyornot"></h4>
-                            <b>PR Number :</b> <span id="pono"></span><br>
-                            <b>Quotation Number :</b> <span id="qoano"></span><br>
-                            <b>Printed Date :</b> <span id="prprinteddate"></span><br>
-                            <b>Reprint Date :</b> <span id="reprintdate"></span><br>
+                            <b>GRN Id :</b> <span id="grnid"></span><br>
+                            <b>Invoice Number :</b> <span id="invoiceno"></span><br>
+                            <b>Invoice Date :</b> <span id="invoicedate"></span><br>
+                            <b>MRA Number :</b> <span id="mrano"></span><br>
+                            <b>MRA Date :</b> <span id="mradate"></span><br>
                         </div>
                         <!-- /.col -->
                     </div>
@@ -264,20 +252,16 @@
                                     <tr>
                                         <th>No.</th>
                                         <th>Material</th>
+                                        <th>GRNM Code</th>
+                                        <th>Bulck Code</th>
                                         <th>
-                                            <div style="text-align: right;">Unit Rate(Rs.)</div>
-                                        </th>
-                                        <th>
-                                            <div style="text-align: right;">Quntity </div>
-                                        </th>
-                                        <th>
-                                            <div style="text-align: right;">Subtotal</div>
+                                            <div style="text-align: right;">Arrived Count</div>
                                         </th>
                                     </tr>
                                 </thead>
                                 <tbody id="potablebody">
 
-                                </tbody>
+                                </tbody> 
                             </table>
                         </div>
                         <!-- /.col -->
@@ -288,34 +272,6 @@
                         <!-- accepted payments column -->
                         <div class="col-6">
 
-                        </div>
-                        <!-- /.col -->
-                        <div class="col-6">
-
-                            <div class="table-responsive">
-                                <table class="table">
-                                    <tbody>
-                                        <tr>
-                                            <th style="width:50%">Subtotal:</th>
-                                            <td>
-                                                <div style="text-align: right;">Rs.<span id="nettotal"></div></span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th>Tax (<span class="tax"></span>)</th>
-                                            <td>
-                                                <div style="text-align: right;"><span class="tax"></div></span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th>Total:</th>
-                                            <td>
-                                                <div style="text-align: right;">Rs.<span id="grosstotal"></div></span>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
                         </div>
                         <!-- /.col -->
                     </div>
@@ -352,9 +308,7 @@
         </div>
     </div>
     <!-- ./wrapper -->
-    <script src="../../dist/js/pages/clientclasses.js"></script>
-    <script src="../../dist/js/pages/materialclasses.js"></script>
-    <script src="../../dist/js/pages/prprintclasses.js"></script>
-    <script src="../../dist/js/pages/printpr.js"></script>
+    <script src="../../dist/js/pages/grnclasses.js"></script>
+    <script src="../../dist/js/pages/printgrn.js"></script>
 
 </body>

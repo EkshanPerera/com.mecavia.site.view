@@ -74,7 +74,7 @@ $(function () {
         unhighlight: function (element, errorClass, validClass) {
             $(element).removeClass('is-invalid');
         }, submitHandler: function () {
-            if (cli_obj.id && purchaseRequisitionMaterialsobjarr.length != 0 && purchaserequisitionobj.status == "PENDING" ) {
+            if (cli_obj.id && purchaseRequisitionMaterialsobjarr.length != 0 && (purchaserequisitionobj.status == "PENDING" || purchaserequisitionobj.status == "SUBMIT")) {
                 Swal.fire({
                     title: 'Are you sure?',
                     text: "You won't be able to get another original copy!",
@@ -121,7 +121,7 @@ $(function () {
             },
             success: function (data) {
                 $.each(data.content, function (i, item) {
-                    if (item.status == "PENDING") {
+                    if (item.status == "PENDING"|| item.status == "SUBMIT") {
                         purchaserequisition_col.addPurchaseRequisitiontoArray(item.id, item.prcode, item.pocode, item.supplierid, item.status, item.remark, item.totalAmount, item.purchaseRequisitionMaterials,item.quotationno,item.prprinteddate);
                     }
                 });
@@ -264,7 +264,6 @@ $(function () {
             purchaserequisition_col.clearprm();
             purchaseRequisitionMaterialsobjarr = [];
             total = undefined;
-            $("#purchaserequisition_code").val(undefined);
             $("#purchaserequisition_unitrate").val(undefined);
             $("#purchaserequisition_quntity").val(undefined);
             $("#purchaserequisition_remark").val(undefined);

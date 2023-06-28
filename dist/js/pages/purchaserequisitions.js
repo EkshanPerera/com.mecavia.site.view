@@ -443,14 +443,10 @@ $(function () {
                 cli_obj = purchaserequisitionobj.supplierid;
                 $("#purchaserequisition_supplierid").val(purchaserequisitionobj.supplierid.code + " - " + purchaserequisitionobj.supplierid.firstname + " " + purchaserequisitionobj.supplierid.lastname);
             }
-            if (purchaserequisitionobj.material) {
-                material_obj = purchaserequisitionobj.material;
-                $("#purchaserequisition_matarialid").val(purchaserequisitionobj.material.code + " - " + purchaserequisitionobj.material.description);
-            }
             if (purchaserequisitionobj.purchaseRequisitionMaterials) {
                 t21.clear().draw(false);
                 $.each(purchaserequisitionobj.purchaseRequisitionMaterials, function (i, item) {
-                    t21.row.add([i + 1, item.material.description, item.unitrate, item.quantity, item.material.uomid.scode]).draw(false);
+                    t21.row.add([item.hash , item.material.description, item.unitrate, item.quantity, item.material.uomid.scode]).draw(false);
                 })
             }
 
@@ -461,6 +457,7 @@ $(function () {
             purchaseRequisitionMaterialsobjarr = [];
             total = undefined;
             materialhash = undefined;
+            cli_obj = undefined;
             $("#purchaserequisition_code").val(undefined);
             $("#purchaseorder_code").val(undefined);
             $("#purchaserequisition_unitrate").val(undefined)

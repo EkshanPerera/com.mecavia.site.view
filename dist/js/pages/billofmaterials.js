@@ -21,7 +21,6 @@ $(function () {
     var selectedcode = undefined;
 
     var t36 = $("#table36").DataTable({
-        
         pageLength: 5,
         dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>'
     });
@@ -31,7 +30,13 @@ $(function () {
         dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body met"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>'
     });
     var t38 = $("#table38").DataTable({
-        "order": [[0, "desc"]]
+        "autoWidth": false,
+        "columns": [
+            { "width": "30%" },
+            null,
+        ],
+        pageLength: 5,
+        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body popup"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
     });
     var Toast = Swal.mixin({
         toast: true,
@@ -192,6 +197,22 @@ $(function () {
                 fadepageloder();
             }
         })
+    }
+    function commaSeparateNumber(val){
+        while (/(\d+)(\d{3})/.test(val.toString())){
+          val = val.toString().replace(/(\d+)(\d{3})/, '$1'+','+'$2');
+        }
+        if (val != "") {
+            if (val.indexOf('.') == -1) {
+                val = val + ".00";
+            }else{
+                val = val;
+            }
+        }else{
+            val = val;
+        }
+        return val;
+
     }
     function refreshmatarialtable() {
         material_col.clear()
