@@ -279,7 +279,13 @@ $(function () {
         t31.clear().draw(false);
         var total = 0;
         $.each(customerOrderProductsobjarr, function (i, item) {
-            t31.row.add([i + 1, item.product.name, item.unitrate, item.quantity]).draw(false);
+            var hashval;
+            if(item.hash==undefined){
+                hashval+=i
+            }else{
+                hashval = item.hash
+            }
+            t31.row.add([hashval, item.product.name, item.unitrate, item.quantity]).draw(false);
             total += parseFloat(item.unitrate) * parseFloat(item.quantity);
         })
 

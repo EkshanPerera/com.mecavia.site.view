@@ -27,7 +27,38 @@ $(function () {
     var t37 = $("#table37").DataTable({
         "order": [[0, "desc"]],
         pageLength: 7,
-        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body met"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>'
+        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body met"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+        "autoWidth": false,
+        columns: [
+            null,
+            null,
+            {
+                render: function (data, type, row, meta) {
+                    if (type === 'display') {
+                        var symbol = "Rs. ";
+                        var num = $.fn.dataTable.render.number(',', '.', 2, symbol).display(data);
+                        return '<div style="text-align: right;">' + num + '</div>';
+                    } else {
+                        return data;
+                    }
+                    
+                },
+                
+            },
+            {
+                render: function (data, type, row, meta) {
+                    if (type === 'display') {
+                        var num = $.fn.dataTable.render.number(',', '.', 2).display(data);
+                        return '<div style="text-align: right;">' + num + '</div>';
+                    } else {
+                        return data;
+                    }
+                    
+                },
+                
+            },
+            null
+        ]
     });
     var t38 = $("#table38").DataTable({
         "autoWidth": false,
@@ -76,7 +107,10 @@ $(function () {
                         confirmButtonText: 'Yes, accept it!'
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            var totalcost =  $('#purchaserequisition_totalamount').val();
+                            var totalcost = 0;
+                            $.each(bomMaterialobjArry, function (i, item) {
+                                totalcost += parseFloat(item.materialCost) * parseFloat(item.quantity);
+                            })
                             var status = "ACTIVE";
                             var code = genaratecode();
                             setNewValues(code,customerorderobj,bomMaterialobjArry,totalcost,status);
@@ -241,17 +275,16 @@ $(function () {
         t37.clear().draw(false);
         var total = 0;
         $.each(bomMaterialobjArry, function (i, item) {
-            t37.row.add([i + 1, item.material.description, item.materialCost, item.quantity, item.material.uomid.scode]).draw(false);
+            t37.row.add([item.hash, item.material.description, item.materialCost, item.quantity, item.material.uomid.scode]).draw(false);
             total += parseFloat(item.materialCost) * parseFloat(item.quantity);
         })
-        $('#purchaserequisition_totalamount').val(total);
+        $('#purchaserequisition_totalamount').val(commaSeparateNumber(String(total)));
     }
     //definded functions
     function submit() {
         showpageloder();
         var url;
         var method;
-
         url = "http://localhost:8080/api/billofmaterialctrl/savebillofmaterial";
         method = "POST";
         $.ajax({
@@ -270,7 +303,6 @@ $(function () {
     function formctrl() {
         $(".formfillin").prop("disabled", true);
     }
-
     function setValues(code) {
         formctrl();
         addmoddel = undefined;
@@ -284,6 +316,8 @@ $(function () {
             $("#customerorder_jobno").val(customerorderobj.jobNumber);
             $("#customerorder_totalamount").val(customerorderobj.totalAmount);
             $("#customerorder_status").val(customerorderobj.status);
+            enablefillin("#addMaterialbtn");
+            enablefillin("#removeMaterialbtn");
             if (customerorderobj.customerid) {
                 enablefillin("#purchaserequisition_quntity");
                 cli_obj = customerorderobj.customerid;
@@ -332,11 +366,12 @@ $(function () {
         $("#modal-matariallist").modal("hide");
         if (code) {
             material_obj = material_col.getMaterial(code);
-            $("#purchaserequisition_unitrate").val(material_obj.price);
-
+            $("#purchaserequisition_unitrate").val(commaSeparateNumber(String(material_obj.price)));
+            $("#pr_material_code").text(material_obj.uomid.scode);
         } else {
             material_obj = undefined;
             $("#purchaserequisition_unitrate").val(undefined);
+            $("#pr_material_code").text(" ");
 
         }
     }
@@ -359,12 +394,21 @@ $(function () {
             setMatarialalues($(this).children("td:nth-child(1)").text());
         }
     });
-    
+    $('#table37 tbody').on('click', 'tr', function () {
+        if ($(this).hasClass('selected')) {
+            $(this).removeClass('selected');
+            materialhash = "";
+        } else {
+            t37.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+            materialhash = $(this).children("td:nth-child(1)").text();
+        }
+    });
     $(document).off("click", "#addMaterialbtn");
+    $(document).off("click", "#removeMaterialbtn");
     $(document).off("click", "#btnprm");
     $(document).off("click", "#purchaserequisition_unitrate");
     $(document).off("click", "#purchaserequisition_quntity");
-
     $(document).on("click", "#addMaterialbtn", function () {
         if ($("#table38 tbody tr").hasClass('selected')) {
             material_obj = undefined;
@@ -372,11 +416,14 @@ $(function () {
         }
         $("#purchaserequisition_unitrate").val(undefined);
         $("#purchaserequisition_quntity").val(undefined);
+    });
+    $(document).on("click", "#removeMaterialbtn", function () {
+        billofmaterial_col.removebommaterialfromArray(materialhash);
+        refreshprmatarialtable();
     })
     $(document).on("click", "#btnprm", function () {
         selectedcode = $("#customerorder_code").val();
         refreshtable();
-
     })
     $(document).on('input', '#purchaserequisition_unitrate', function () {
         var value = $('#purchaserequisition_unitrate').val();

@@ -446,7 +446,7 @@ $(function () {
             if (purchaserequisitionobj.purchaseRequisitionMaterials) {
                 t21.clear().draw(false);
                 $.each(purchaserequisitionobj.purchaseRequisitionMaterials, function (i, item) {
-                    t21.row.add([item.hash , item.material.description, item.unitrate, item.quantity, item.material.uomid.scode]).draw(false);
+                    t21.row.add([i + 1, item.material.description, item.unitrate, item.quantity, item.material.uomid.scode]).draw(false);
                 })
             }
 

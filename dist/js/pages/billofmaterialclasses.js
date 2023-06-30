@@ -11,12 +11,13 @@ class billofmaterial {
     }
 }
 class bommaterial{
-    constructor(id,code,material,materialCost,quantity){
+    constructor(id,code,material,materialCost,quantity,hash){
         this.id = id;
         this.code = code;
         this.material = material;
         this.materialCost = materialCost;
         this.quantity = quantity;
+        this.hash = hash;
     }
 }
 class billofmaterial_service {
@@ -24,14 +25,19 @@ class billofmaterial_service {
         this.billofmaterials = [];
         this.bommaterials = [];
         this.billofmaterial;
+        this.hash = 0;
     }
     addBillOfMaterialtoArray(id,code,customerOrder,bomMaterials,totalcost,status) {
         let billofmaterial_arritem = new billofmaterial(id,code,customerOrder,bomMaterials,totalcost,status);
         this.billofmaterials.push(billofmaterial_arritem);
     }
     addbommaterialtoArray(id,code,material,materialCost,quantity) {
-        let bommaterials_arritem = new bommaterial(id,code,material,materialCost,quantity);
+        this.hash += 1;
+        let bommaterials_arritem = new bommaterial(id,code,material,materialCost,quantity,this.hash);
         this.bommaterials.push(bommaterials_arritem);
+    }
+    removebommaterialfromArray(hash){
+        this.bommaterials = this.bommaterials.filter(bommaterial => bommaterial.hash != hash)
     }
     allBillOfMaterial() {
         return this.billofmaterials;
