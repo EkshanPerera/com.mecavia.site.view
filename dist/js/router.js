@@ -82,6 +82,15 @@
     $("#lnkprintgrn").click(function () {
         $("#content").load("../pages/corporate/printgrn.html");
     });
+    $("#lnkappicon").click(function () {
+        $("#content").load("../pages/corporate/appicongroups.html");
+    });
+    $("#lnkaccessctrl").click(function () {
+        $("#content").load("../pages/corporate/accessctrl.html");
+    });
+    $("#lnkmron").click(function () {
+        $("#content").load("../pages/corporate/materialoutnote.html");
+    });
     
     // GRN click event handler
     $("#grn").click(function () {

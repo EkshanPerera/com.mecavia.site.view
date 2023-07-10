@@ -13,6 +13,7 @@ $(function () {
     var materialhash;
     var addmoddel = undefined;
     var selectedcode = undefined;
+    var jwtPayload = undefined;
     var t17 = $("#table17").DataTable({
         "order": [[0, "desc"]],
         pageLength: 5,
@@ -35,9 +36,9 @@ $(function () {
                     } else {
                         return data;
                     }
-                    
+
                 },
-                
+
             },
             {
                 render: function (data, type, row, meta) {
@@ -47,9 +48,9 @@ $(function () {
                     } else {
                         return data;
                     }
-                    
+
                 },
-                
+
             },
             null
         ]
@@ -91,15 +92,15 @@ $(function () {
             purchaserequisitionremark: {
                 required: true
             },
-            purchaserequisitionquotationno:{
-                required:true
+            purchaserequisitionquotationno: {
+                required: true
             }
         },
         messages: {
             purchaserequisitionremark: {
                 required: "Please fillout the remark!"
             },
-            purchaserequisitionquotationno:{
+            purchaserequisitionquotationno: {
                 required: "Please fillout the quatation number!"
             }
         },
@@ -141,7 +142,7 @@ $(function () {
                                     var supplierid;
                                     if (cli_obj) supplierid = cli_obj;
                                     else supplierid = undefined;
-                                    setNewValues(code, remark, totalamount, status, supplierid, purchaseRequisitionMaterials,quotationno);
+                                    setNewValues(code, remark, totalamount, status, supplierid, purchaseRequisitionMaterials, quotationno);
                                     submit();
                                     break;
                                 case "mod":
@@ -152,7 +153,7 @@ $(function () {
                                     var status = "SUBMIT";
                                     var supplierid = undefined;
                                     var purchaseRequisitionMaterials = undefined;
-                                    setNewValues(code, remark, totalamount, status, supplierid, purchaseRequisitionMaterials,quotationno);
+                                    setNewValues(code, remark, totalamount, status, supplierid, purchaseRequisitionMaterials, quotationno);
                                     submit();
                                     break;
                                 case "del":
@@ -163,7 +164,7 @@ $(function () {
                                     var status = "EXPIRE";
                                     var supplierid = undefined;
                                     var purchaseRequisitionMaterials = undefined;
-                                    setNewValues(code, remark, totalamount, status, supplierid, purchaseRequisitionMaterials,quotationno);
+                                    setNewValues(code, remark, totalamount, status, supplierid, purchaseRequisitionMaterials, quotationno);
                                     submit();
                                     break;
                                 default:
@@ -254,47 +255,62 @@ $(function () {
         }
     });
     //definded functions
-    function refreshtable() {
-        purchaserequisition_col.clear();
-        material_col.clear();
-        cli_col.clear();
-        addmoddel = undefined;
-        selectedcode = undefined;
-        t17.clear().draw(false);
-        t21.clear().draw(false);
-        $.ajax({
-            url: "http://localhost:8080/api/purchaserequisitionctrl/getpurchaserequisitions",
-            dataType: "JSON",
-            headers: {
-                "Authorization": jwt
-            },
-            success: function (data) {
-                $.each(data.content, function (i, item) {
-                    purchaserequisition_col.addPurchaseRequisitiontoArray(item.id, item.prcode, item.pocode, item.supplierid, item.status, item.remark, item.totalAmount, item.purchaseRequisitionMaterials, item.quotationno);
-                    t17.row.add([item.prcode, item.pocode,item.quotationno, item.supplierid.code, item.supplierid.firstname + " " + item.supplierid.lastname, item.status]).draw(false);
-                });
-                setValues();
-                var $tableRow = $("#table17 tr td:contains('" + selectedcode + "')").closest("tr");
-                $tableRow.trigger("click");
-                refreshmatarialtable();
-                fadepageloder();
-            },
-            error: function (xhr, status, error) {
-                fadepageloder();
-            }
-        })
+    function getJwtPayload() {
+        var parts = jwt.split('.');
+        var encodedPayload = parts[1];
+        var decodedPayload = atob(encodedPayload.replace(/-/g, '+').replace(/_/g, '/'));
+        var payload = JSON.parse(decodedPayload);
+        return payload;
     }
-    function commaSeparateNumber(val){
-        while (/(\d+)(\d{3})/.test(val.toString())){
-          val = val.toString().replace(/(\d+)(\d{3})/, '$1'+','+'$2');
+    function refreshtable() {
+        if (jwtPayload.roleid.accIconList.find(accicon => accicon.status == "ACTIVE" && accicon.code == "AI00103") != undefined || jwtPayload.businessRole == "ADMIN") {
+            purchaserequisition_col.clear();
+            material_col.clear();
+            cli_col.clear();
+            addmoddel = undefined;
+            selectedcode = undefined;
+            t17.clear().draw(false);
+            t21.clear().draw(false);
+            $.ajax({
+                url: "http://localhost:8080/api/purchaserequisitionctrl/getpurchaserequisitions",
+                dataType: "JSON",
+                headers: {
+                    "Authorization": jwt
+                },
+                success: function (data) {
+                    $.each(data.content, function (i, item) {
+                        purchaserequisition_col.addPurchaseRequisitiontoArray(item.id, item.prcode, item.pocode, item.supplierid, item.status, item.remark, item.totalAmount, item.purchaseRequisitionMaterials, item.quotationno);
+                        t17.row.add([item.prcode, item.pocode, item.quotationno, item.supplierid.code, item.supplierid.firstname + " " + item.supplierid.lastname, item.status]).draw(false);
+                    });
+                    setValues();
+                    var $tableRow = $("#table17 tr td:contains('" + selectedcode + "')").closest("tr");
+                    $tableRow.trigger("click");
+                    refreshmatarialtable();
+                    fadepageloder();
+                },
+                error: function (xhr, status, error) {
+                    fadepageloder();
+                }
+            })
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Warning!',
+                text: 'You don\'t have permission to perform this action.Please contact the Administrator(a.c:AI00103)',
+            });
+        }
+    }
+    function commaSeparateNumber(val) {
+        while (/(\d+)(\d{3})/.test(val.toString())) {
+            val = val.toString().replace(/(\d+)(\d{3})/, '$1' + ',' + '$2');
         }
         if (val != "") {
             if (val.indexOf('.') == -1) {
                 val = val + ".00";
-            }else{
+            } else {
                 val = val;
             }
-        }else{
+        } else {
             val = val;
         }
         return val;
@@ -306,9 +322,9 @@ $(function () {
         var total = 0;
         $.each(purchaseRequisitionMaterialsobjarr, function (i, item) {
             var hashval;
-            if(item.hash==undefined){
-                hashval+=i
-            }else{
+            if (item.hash == undefined) {
+                hashval += i
+            } else {
                 hashval = item.hash
             }
             t21.row.add([hashval, item.material.description, item.unitrate, item.quantity, item.material.uomid.scode]).draw(false);
@@ -410,7 +426,7 @@ $(function () {
                         break;
                 }
                 refreshtable();
-            },error:function(xhr,error,status){
+            }, error: function (xhr, error, status) {
                 Swal.fire(
                     'Error!',
                     'Please contact the Administator',
@@ -495,7 +511,7 @@ $(function () {
 
         }
     }
-    function setNewValues(code, remark, totalamount, status, supplierid, purchaseRequisitionMaterials,quotationno) {
+    function setNewValues(code, remark, totalamount, status, supplierid, purchaseRequisitionMaterials, quotationno) {
         if (purchaserequisitionobj) {
             if (code) purchaserequisitionobj.prcode = code;
             if (remark) purchaserequisitionobj.remark = remark;
@@ -507,7 +523,7 @@ $(function () {
 
         } else {
             purchaserequisitionobj = purchaserequisitionClassesInstence.purchaserequisition;
-            setNewValues(code, remark, totalamount, status, supplierid, purchaseRequisitionMaterials,quotationno);
+            setNewValues(code, remark, totalamount, status, supplierid, purchaseRequisitionMaterials, quotationno);
         }
     }
     function resetform(element) {
@@ -596,7 +612,7 @@ $(function () {
     $(document).off("input", "#purchaserequisition_quntity");
     $(document).off("click", "#filter_material_type");
     $(document).off("click", "#cancelPR");
-    
+
 
     $(document).on("click", "#addMaterialbtn", function () {
         if ($("#table20 tbody tr").hasClass('selected')) {
@@ -611,136 +627,160 @@ $(function () {
         refreshprmatarialtable();
     })
     $(document).on("click", "#addPurchaseRequisitions", function () {
-        selectedcode = "";
-        setValues(undefined);
-        addmoddel = "add";
-        $("#purchaserequisition_code").val(genaratecode());
-        $("#table17 tbody tr").removeClass('selected');
-        enablefillin("#purchaserequisition_unitrate");
-        enablefillin("#purchaserequisition_quntity");
-        enablefillin("#purchaserequisition_remark");
-        enablefillin("#purchaserequisition_quotationno");
-        enablefillin("#supplierbtn");
-        enablefillin("#matarialbtn");
-        enablefillin("#addMaterialbtn");
-        enablefillin("#removeMaterialbtn");
-        $("#purchaserequisition_status").val("PENDING");
+        if (jwtPayload.roleid.accIconList.find(accicon => accicon.status == "ACTIVE" && accicon.code == "AI00101") != undefined || jwtPayload.businessRole == "ADMIN") {
+            selectedcode = "";
+            setValues(undefined);
+            addmoddel = "add";
+            $("#purchaserequisition_code").val(genaratecode());
+            $("#table17 tbody tr").removeClass('selected');
+            enablefillin("#purchaserequisition_unitrate");
+            enablefillin("#purchaserequisition_quntity");
+            enablefillin("#purchaserequisition_remark");
+            enablefillin("#purchaserequisition_quotationno");
+            enablefillin("#supplierbtn");
+            enablefillin("#matarialbtn");
+            enablefillin("#addMaterialbtn");
+            enablefillin("#removeMaterialbtn");
+            $("#purchaserequisition_status").val("PENDING");
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Warning!',
+                text: 'You don\'t have permission to perform this action.Please contact the Administrator(a.c:AI00101)',
+            });
+        }
     });
     $(document).on("click", "#setPurchaseRequisitions", function () {
-        if (selectedcode) {
-            if (purchaserequisitionobj.status == "PENDING") {
-                setValues(selectedcode);
-                addmoddel = "mod";
-                $("#purchaserequisition_status").val("SUBMIT");
-                Toast.fire({
-                    icon: 'info',
-                    title: 'Please press save to compleate!'
-                });
-            } else {
-                switch (purchaserequisitionobj.status) {
-                    case "EXPIRE":
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Warning!',
-                            text: 'The PR you are attempting to submit is currently expired!',
-                        });
-                        break;
-                    case "APPROVED":
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Warning!',
-                            text: 'The PR you are attempting to submit is currently approved!',
-                        });
-                        break;
-                    case "REJECTED":
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Warning!',
-                            text: 'The PR you are attempting to submit is rejected!',
-                        });
-                        break;
-                    case "SUBMIT":
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Warning!',
-                            text: 'The PR you are attempting to submit is already submitted!',
-                        });
-                        break;
-                    case "PRINTED":
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Warning!',
-                            text: 'PO is genarated under this PR!',
-                        });
-                        break;
-                }
+        if (jwtPayload.roleid.accIconList.find(accicon => accicon.status == "ACTIVE" && accicon.code == "AI00109") != undefined || jwtPayload.businessRole == "ADMIN") {
+            if (selectedcode) {
+                if (purchaserequisitionobj.status == "PENDING") {
+                    setValues(selectedcode);
+                    addmoddel = "mod";
+                    $("#purchaserequisition_status").val("SUBMIT");
+                    Toast.fire({
+                        icon: 'info',
+                        title: 'Please press save to compleate!'
+                    });
+                } else {
+                    switch (purchaserequisitionobj.status) {
+                        case "EXPIRE":
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Warning!',
+                                text: 'The PR you are attempting to submit is currently expired!',
+                            });
+                            break;
+                        case "APPROVED":
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Warning!',
+                                text: 'The PR you are attempting to submit is currently approved!',
+                            });
+                            break;
+                        case "REJECTED":
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Warning!',
+                                text: 'The PR you are attempting to submit is rejected!',
+                            });
+                            break;
+                        case "SUBMIT":
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Warning!',
+                                text: 'The PR you are attempting to submit is already submitted!',
+                            });
+                            break;
+                        case "PRINTED":
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Warning!',
+                                text: 'PO is genarated under this PR!',
+                            });
+                            break;
+                    }
 
+                }
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Please select a PR!',
+                })
             }
         } else {
             Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: 'Please select a PR!',
-            })
+                icon: 'warning',
+                title: 'Warning!',
+                text: 'You don\'t have permission to perform this action.Please contact the Administrator(a.c:AI00109)',
+            });
         }
     });
     $(document).on("click", "#removaPurchaseRequisitions", function () {
-        if (selectedcode) {
-            if (purchaserequisitionobj.status == "PENDING" || purchaserequisitionobj.status == "INITIATED") {
-                setValues(selectedcode);
-                addmoddel = "del";
-                $("#purchaserequisition_status").val("EXPIRE");
-                Toast.fire({
-                    icon: 'info',
-                    title: 'Please press save to compleate!'
-                });
-            } else {
-                switch (purchaserequisitionobj.status) {
-                    case "EXPIRE":
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Warning!',
-                            text: 'The PR you are attempting to expire is already expired!',
-                        });
-                        break;
-                    case "APPROVED":
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Warning!',
-                            text: 'The PR you are attempting to expire is currently approved!',
-                        });
-                        break;
-                    case "REJECTED":
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Warning!',
-                            text: 'The PR you are attempting to expire is rejected!',
-                        });
-                        break;
-                    case "SUBMIT":
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Warning!',
-                            text: 'The PR you are attempting to expire is currently submitted!',
-                        });
-                        break;
-                    case "PRINTED":
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Warning!',
-                            text: 'PO is genarated under this PR!',
-                        });
-                        break;
+        if (jwtPayload.roleid.accIconList.find(accicon => accicon.status == "ACTIVE" && accicon.code == "AI01010") != undefined || jwtPayload.businessRole == "ADMIN") {
+            if (selectedcode) {
+                if (purchaserequisitionobj.status == "PENDING" || purchaserequisitionobj.status == "INITIATED") {
+                    setValues(selectedcode);
+                    addmoddel = "del";
+                    $("#purchaserequisition_status").val("EXPIRE");
+                    Toast.fire({
+                        icon: 'info',
+                        title: 'Please press save to compleate!'
+                    });
+                } else {
+                    switch (purchaserequisitionobj.status) {
+                        case "EXPIRE":
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Warning!',
+                                text: 'The PR you are attempting to expire is already expired!',
+                            });
+                            break;
+                        case "APPROVED":
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Warning!',
+                                text: 'The PR you are attempting to expire is currently approved!',
+                            });
+                            break;
+                        case "REJECTED":
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Warning!',
+                                text: 'The PR you are attempting to expire is rejected!',
+                            });
+                            break;
+                        case "SUBMIT":
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Warning!',
+                                text: 'The PR you are attempting to expire is currently submitted!',
+                            });
+                            break;
+                        case "PRINTED":
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Warning!',
+                                text: 'PO is genarated under this PR!',
+                            });
+                            break;
+                    }
+
+
                 }
-
-
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Please select a PR!',
+                })
             }
         } else {
             Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: 'Please select a PR!',
-            })
+                icon: 'warning',
+                title: 'Warning!',
+                text: 'You don\'t have permission to perform this action.Please contact the Administrator(a.c:AI01010)',
+            });
         }
     });
     $(document).on('input', '#purchaserequisition_unitrate', function () {
@@ -760,10 +800,10 @@ $(function () {
         if (value != "") {
             if (value.indexOf('.') == -1) {
                 value = value + ".00";
-            }else{
+            } else {
                 value = value;
             }
-        }else{
+        } else {
             value = value;
         }
         $('#purchaserequisition_unitrate').val(value);
@@ -785,10 +825,10 @@ $(function () {
         if (value != "") {
             if (value.indexOf('.') == -1) {
                 value = value + ".00";
-            }else{
+            } else {
                 value = value;
             }
-        }else{
+        } else {
             value = value;
         }
         $('#purchaserequisition_quntity').val(value);
@@ -802,6 +842,7 @@ $(function () {
     });
 
     //end of triggers
+    jwtPayload = getJwtPayload();
     formctrl();
     refreshtable();
 

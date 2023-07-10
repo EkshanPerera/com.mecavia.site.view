@@ -1,22 +1,41 @@
 $(function () {
     //variables
     var mrClassesInstence = mrClasses.mrClassesInstence();
-    let billofmaterial_col = mrClassesInstence.billofmaterial_service;
     let materialrequisition_col = mrClassesInstence.materialRequisition_service;
-    let billofmaterialobj = mrClassesInstence.billofmaterial;
-    let prmobj = mrClassesInstence.bommaterial;
+    var billofmaterialClassesInstence = billofmaterialClasses.billofmaterialClassesInstence();
+    let billofmaterial_col = billofmaterialClassesInstence.billofmaterial_service;
+    let billofmaterialobj = billofmaterialClassesInstence.billofmaterial;
+    let bommobj = billofmaterialClassesInstence.bommaterial;
     let materialrequisitionobj = mrClassesInstence.materialrequisition;
-    let bommaterialsobjarr = [];
+    let bomMaterialsobjarr = [];
     let materialRequisitionMaterialsobjarr = [];
     var outstangingcount = 0;
     var addmoddel = undefined;
     var selectedcode = undefined;
+    var jwtPayload = undefined;
     var selectedpomcode = undefined;
 
     var t22 = $("#table22").DataTable({
-        "order": [[0, "desc"]],
         pageLength: 5,
-        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>'
+        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+        "autoWidth": false,
+        columns: [
+            null,
+            null,
+            {
+                render: function (data, type, row, meta) {
+                    if (type === 'display') {
+                        var num = $.fn.dataTable.render.number(',', '.', 2).display(data);
+                        return '<div style="text-align: right;">' + num + '</div>';
+                    } else {
+                        return data;
+                    }
+
+                },
+
+            },
+            null
+        ]
     });
     var t23 = $("#table23").DataTable({
         "order": [[0, "desc"]],
@@ -44,40 +63,6 @@ $(function () {
     // Get the input element
 
     $('#quickForm10').validate({
-        rules: {
-            mr_invoceno: {
-                required: true
-            },
-            mr_invoicedate: {
-                required: true
-            },
-            mr_mrano: {
-                required: true
-            },
-            mr_mradate: {
-                required: true
-            },
-            mr_remark: {
-                required: true
-            }
-        },
-        messages: {
-            mr_invoceno: {
-                required: "Please fillout the invoce number."
-            },
-            mr_invoicedate: {
-                required: "Please fillout the invoce date."
-            },
-            mr_mrano: {
-                required: "Please fillout the mra number."
-            },
-            mr_mradate: {
-                required: "Please fillout the mra date."
-            },
-            mr_remark: {
-                required: "Please fillout the invoce remark."
-            }
-        },
         errorElement: 'span',
         errorPlacement: function (error, element) {
             error.addClass('invalid-feedback');
@@ -101,23 +86,18 @@ $(function () {
                 }).then((result) => {
                     if (result.isConfirmed) {
                         var year = new Date().getFullYear();
-                        var month =  new Date().getMonth();
+                        var month = new Date().getMonth();
                         var day = new Date().getDate();
                         var date = day + "/" + (parseInt(month) + 1) + "/" + year;
-                        let index = materialrequisition_col.getMRsByPOCode(selectedcode).length
-                        let prcode = billofmaterialobj.prcode;
-                        let mrcode = new GoodsRecevedNoteSerial().genarateMRCode(index,prcode);
-                        var invoicenumber = $("#mr_invoiceno").val();
-                        var invocedate = $("#mr_invoicedate").val();
+                        let index = materialrequisition_col.getMRsByBOMCode(billofmaterialobj.code).length
+                        let bomcode = billofmaterialobj.code;
+                        let mrcode = mrClassesInstence.MaterialRequisitionSerial.genarateMRCode(index, bomcode);
                         var code = mrcode;
-                        var mradate = $("#mr_mradate").val();
-                        var mrano = $("#mr_mrano").val();
                         var enterddate = date;
-                        var remark = $("#mr_remark").val();
-                        var status = "SUBMIT";
-                        var billofMaterial = billofmaterialobj;
+                        var status = "PENDING";
+                        var billOfMaterial = billofmaterialobj;
                         var materialRequisitionMaterials = materialrequisition_col.allNewMRNMaterials();
-                        setNewValues(invoicenumber,invocedate,code,mradate,mrano,enterddate,remark,status,billofMaterial,materialRequisitionMaterials,);
+                        setNewValues(code, enterddate, billOfMaterial, materialRequisitionMaterials, undefined, status);
                         submit();
                     }
                 })
@@ -131,61 +111,75 @@ $(function () {
         }
     });
     //definded functions
-    function refreshtable() {
-        billofmaterial_col.clear();
-        materialrequisition_col.clear();
-        addmoddel = undefined;
-        t22.clear().draw(false);
-        t23.clear().draw(false);
-        $.ajax({
-            url: "http://localhost:8080/api/billofmaterialctrl/getbillofmaterials",
-            dataType: "JSON",
-            headers: {
-                "Authorization": jwt
-            },
-            success: function (data) {
-                $.each(data.content, function (i, item) {
-                    if (item.status == "PRINTED") {
-                        $.each(item.bommaterials, function (i, item) {
-                            billofmaterial_col.addbommaterialstoArray(item.id, item.code, item.material, item.unitrate, item.quantity);
-                        })
-                        billofmaterial_col.addPurchaseRequisitiontoArray(item.id, item.prcode, item.pocode, item.supplierid, item.status, item.remark, item.totalAmount, item.bommaterials, item.printeddate);
-                    }
-                });
-                $.ajax({
-                    url: "http://localhost:8080/api/materialrequisitionctrl/getmaterialrequisitions",
-                    dataType: "JSON",
-                    headers: {
-                "Authorization": jwt
-            },
-            success: function (data) {
-                        $.each(data.content, function (i, item) {
-                            $.each(item.materialRequisitionMaterials, function (i, item) {
-                                materialrequisition_col.addMRMaterialstoArray(item.id, item.code, item.ordercode, item.materialRequisition, item.prmaterial, item.arrivedCount);
-                            });
-                            materialrequisition_col.addMRtoArray(item.id, item.invoicenumber, item.invocedate, item.code, item.mradate, item.mrano, item.enterddate, item.remark, item.status, item.billofMaterial, item.materialRequisitionMaterials, item.printeddate);
-                        });
-                        setValues(selectedcode);
-                        fadepageloder();
-                    },
-                    error:function(xhr, status, error){
-                        fadepageloder();
-                    }
-                })
-
-                fadepageloder();
-            },
-            error:function(xhr, status, error){
-                fadepageloder();
-            }
-        })
-
+    function getJwtPayload() {
+        var parts = jwt.split('.');
+        var encodedPayload = parts[1];
+        var decodedPayload = atob(encodedPayload.replace(/-/g, '+').replace(/_/g, '/'));
+        var payload = JSON.parse(decodedPayload);
+        return payload;
     }
-    function refreshmrmtable(){
+    function refreshtable() {
+        if (jwtPayload.roleid.accIconList.find(accicon => accicon.status == "ACTIVE" && accicon.code == "AI00201") != undefined || jwtPayload.businessRole == "ADMIN") {
+            billofmaterial_col.clear();
+            materialrequisition_col.clear();
+            addmoddel = undefined;
+            t22.clear().draw(false);
+            t23.clear().draw(false);
+            $.ajax({
+                url: "http://localhost:8080/api/billofmaterialctrl/getbillofmaterials",
+                dataType: "JSON",
+                headers: {
+                    "Authorization": jwt
+                },
+                success: function (data) {
+                    $.each(data.content, function (i, item) {
+                        if (item.customerOrder.status == "ACCEPTED" && item.bomMaterials.length != 0) {
+                            $.each(item.bomMaterials, function (i, item) {
+                                billofmaterial_col.addbommaterialtoArray(item.id, item.code, item.material, item.materialCost, item.quantity);
+                            })
+                            billofmaterial_col.addBillOfMaterialtoArray(item.id, item.code, item.customerOrder, item.bomMaterials, item.totalcost, item.status);
+
+                        }
+                    });
+                    $.ajax({
+                        url: "http://localhost:8080/api/materialrequisitionctrl/getmaterialrequisitions",
+                        dataType: "JSON",
+                        headers: {
+                            "Authorization": jwt
+                        },
+                        success: function (data) {
+                            $.each(data.content, function (i, item) {
+                                $.each(item.materialRequisitionMaterials, function (i, item) {
+                                    materialrequisition_col.addMRMaterialstoArray(item.id, item.code, item.ordercode, item.materialRequisition, item.bommaterial, item.requestedCount);
+                                });
+                                materialrequisition_col.addMRtoArray(item.id, item.code, item.enterddate, item.billOfMaterial, item.materialRequisitionMaterials, item.printeddate, item.status);
+                            });
+                            setValues(selectedcode);
+                            fadepageloder();
+                        },
+                        error: function (xhr, status, error) {
+                            fadepageloder();
+                        }
+                    })
+                    fadepageloder();
+                },
+                error: function (xhr, status, error) {
+                    fadepageloder();
+                }
+            })
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Warning!',
+                text: 'You don\'t have permission to perform this action.Please contact the Administrator(a.c:AI00201)',
+            });
+        }
+    }
+    function refreshmrmtable() {
         t24.clear().draw(false);
         let mrmlist = materialrequisition_col.allNewMRNMaterials();
-        $.each(mrmlist,function(i,item){
-            t24.row.add([item.code,item.ordercode,item.arrivedCount,item.prmaterial.material.uomid.scode]).draw(false);
+        $.each(mrmlist, function (i, item) {
+            t24.row.add([item.code, item.ordercode, item.requestedCount, item.bommaterial.material.uomid.scode]).draw(false);
         })
     }
     //definded functions
@@ -193,7 +187,6 @@ $(function () {
         showpageloder();
         var url;
         var method;
-
         url = "http://localhost:8080/api/materialrequisitionctrl/savematerialrequisition";
         method = "POST";
         $.ajax({
@@ -206,6 +199,7 @@ $(function () {
             },
             success: function (data) {
                 refreshtable();
+
             }
         })
     }
@@ -215,20 +209,21 @@ $(function () {
     function enablefillin(fillinid) {
         $(fillinid).prop("disabled", false)
     }
-    function setPOMValues(ordercode) {
+    function setBOMMValues(ordercode) {
         if (ordercode) {
             t23.clear().draw(false);
             materialRequisitionMaterialsobjarr = [];
             materialRequisitionMaterialsobjarr = materialrequisition_col.allMRsByOrderCode(ordercode).MRMs;
             setOutstanding(ordercode);
-            if(addmoddel=="add"){
+            if (addmoddel == "add") {
                 $("#mr_orderno").val(selectedpomcode);
             }
             if (materialRequisitionMaterialsobjarr.length != 0) {
+                console.log(materialRequisitionMaterialsobjarr)
                 $.each(materialRequisitionMaterialsobjarr, function (i, item) {
                     if (item.id != undefined)
-                        t23.row.add([item.materialRequisition.code, item.code, item.arrivedCount, item.prmaterial.material.uomid.scode, item.materialRequisition.enterddate,
-                        item.materialRequisition.invoicenumber, item.materialRequisition.invocedate, item.materialRequisition.mrano, item.materialRequisition.mradate]).draw(false);
+                        t23.row.add([item.materialRequisition.code, item.code, item.requestedCount, item.bommaterial.material.uomid.scode, item.materialRequisition.enterddate
+                        ]).draw(false);
                 })
             }
         } else {
@@ -236,36 +231,35 @@ $(function () {
             materialRequisitionMaterialsobjarr = [];
             $("#mr_outstanding").val(undefined);
             $("#mr_orderno").val(undefined);
-            $("#mr_arrivedcount").val(undefined)
+            $("#mr_requestedcount").val(undefined)
         }
     }
-    function setOutstanding(ordercode){
-        if(ordercode){
-            var totarrived = materialrequisition_col.allMRsByOrderCode(ordercode).totarrived;
-            prmobj = billofmaterial_col.getPRMsByOrderCode(ordercode);
-            outstangingcount = prmobj.quantity - totarrived;
+    function setOutstanding(ordercode) {
+        if (ordercode) {
+            var totrequested = materialrequisition_col.allMRsByOrderCode(ordercode).totrequested;
+            bommobj = billofmaterial_col.getBOMMaterialbycode(ordercode, billofmaterialobj.code);
+            outstangingcount = bommobj.quantity - totrequested;
             $("#mr_outstanding").val(outstangingcount);
-        }else{
+        } else {
             outstangingcount = 0;
             $("#mr_outstanding").val(undefined);
         }
     }
-
-    function setGRMValues() {
+    function setMRMValues() {
         setOutstanding(selectedpomcode);
         var index = materialrequisition_col.getNewMRNMaterialsByOrderCode(selectedpomcode).length;
-        var mrmcode = mrClassesInstence.GoodsRecevedNoteSerial.genarateMRMCode(index,selectedpomcode);
-        var arrivedCount = $("#mr_arrivedcount").val();
-        var res = materialrequisition_col.addNewMRMaterialstoArray(undefined,mrmcode,selectedpomcode,materialrequisitionobj,prmobj,arrivedCount,outstangingcount);
-        
-        if(res){
+        var mrmcode = mrClassesInstence.MaterialRequisitionSerial.genarateMRMCode(index, selectedpomcode);
+        var requestedCount = $("#mr_requestedcount").val();
+        var res = materialrequisition_col.addNewMRMaterialstoArray(undefined, mrmcode, selectedpomcode, materialrequisitionobj, bommobj, requestedCount, outstangingcount);
+
+        if (res) {
             Swal.fire(
                 'Added!',
                 'The new record has been added.',
                 'success'
             )
             refreshmrmtable();
-        }else{
+        } else {
             Swal.fire({
                 icon: 'error',
                 title: 'Oops...',
@@ -274,36 +268,39 @@ $(function () {
         }
 
     }
-
     function setValues(code) {
         formctrl();
         addmoddel = undefined;
         if (code) {
-            billofmaterialobj = billofmaterial_col.getPurchaseOrder(code);
-            if (billofmaterialobj) {
-                bommaterialsobjarr = billofmaterialobj.bommaterials;
-                $("#billofmaterial_code").val(billofmaterialobj.prcode);
-                $("#purchaseorder_code").val(billofmaterialobj.pocode);
-                $("#mr_lastmr").val(materialrequisition_col.getlastMRByPOCode(code));
-                if (billofmaterialobj.supplierid) {
-                    cli_obj = billofmaterialobj.supplierid;
-                    $("#billofmaterial_supplierid").val(billofmaterialobj.supplierid.code + " - " + billofmaterialobj.supplierid.firstname + " " + billofmaterialobj.supplierid.lastname);
+            billofmaterialobj = billofmaterial_col.getBillOfMaterialByCOcode(code);
+            if (billofmaterialobj != undefined) {
+                bomMaterialsobjarr = billofmaterialobj.bomMaterials;
+                $("#billofmaterial_code").val(billofmaterialobj.code);
+                $("#mr_lastmr").val(materialrequisition_col.getlastMRByCOCode(code));
+                if (billofmaterialobj.customerOrder.customerid) {
+                    cli_obj = billofmaterialobj.customerOrder.customerid;
+                    $("#billofmaterial_customerid").val(billofmaterialobj.customerOrder.customerid.code + " - " + billofmaterialobj.customerOrder.customerid.firstname + " " + billofmaterialobj.customerOrder.customerid.lastname);
                 }
-                if (billofmaterialobj.bommaterials) {
+                if (billofmaterialobj.bomMaterials) {
                     t22.clear().draw(false);
-                    $.each(billofmaterialobj.bommaterials, function (i, item) {
+                    $.each(billofmaterialobj.bomMaterials, function (i, item) {
                         t22.row.add([item.code, item.material.description, item.quantity, item.material.uomid.scode]).draw(false);
 
                     })
                 }
             } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Please select a valid Customer Order',
+                });
                 setValues();
             }
 
         } else {
             t22.clear().draw(false);
             t24.clear().draw(false);
-            prmobj = null;
+            bommobj = null;
             materialrequisitionobj = null;
             materialRequisitionMaterialsobjarr = [];
             outstangingcount = 0
@@ -311,88 +308,72 @@ $(function () {
             selectedcode = undefined;
             selectedpomcode = undefined;
             billofmaterialobj = null;
-            billofmaterial_col.clearprm();
-            materialrequisition_col.clearmrm();
             billofmaterial_col.clear();
             materialrequisition_col.clear();
-            bommaterialsobjarr = [];
+            bomMaterialsobjarr = [];
             $("#billofmaterial_code").val(undefined);
-            $("#billofmaterial_supplierid").val(undefined);
+            $("#billofmaterial_customerid").val(undefined);
             $("#mr_lastmr").val(undefined);
-            $("#billofmaterial_supplierid").val(undefined);
-            $("#mr_arrivedcount").val(undefined)
+            $("#mr_requestedcount").val(undefined)
             $("#mr_code").val(undefined);
-            $("#mr_invoiceno").val(undefined);
-            $("#mr_invoicedate").val(undefined);
-            $("#mr_mrano").val(undefined);
-            $("#mr_mradate").val(undefined);
             $("#mr_remark").val(undefined);
-            
+
         }
     }
-    function setNewValues(invoicenumber,invocedate,code,mradate,mrano,enterddate,remark,status,billofMaterial,materialRequisitionMaterials,printeddate) {
-        materialrequisitionobj = new materialrequisition();
-        if(invoicenumber)materialrequisitionobj.invoicenumber = invoicenumber;
-        if(invocedate)materialrequisitionobj.invocedate = invocedate;
-        if(code)materialrequisitionobj.code = code;
-        if(mradate)materialrequisitionobj.mradate = mradate;
-        if(mrano)materialrequisitionobj.mrano = mrano;
-        if(enterddate)materialrequisitionobj.enterddate = enterddate;
-        if(remark)materialrequisitionobj.remark = remark;
-        if(status)materialrequisitionobj.status = status;
-        if(billofMaterial)materialrequisitionobj.billofMaterial = billofMaterial;
-        if(materialRequisitionMaterials)materialrequisitionobj.materialRequisitionMaterials = materialRequisitionMaterials;
-        
+    function setNewValues(code, enterddate, billOfMaterial, materialRequisitionMaterials, printeddate, status) {
+        materialrequisitionobj = mrClassesInstence.materialrequisition;
+        if (code) materialrequisitionobj.code = code;
+        if (enterddate) materialrequisitionobj.enterddate = enterddate;
+        if (billOfMaterial) materialrequisitionobj.billOfMaterial = billOfMaterial;
+        if (status) materialrequisitionobj.status = status;
+        if (materialRequisitionMaterials) materialrequisitionobj.materialRequisitionMaterials = materialRequisitionMaterials;
     }
     //end of functions
     //triggers
     $('#table22 tbody').on('click', 'tr', function () {
-        if (bommaterialsobjarr.length != 0 &&  addmoddel == "add") {
+        if (bomMaterialsobjarr.length != 0 && addmoddel == "add") {
             if ($(this).hasClass('selected')) {
                 $(this).removeClass('selected');
-                setPOMValues();
+                setBOMMValues();
                 selectedpomcode = undefined;
             } else {
                 t22.$('tr.selected').removeClass('selected');
                 $(this).addClass('selected');
                 selectedpomcode = $(this).children("td:nth-child(1)").text();
-                setPOMValues($(this).children("td:nth-child(1)").text());
+                setBOMMValues($(this).children("td:nth-child(1)").text());
             }
         }
 
     });
-    
+
     $(document).off("click", "#btnprmpo");
     $(document).off("click", "#addMR");
     $(document).off("click", "#addPOM");
 
     $(document).on("click", "#btnprmpo", function () {
-        selectedcode = $("#purchaseorder_code").val();
+        selectedcode = $("#customerorder_code").val();
         refreshtable();
     })
     $(document).on("click", "#addMR", function () {
         if (billofmaterialobj) {
             addmoddel = "add";
-            let index = materialrequisition_col.getMRsByPOCode(selectedcode).length
-            let prcode = billofmaterialobj.prcode;
-            let mrcode = mrClassesInstence.GoodsRecevedNoteSerial.genarateMRCode(index,prcode);
+            let index = materialrequisition_col.getMRsByBOMCode(billofmaterialobj.code).length
+            let code = billofmaterialobj.code;
+            let mrcode = mrClassesInstence.MaterialRequisitionSerial.genarateMRCode(index, code);
             $("#mr_code").val(mrcode);
-            enablefillin("#mr_arrivedcount");
-            enablefillin("#mr_invoiceno");
-            enablefillin("#mr_invoicedate");
-            enablefillin("#mr_mrano");
-            enablefillin("#mr_mradate");
-            enablefillin("#mr_remark");
+            enablefillin("#mr_requestedcount");
         }
 
     })
     $(document).on("click", "#addPOM", function () {
-        setGRMValues()
+        setMRMValues()
     })
-    
+
     //end of triggers
     $("#podiv").hide();
+    jwtPayload = getJwtPayload();
     formctrl();
     refreshtable();
+
 });
 

@@ -6,30 +6,31 @@ $(function () {
     let productpriceobj = productClassesInstence.productprice;
     var addmoddel = undefined;
     var selectedcode = undefined;
+    var jwtPayload = undefined;
     var t15 = $("#table15").DataTable({
-        "order": [[ 0, "desc" ]],
+        "order": [[0, "desc"]],
         dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>'
     });
     var t14 = $("#table14").DataTable({
-        "order": [[ 0, "desc" ]],
+        "order": [[0, "desc"]],
         pageLength: 5,
         dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body popup"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
         columns: [
             null,
-            { 
-              render: function(data, type, row, meta){
-                 if(type === 'display'){
-                    var symbol = "Rs. ";   
-                    var num = $.fn.dataTable.render.number(',', '.', 2, symbol).display(data);              
-                    return '<div style="text-align: right;">' + num + '</div>';
-                 } else {
-                    return data;
-                 }
-              }
+            {
+                render: function (data, type, row, meta) {
+                    if (type === 'display') {
+                        var symbol = "Rs. ";
+                        var num = $.fn.dataTable.render.number(',', '.', 2, symbol).display(data);
+                        return '<div style="text-align: right;">' + num + '</div>';
+                    } else {
+                        return data;
+                    }
+                }
             },
             null,
             null
-          ]
+        ]
     });
     //end of variables
     //functions
@@ -64,62 +65,62 @@ $(function () {
         unhighlight: function (element, errorClass, validClass) {
             $(element).removeClass('is-invalid');
         }, submitHandler: function () {
-                if (addmoddel) {
-                    Swal.fire({
-                        title: 'Are you sure?',
-                        text: "You won't be able to revert this!",
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#3085d6',
-                        cancelButtonColor: '#d33',
-                        confirmButtonText: 'Yes, save it!'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            switch (addmoddel) {
-                                case "add":
-                                    var code = $("#product_code").val();
-                                    var name = $("#product_name").val();
-                                    var description = $("#product_description").val();
-                                    var status = "ACTIVE";
-                                    selectedcode = code;
-                                    setNewValues(code, name, description, status);
-                                    submit();
-                                    
-                                    break;
-                                case "mod":
-                                    var code = undefined;
-                                    var name = $("#product_name").val();
-                                    var description = $("#product_description").val();
-                                    var status = undefined;
-                                    setNewValues(code, name, description, status);
-                                    submit();
-                                    
-                                    break;
-                                case "del":
-                                    var code = undefined;
-                                    var name = undefined;
-                                    var description = undefined;
-                                    var status = "INACTIVE";
-                                    setNewValues(code, name, description, status);
-                                    submit();
-                                    
-                                    break;
-                                default:
-                                    Swal.fire({
-                                        icon: 'error',
-                                        title: 'Oops...',
-                                        text: 'In order to save, please complete the operation first.',
-                                    });
-                            }
+            if (addmoddel) {
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, save it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        switch (addmoddel) {
+                            case "add":
+                                var code = $("#product_code").val();
+                                var name = $("#product_name").val();
+                                var description = $("#product_description").val();
+                                var status = "ACTIVE";
+                                selectedcode = code;
+                                setNewValues(code, name, description, status);
+                                submit();
+
+                                break;
+                            case "mod":
+                                var code = undefined;
+                                var name = $("#product_name").val();
+                                var description = $("#product_description").val();
+                                var status = undefined;
+                                setNewValues(code, name, description, status);
+                                submit();
+
+                                break;
+                            case "del":
+                                var code = undefined;
+                                var name = undefined;
+                                var description = undefined;
+                                var status = "INACTIVE";
+                                setNewValues(code, name, description, status);
+                                submit();
+
+                                break;
+                            default:
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Oops...',
+                                    text: 'In order to save, please complete the operation first.',
+                                });
                         }
-                    })
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: 'In order to save, please complete the operation first.',
-                    });
-                }
+                    }
+                })
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'In order to save, please complete the operation first.',
+                });
+            }
         }
     });
     $('#quickForm8').validate({
@@ -127,7 +128,7 @@ $(function () {
             productpriceamt: {
                 required: true
             }
-          
+
         },
         messages: {
             productpriceamt: {
@@ -145,46 +146,53 @@ $(function () {
         unhighlight: function (element, errorClass, validClass) {
             $(element).removeClass('is-invalid');
         }, submitHandler: function () {
-                if (addmoddel) {
-                    Swal.fire({
-                        title: 'Are you sure?',
-                        text: "You won't be able to revert this!",
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#3085d6',
-                        cancelButtonColor: '#d33',
-                        confirmButtonText: 'Yes, save it!'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            switch (addmoddel) {
-                                case "addprice":
-                                    var code = $("#product_price_code").val();
-                                    var price = $("#product_price_amt").val();
-                                    var effectiveDate = $("#product_price_eff").val();
-                                    var status = "ACTIVE";
-                                    setNewPriceValues(code,price,effectiveDate,status);
-                                    submit();
-                                    
-                                    break;
-                                default:
-                                    Swal.fire({
-                                        icon: 'error',
-                                        title: 'Oops...',
-                                        text: 'In order to save, please complete the operation first.',
-                                    });
-                            }
+            if (addmoddel) {
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, save it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        switch (addmoddel) {
+                            case "addprice":
+                                var code = $("#product_price_code").val();
+                                var price = $("#product_price_amt").val();
+                                var effectiveDate = $("#product_price_eff").val();
+                                var status = "ACTIVE";
+                                setNewPriceValues(code, price, effectiveDate, status);
+                                submit();
+
+                                break;
+                            default:
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Oops...',
+                                    text: 'In order to save, please complete the operation first.',
+                                });
                         }
-                    })
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: 'In order to save, please complete the operation first.',
-                    });
-                }
+                    }
+                })
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'In order to save, please complete the operation first.',
+                });
+            }
         }
     });
     //definded functions
+    function getJwtPayload() {
+        var parts = jwt.split('.');
+        var encodedPayload = parts[1];
+        var decodedPayload = atob(encodedPayload.replace(/-/g, '+').replace(/_/g, '/'));
+        var payload = JSON.parse(decodedPayload);
+        return payload;
+    }
     function refreshtable() {
         product_col.clear();
         addmoddel = undefined;
@@ -197,16 +205,16 @@ $(function () {
             },
             success: function (data) {
                 $.each(data.content, function (i, item) {
-                    product_col.addProducttoArray(item.id,item.code,item.desc,item.name,item.status,item.pricelist);
-                    if(item.status == "ACTIVE")t15.row.add([item.code, item.name]).draw(false);
+                    product_col.addProducttoArray(item.id, item.code, item.desc, item.name, item.status, item.pricelist);
+                    if (item.status == "ACTIVE") t15.row.add([item.code, item.name]).draw(false);
                 });
                 setValues();
                 fadepageloder();
                 var $tableRow = $("#table15 tr td:contains('" + selectedcode + "')").closest("tr");
                 $tableRow.trigger("click");
-                
+
             },
-            error:function(xhr, status, error){
+            error: function (xhr, status, error) {
                 fadepageloder();
             }
         })
@@ -272,7 +280,7 @@ $(function () {
                         break;
                 }
                 refreshtable();
-            },error:function(xhr,status,error){
+            }, error: function (xhr, status, error) {
                 Swal.fire(
                     'Error!',
                     'Please contact the Administator',
@@ -297,8 +305,8 @@ $(function () {
             $("#product_name").val(productobj.name);
             $("#product_description").val(productobj.desc);
             $("#product_status").val(productobj.status);
-            $.each(productobj.pricelist,function(i,item){
-                t14.row.add([item.code,item.price,item.effectiveDate,item.status]).draw(false);
+            $.each(productobj.pricelist, function (i, item) {
+                t14.row.add([item.code, item.price, item.effectiveDate, item.status]).draw(false);
             })
             setProductpricevalues();
         } else {
@@ -319,7 +327,7 @@ $(function () {
         $("#product_price_amt").val(undefined);
         $("#product_price_eff").val(undefined);
         $("#product_price_status").val(undefined);
-        
+
     }
     function setNewValues(code, name, description, status) {
         if (productobj) {
@@ -332,20 +340,20 @@ $(function () {
             setNewValues(code, name, description, status);
         }
     }
-    function setNewPriceValues(code,price,effectiveDate,status){
+    function setNewPriceValues(code, price, effectiveDate, status) {
         productpriceobj = productClassesInstence.productprice;
-        if(productobj.pricelist.length!=0){
+        if (productobj.pricelist.length != 0) {
             productobj.pricelist = productobj.pricelist.map(priceobj => {
-                if(priceobj.status === "ACTIVE"){
-                    return{...priceobj,status:"INACTIVE"}
+                if (priceobj.status === "ACTIVE") {
+                    return { ...priceobj, status: "INACTIVE" }
                 }
                 return priceobj;
             })
         }
-        if(code)productpriceobj.code = code; 
-        if(price)productpriceobj.price = price; 
-        if(effectiveDate)productpriceobj.effectiveDate = effectiveDate; 
-        if(status)productpriceobj.status = status; 
+        if (code) productpriceobj.code = code;
+        if (price) productpriceobj.price = price;
+        if (effectiveDate) productpriceobj.effectiveDate = effectiveDate;
+        if (status) productpriceobj.status = status;
         productobj.pricelist.push(productpriceobj);
 
     }
@@ -370,7 +378,7 @@ $(function () {
             setValues($(this).children("td:nth-child(1)").text());
         }
     });
-    
+
     $(document).off("click", "#addProducts");
     $(document).off("click", "#addProductPrice");
     $(document).off("click", "#setProducts");
@@ -396,10 +404,10 @@ $(function () {
         if (selectedcode) {
             addmoddel = "addprice";
             setProductpricevalues();
-            let productcode = productClassesInstence.ProductSerial.genarateProductPriceCode(productobj.pricelist.length,productobj.code);
+            let productcode = productClassesInstence.ProductSerial.genarateProductPriceCode(productobj.pricelist.length, productobj.code);
             enablefillin("#product_price_amt");
             var year = new Date().getFullYear();
-            var month =  new Date().getMonth();
+            var month = new Date().getMonth();
             var day = new Date().getDate();
             var date = day + "/" + (parseInt(month) + 1) + "/" + year;
             $("#product_price_eff").val(date);
@@ -412,7 +420,7 @@ $(function () {
                 text: 'Please select a product!',
             })
         }
-        
+
     });
     $(document).on("click", "#setProducts", function () {
         if (selectedcode) {
@@ -464,8 +472,8 @@ $(function () {
     });
     $(document).on('focusout', '#product_price_amt', function () {
         var value = $('#product_price_amt').val();
-        if(value != ""){
-            if (value.indexOf('.')== -1) {
+        if (value != "") {
+            if (value.indexOf('.') == -1) {
                 value = value + ".00";
             }
             $('#product_price_amt').val(value);
@@ -475,10 +483,12 @@ $(function () {
         selectedcode = "";
         refreshtable();
     });
-    
+
 
     //end of triggers
+    jwtPayload = getJwtPayload();
     formctrl();
     refreshtable();
+
 });
 

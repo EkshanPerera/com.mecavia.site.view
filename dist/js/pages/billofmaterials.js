@@ -19,6 +19,7 @@ $(function () {
 
     var addmoddel = undefined;
     var selectedcode = undefined;
+    var jwtPayload = undefined;
 
     var t36 = $("#table36").DataTable({
         pageLength: 5,
@@ -41,9 +42,9 @@ $(function () {
                     } else {
                         return data;
                     }
-                    
+
                 },
-                
+
             },
             {
                 render: function (data, type, row, meta) {
@@ -53,9 +54,9 @@ $(function () {
                     } else {
                         return data;
                     }
-                    
+
                 },
-                
+
             },
             null
         ]
@@ -83,6 +84,13 @@ $(function () {
     // });
     // Get the input element
 
+    function getJwtPayload() {
+        var parts = jwt.split('.');
+        var encodedPayload = parts[1];
+        var decodedPayload = atob(encodedPayload.replace(/-/g, '+').replace(/_/g, '/'));
+        var payload = JSON.parse(decodedPayload);
+        return payload;
+    }
     $('#quickForm8').validate({
         errorElement: 'span',
         errorPlacement: function (error, element) {
@@ -113,7 +121,7 @@ $(function () {
                             })
                             var status = "ACTIVE";
                             var code = genaratecode();
-                            setNewValues(code,customerorderobj,bomMaterialobjArry,totalcost,status);
+                            setNewValues(code, customerorderobj, bomMaterialobjArry, totalcost, status);
                             submit();
                             Swal.fire(
                                 'Submitted!',
@@ -122,7 +130,7 @@ $(function () {
                             )
                         }
                     })
-                } else if (customerorderobj.status == "ACCEPTED" || customerorderobj.status == "INITIATED" || customerorderobj.status == "SUBMIT" ) {
+                } else if (customerorderobj.status == "ACCEPTED" || customerorderobj.status == "INITIATED" || customerorderobj.status == "SUBMIT") {
                     Swal.fire({
                         icon: 'warning',
                         title: 'Warning!',
@@ -227,22 +235,22 @@ $(function () {
                 refreshmatarialtable();
                 fadepageloder();
             },
-            error:function(xhr, status, error){
+            error: function (xhr, status, error) {
                 fadepageloder();
             }
         })
     }
-    function commaSeparateNumber(val){
-        while (/(\d+)(\d{3})/.test(val.toString())){
-          val = val.toString().replace(/(\d+)(\d{3})/, '$1'+','+'$2');
+    function commaSeparateNumber(val) {
+        while (/(\d+)(\d{3})/.test(val.toString())) {
+            val = val.toString().replace(/(\d+)(\d{3})/, '$1' + ',' + '$2');
         }
         if (val != "") {
             if (val.indexOf('.') == -1) {
                 val = val + ".00";
-            }else{
+            } else {
                 val = val;
             }
-        }else{
+        } else {
             val = val;
         }
         return val;
@@ -271,7 +279,6 @@ $(function () {
     }
     function refreshprmatarialtable() {
         bomMaterialobjArry = billofmaterial_col.allBillOfMaterialMaterials();
-        console.log(bomMaterialobjArry);
         t37.clear().draw(false);
         var total = 0;
         $.each(bomMaterialobjArry, function (i, item) {
@@ -354,13 +361,13 @@ $(function () {
 
         }
     }
-    function setNewValues(code,customerOrder,bomMaterials,totalcost,status) {
+    function setNewValues(code, customerOrder, bomMaterials, totalcost, status) {
         billofmaterialobj = billofmaterialClassesInstence.billofmaterial;
-        if(code)billofmaterialobj.code = code;
-        if(customerOrder)billofmaterialobj.customerOrder = customerOrder;
-        if(bomMaterials)billofmaterialobj.bomMaterials = bomMaterials;
-        if(totalcost)billofmaterialobj.totalcost = totalcost;
-        if(status)billofmaterialobj.status = status;
+        if (code) billofmaterialobj.code = code;
+        if (customerOrder) billofmaterialobj.customerOrder = customerOrder;
+        if (bomMaterials) billofmaterialobj.bomMaterials = bomMaterials;
+        if (totalcost) billofmaterialobj.totalcost = totalcost;
+        if (status) billofmaterialobj.status = status;
     }
     function setMatarialalues(code) {
         $("#modal-matariallist").modal("hide");
@@ -451,7 +458,9 @@ $(function () {
     });
 
     //end of triggers
+    jwtPayload = getJwtPayload();
     formctrl();
     refreshtable();
+
 });
 

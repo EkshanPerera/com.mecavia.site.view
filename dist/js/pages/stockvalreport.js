@@ -4,6 +4,7 @@ $(function () {
     let GeneralStoreDtos_col = GeneralStoreDtosInstence.GeneralStoreDto_service;
     let GeneralStoreDtosarr = [];
     var total = 0;
+    var jwtPayload = undefined;
     var t18 = $("#table18").DataTable({
         "order": [[0, "desc"]],
         dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
@@ -11,7 +12,7 @@ $(function () {
         columns: [
             null,
             null,
-            
+
             {
                 render: function (data, type, row, meta) {
                     if (type === 'display') {
@@ -20,9 +21,9 @@ $(function () {
                     } else {
                         return data;
                     }
-                    
+
                 },
-                
+
             },
             null,
             {
@@ -34,9 +35,9 @@ $(function () {
                     } else {
                         return data;
                     }
-                    
+
                 },
-                
+
             },
             {
                 render: function (data, type, row, meta) {
@@ -47,9 +48,9 @@ $(function () {
                     } else {
                         return data;
                     }
-                    
+
                 },
-                
+
             }
         ]
     });
@@ -79,7 +80,7 @@ $(function () {
         unhighlight: function (element, errorClass, validClass) {
             $(element).removeClass('is-invalid');
         }, submitHandler: function () {
-           
+
             Swal.fire({
                 title: 'Are you sure?',
                 text: "You won't be able to get another original copy!",
@@ -90,7 +91,7 @@ $(function () {
                 confirmButtonText: 'Yes, print it!'
             }).then((result) => {
                 if (result.isConfirmed) {
-                   
+
                     // setNewValues(date);
                     // submit();
                     $("#podiv").show();
@@ -102,35 +103,50 @@ $(function () {
         }
     });
     //definded functions
+    function getJwtPayload() {
+        var parts = jwt.split('.');
+        var encodedPayload = parts[1];
+        var decodedPayload = atob(encodedPayload.replace(/-/g, '+').replace(/_/g, '/'));
+        var payload = JSON.parse(decodedPayload);
+        return payload;
+    }
     function refreshtable() {
-        t18.clear().draw(false);
-        $.ajax({
-            url: "http://localhost:8080/api/generalstorectrl/getgeneralstorelist",
-            dataType: "JSON",
-            headers: {
-                "Authorization": jwt
-            },
-            success: function (data) {
-                $.each(data.content, function (i, item) {
-                    GeneralStoreDtos_col.addGeneralStoreDtostoArray(item.id,item.materialid,item.itemcount,item.status);
-                });
-                setValues();
-                fadepageloder();
-            }
-        })
+        if (jwtPayload.roleid.accIconList.find(accicon => accicon.status == "ACTIVE" && accicon.code == "AI00602") != undefined || jwtPayload.businessRole == "ADMIN") {
+            t18.clear().draw(false);
+            $.ajax({
+                url: "http://localhost:8080/api/generalstorectrl/getgeneralstorelist",
+                dataType: "JSON",
+                headers: {
+                    "Authorization": jwt
+                },
+                success: function (data) {
+                    $.each(data.content, function (i, item) {
+                        GeneralStoreDtos_col.addGeneralStoreDtostoArray(item.id, item.materialid, item.itemcount, item.requestedItemcount, item.releasedItemcount, item.status);
+                    });
+                    setValues();
+                    fadepageloder();
+                }
+            })
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Warning!',
+                text: 'You don\'t have permission to perform this action.Please contact the Administrator(a.c:AI00602)',
+            });
+        }
     }
     //definded functions
-    function commaSeparateNumber(val){
-        while (/(\d+)(\d{3})/.test(val.toString())){
-          val = val.toString().replace(/(\d+)(\d{3})/, '$1'+','+'$2');
+    function commaSeparateNumber(val) {
+        while (/(\d+)(\d{3})/.test(val.toString())) {
+            val = val.toString().replace(/(\d+)(\d{3})/, '$1' + ',' + '$2');
         }
         if (val != "") {
             if (val.indexOf('.') == -1) {
                 val = val + ".00";
-            }else{
+            } else {
                 val = val;
             }
-        }else{
+        } else {
             val = val;
         }
         return val;
@@ -139,15 +155,14 @@ $(function () {
     function setValues() {
         total = 0;
         GeneralStoreDtosarr = GeneralStoreDtos_col.allGeneralStoreDtos();
-        console.log(GeneralStoreDtosarr);
         t18.clear().draw(false);
         var dataset = "";
         $.each(GeneralStoreDtosarr, function (i, item) {
-            if(item.materialid.status == "ACTIVE"){
-            t18.row.add([item.materialid.code, item.materialid.description, item.itemcount, item.materialid.uomid.scode, item.materialid.price, item.itemcount*item.materialid.price]).draw(false);
-            dataset += "<tr><td>" + (i+1) + "</td><td>" + item.materialid.code + "</td><td>" + item.materialid.description + "</td><td> <div style=\"text-align: right;\"> " + commaSeparateNumber(String(item.itemcount)) + "</div></td><td>" +  item.materialid.uomid.scode+ "</td><td><div style=\"text-align: right;\">Rs. " + commaSeparateNumber(String(item.materialid.price)) + "</div></td><td><div style=\"text-align: right;\">Rs. " + commaSeparateNumber(String(item.itemcount * item.materialid.price)) + "</div></td></tr>";
+            if (item.materialid.status == "ACTIVE") {
+                t18.row.add([item.materialid.code, item.materialid.description, item.itemcount, item.materialid.uomid.scode, item.materialid.price, item.itemcount * item.materialid.price]).draw(false);
+                dataset += "<tr><td>" + (i + 1) + "</td><td>" + item.materialid.code + "</td><td>" + item.materialid.description + "</td><td> <div style=\"text-align: right;\"> " + commaSeparateNumber(String(item.itemcount)) + "</div></td><td>" + item.materialid.uomid.scode + "</td><td><div style=\"text-align: right;\">Rs. " + commaSeparateNumber(String(item.materialid.price)) + "</div></td><td><div style=\"text-align: right;\">Rs. " + commaSeparateNumber(String(item.itemcount * item.materialid.price)) + "</div></td></tr>";
             }
-            total+=(item.itemcount * item.materialid.price);
+            total += (item.itemcount * item.materialid.price);
         })
         var year = new Date().getFullYear();
         var month = new Date().getMonth();
@@ -173,6 +188,8 @@ $(function () {
 
     //end of triggers
     $("#podiv").hide();
+    jwtPayload = getJwtPayload();
     refreshtable();
+
 });
 

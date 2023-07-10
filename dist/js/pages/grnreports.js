@@ -4,6 +4,7 @@ $(function () {
     let goodsreceivednote_col = grnClassesInstence.goodsReceivedNote_service;
     let goodsreceivednoteobjarr = [];
     var total = 0;
+    var jwtPayload = undefined;
     var t18 = $("#table18").DataTable({
         "order": [[0, "desc"]],
         dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
@@ -11,7 +12,7 @@ $(function () {
         columns: [
             null,
             null,
-            
+
             {
                 render: function (data, type, row, meta) {
                     if (type === 'display') {
@@ -20,9 +21,9 @@ $(function () {
                     } else {
                         return data;
                     }
-                    
+
                 },
-                
+
             },
             null,
             {
@@ -34,9 +35,9 @@ $(function () {
                     } else {
                         return data;
                     }
-                    
+
                 },
-                
+
             },
             {
                 render: function (data, type, row, meta) {
@@ -47,9 +48,9 @@ $(function () {
                     } else {
                         return data;
                     }
-                    
+
                 },
-                
+
             }
         ]
     });
@@ -79,7 +80,7 @@ $(function () {
         unhighlight: function (element, errorClass, validClass) {
             $(element).removeClass('is-invalid');
         }, submitHandler: function () {
-           
+
             Swal.fire({
                 title: 'Are you sure?',
                 text: "You won't be able to get another original copy!",
@@ -90,7 +91,7 @@ $(function () {
                 confirmButtonText: 'Yes, print it!'
             }).then((result) => {
                 if (result.isConfirmed) {
-                   
+
                     // setNewValues(date);
                     // submit();
                     $("#podiv").show();
@@ -102,36 +103,51 @@ $(function () {
         }
     });
     //definded functions
-    function refreshtable() {
-        t18.clear().draw(false);
-        $.ajax({
-            url: "http://localhost:8080/api/goodsreceivednotectrl/getgoodsreceivednotes",
-            dataType: "JSON",
-            headers: {
-                "Authorization": jwt
-            },
-            success: function (data) {
-                $.each(data.content, function (i, item) {
-                    goodsreceivednote_col.addGRNtoArray(item.id, item.invoicenumber, item.invocedate, item.code, item.mradate, item.mrano, item.enterddate, item.remark, item.status, item.purchaseRequisition, item.goodsReceivedNoteMaterials, item.printeddate);
-                });
-                setValues();
-                fadepageloder();
-            }
-        })
+    function getJwtPayload() {
+        var parts = jwt.split('.');
+        var encodedPayload = parts[1];
+        var decodedPayload = atob(encodedPayload.replace(/-/g, '+').replace(/_/g, '/'));
+        var payload = JSON.parse(decodedPayload);
+        return payload;
     }
- 
+    function refreshtable() {
+        if (jwtPayload.roleid.accIconList.find(accicon => accicon.status == "ACTIVE" && accicon.code == "AI00602") != undefined || jwtPayload.businessRole == "ADMIN") {
+            t18.clear().draw(false);
+            $.ajax({
+                url: "http://localhost:8080/api/goodsreceivednotectrl/getgoodsreceivednotes",
+                dataType: "JSON",
+                headers: {
+                    "Authorization": jwt
+                },
+                success: function (data) {
+                    $.each(data.content, function (i, item) {
+                        goodsreceivednote_col.addGRNtoArray(item.id, item.invoicenumber, item.invocedate, item.code, item.mradate, item.mrano, item.enterddate, item.remark, item.status, item.purchaseRequisition, item.goodsReceivedNoteMaterials, item.printeddate);
+                    });
+                    setValues();
+                    fadepageloder();
+                }
+            })
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Warning!',
+                text: 'You don\'t have permission to perform this action.Please contact the Administrator(a.c:AI00602)',
+            });
+        }
+    }
+
     //definded functions
-    function commaSeparateNumber(val){
-        while (/(\d+)(\d{3})/.test(val.toString())){
-          val = val.toString().replace(/(\d+)(\d{3})/, '$1'+','+'$2');
+    function commaSeparateNumber(val) {
+        while (/(\d+)(\d{3})/.test(val.toString())) {
+            val = val.toString().replace(/(\d+)(\d{3})/, '$1' + ',' + '$2');
         }
         if (val != "") {
             if (val.indexOf('.') == -1) {
                 val = val + ".00";
-            }else{
+            } else {
                 val = val;
             }
-        }else{
+        } else {
             val = val;
         }
         return val;
@@ -139,9 +155,8 @@ $(function () {
     }
     function setValues() {
         total = 0;
-        var pocode  = "PO23A0000202";
+        var pocode = "PO23A0000202";
         goodsreceivednoteobjarr = goodsreceivednote_col.getGRNsByPOCode(pocode);
-        console.log(goodsreceivednoteobjarr);
         $("#rptpocode").text(pocode);
         t18.clear().draw(false);
         var dataset = "";
@@ -150,18 +165,18 @@ $(function () {
             // t18.row.add([item.materialid.code, item.materialid.description, item.itemcount, item.materialid.uomid.scode, item.materialid.price, item.itemcount*item.materialid.price]).draw(false);
             var grnmdataset = "";
             // var totfinishedcoutset = ""; 
-            var arrivedcount = ""; 
+            var arrivedcount = "";
             var bulckcodeset = "";
             var brset;
-            $.each(item.goodsReceivedNoteMaterials,function(i,itemgrnm){
-                if((i+1) < item.goodsReceivedNoteMaterials.length) brset = "<br>";
-                else brset = ""; 
+            $.each(item.goodsReceivedNoteMaterials, function (i, itemgrnm) {
+                if ((i + 1) < item.goodsReceivedNoteMaterials.length) brset = "<br>";
+                else brset = "";
                 bulckcodeset += itemgrnm.ordercode + brset;
                 grnmdataset += itemgrnm.prmaterial.material.code + brset;
                 arrivedcount += commaSeparateNumber(String(itemgrnm.arrivedCount)) + itemgrnm.prmaterial.material.uomid.scode + brset;
                 // totfinishedcoutset += commaSeparateNumber(String(itemprm.totArrivedCount)) + itemprm.material.uomid.scode + brset;
             })
-            dataset += "<tr><td>" + (i+1) + "</td><td>" + item.code + "</td><td>" + item.invoicenumber + "</td><td>" + item.mrano + "</td><td>" + grnmdataset+ "</td><td>" + bulckcodeset + "</td><td><div style=\"text-align: right;\"> " + arrivedcount + "</div></td><td>" + item.enterddate + "</td></td><td>" + item.status + "</td></tr>";
+            dataset += "<tr><td>" + (i + 1) + "</td><td>" + item.code + "</td><td>" + item.invoicenumber + "</td><td>" + item.mrano + "</td><td>" + grnmdataset + "</td><td>" + bulckcodeset + "</td><td><div style=\"text-align: right;\"> " + arrivedcount + "</div></td><td>" + item.enterddate + "</td></td><td>" + item.status + "</td></tr>";
         })
         var year = new Date().getFullYear();
         var month = new Date().getMonth();
@@ -187,6 +202,8 @@ $(function () {
 
     //end of triggers
     $("#podiv").hide();
+    jwtPayload = getJwtPayload();
     refreshtable();
+
 });
 

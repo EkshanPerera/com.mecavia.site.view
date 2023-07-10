@@ -11,6 +11,7 @@ $(function () {
     let cli_col = clientClassesInstence.cli_service;
     let cli_obj = clientClassesInstence.client;
     var selectedcode = undefined;
+    var jwtPayload = undefined;
 
     var t18 = $("#table18").DataTable({
         "order": [[0, "desc"]],
@@ -29,9 +30,9 @@ $(function () {
                     } else {
                         return data;
                     }
-                    
+
                 },
-                
+
             },
             {
                 render: function (data, type, row, meta) {
@@ -41,9 +42,9 @@ $(function () {
                     } else {
                         return data;
                     }
-                    
+
                 },
-                
+
             },
             null
         ]
@@ -106,29 +107,44 @@ $(function () {
             }
         }
     });
-    
+
     //definded functions
+    function getJwtPayload() {
+        var parts = jwt.split('.');
+        var encodedPayload = parts[1];
+        var decodedPayload = atob(encodedPayload.replace(/-/g, '+').replace(/_/g, '/'));
+        var payload = JSON.parse(decodedPayload);
+        return payload;
+    }
     function refreshtable() {
-        purchaserequisition_col.clear();
-        material_col.clear();
-        cli_col.clear();
-        t18.clear().draw(false);
-        $.ajax({
-            url: "http://localhost:8080/api/purchaserequisitionctrl/getpurchaserequisitions",
-            dataType: "JSON",
-            headers: {
-                "Authorization": jwt
-            },
-            success: function (data) {
-                $.each(data.content, function (i, item) {
-                    if (item.status == "PENDING"|| item.status == "SUBMIT") {
-                        purchaserequisition_col.addPurchaseRequisitiontoArray(item.id, item.prcode, item.pocode, item.supplierid, item.status, item.remark, item.totalAmount, item.purchaseRequisitionMaterials,item.quotationno,item.prprinteddate);
-                    }
-                });
-                setValues(selectedcode);
-                fadepageloder();
-            }
-        })
+        if (jwtPayload.roleid.accIconList.find(accicon => accicon.status == "ACTIVE" && accicon.code == "AI00106") != undefined || jwtPayload.businessRole == "ADMIN") {
+            purchaserequisition_col.clear();
+            material_col.clear();
+            cli_col.clear();
+            t18.clear().draw(false);
+            $.ajax({
+                url: "http://localhost:8080/api/purchaserequisitionctrl/getpurchaserequisitions",
+                dataType: "JSON",
+                headers: {
+                    "Authorization": jwt
+                },
+                success: function (data) {
+                    $.each(data.content, function (i, item) {
+                        if (item.status == "PENDING" || item.status == "SUBMIT") {
+                            purchaserequisition_col.addPurchaseRequisitiontoArray(item.id, item.prcode, item.pocode, item.supplierid, item.status, item.remark, item.totalAmount, item.purchaseRequisitionMaterials, item.quotationno, item.prprinteddate);
+                        }
+                    });
+                    setValues(selectedcode);
+                    fadepageloder();
+                }
+            })
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Warning!',
+                text: 'You don\'t have permission to perform this action.Please contact the Administrator(a.c:AI00106)',
+            });
+        }
     }
     //definded functions
     function submit() {
@@ -153,17 +169,17 @@ $(function () {
     function formctrl() {
         $(".formfillin").prop("disabled", true);
     }
-    function commaSeparateNumber(val){
-        while (/(\d+)(\d{3})/.test(val.toString())){
-          val = val.toString().replace(/(\d+)(\d{3})/, '$1'+','+'$2');
+    function commaSeparateNumber(val) {
+        while (/(\d+)(\d{3})/.test(val.toString())) {
+            val = val.toString().replace(/(\d+)(\d{3})/, '$1' + ',' + '$2');
         }
         if (val != "") {
             if (val.indexOf('.') == -1) {
                 val = val + ".00";
-            }else{
+            } else {
                 val = val;
             }
-        }else{
+        } else {
             val = val;
         }
         return val;
@@ -226,16 +242,16 @@ $(function () {
                     var dataset = "";
                     var icont = 1;
                     $.each(purchaserequisitionobj.purchaseRequisitionMaterials, function (i, item) {
-                        icont += 1; 
+                        icont += 1;
                         t18.row.add([i + 1, item.material.description, item.unitrate, item.quantity, item.material.uomid.scode]).draw(false);
                         dataset += "<tr><td>" + (i + 1) + "</td><td>" + item.material.description + "</td><td> <div style=\"text-align: right;\"> Rs. " + commaSeparateNumber(String(item.unitrate)) + "</div></td><td><div style=\"text-align: right;\">" + commaSeparateNumber(String(item.quantity)) + item.material.uomid.scode + "</div></td><td><div style=\"text-align: right;\">Rs. " + commaSeparateNumber(String(item.unitrate * item.quantity)) + "</div></td></tr>";
                     })
                     do {
-                        dataset+="<tr><td>"+ icont + "</td><td> </td><td> </td><td> </td><td> </td></tr>"
-                        icont ++;
-                      }
-                      while (icont < 17);
-              
+                        dataset += "<tr><td>" + icont + "</td><td> </td><td> </td><td> </td><td> </td></tr>"
+                        icont++;
+                    }
+                    while (icont < 17);
+
                     $("#potablebody").html(dataset);
                 }
                 $("#prprinteddate").text(date);
@@ -298,7 +314,9 @@ $(function () {
 
     //end of triggers
     $("#podiv").hide();
+    jwtPayload = getJwtPayload();
     formctrl();
     refreshtable();
+
 });
 

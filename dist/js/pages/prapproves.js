@@ -13,9 +13,10 @@ $(function () {
 
     var addmoddel = undefined;
     var selectedcode = undefined;
+    var jwtPayload = undefined;
 
     var t19 = $("#table19").DataTable({
-        "order": [[ 0, "desc" ]],
+        "order": [[0, "desc"]],
         pageLength: 5,
         dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
         "autoWidth": false,
@@ -31,9 +32,9 @@ $(function () {
                     } else {
                         return data;
                     }
-                    
+
                 },
-                
+
             },
             {
                 render: function (data, type, row, meta) {
@@ -43,9 +44,9 @@ $(function () {
                     } else {
                         return data;
                     }
-                    
+
                 },
-                
+
             },
             null
         ]
@@ -111,7 +112,7 @@ $(function () {
                             )
                         }
                     })
-                }else if(purchaserequisitionobj.status == "APPROVED" || purchaserequisitionobj.status == "PRINTED"){
+                } else if (purchaserequisitionobj.status == "APPROVED" || purchaserequisitionobj.status == "PRINTED") {
                     Swal.fire({
                         icon: 'warning',
                         title: 'Warning!',
@@ -128,31 +129,46 @@ $(function () {
         }
     });
     //definded functions
+    function getJwtPayload() {
+        var parts = jwt.split('.');
+        var encodedPayload = parts[1];
+        var decodedPayload = atob(encodedPayload.replace(/-/g, '+').replace(/_/g, '/'));
+        var payload = JSON.parse(decodedPayload);
+        return payload;
+    }
     function refreshtable() {
-        purchaserequisition_col.clear();
-        material_col.clear();
-        cli_col.clear();
-        addmoddel = undefined;
-        t19.clear().draw(false);
-        $.ajax({
-            url: "http://localhost:8080/api/purchaserequisitionctrl/getpurchaserequisitions",
-            dataType: "JSON",
-            headers: {
-                "Authorization": jwt
-            },
-            success: function (data) {
-                $.each(data.content, function (i, item) {
-                    if (item.status == "SUBMIT" || item.status == "APPROVED" || item.status == "PRINTED") {
-                        purchaserequisition_col.addPurchaseRequisitiontoArray(item.id, item.prcode, item.pocode, item.supplierid, item.status, item.remark, item.totalAmount, item.purchaseRequisitionMaterials,item.quotationno);
-                    }
-                });
-                setValues(selectedcode);
-                fadepageloder();
-            },
-            error:function(xhr, status, error){
-                fadepageloder();
-            }
-        })
+        if (jwtPayload.roleid.accIconList.find(accicon => accicon.status == "ACTIVE" && accicon.code == "AI00105") != undefined || jwtPayload.businessRole == "ADMIN") {
+            purchaserequisition_col.clear();
+            material_col.clear();
+            cli_col.clear();
+            addmoddel = undefined;
+            t19.clear().draw(false);
+            $.ajax({
+                url: "http://localhost:8080/api/purchaserequisitionctrl/getpurchaserequisitions",
+                dataType: "JSON",
+                headers: {
+                    "Authorization": jwt
+                },
+                success: function (data) {
+                    $.each(data.content, function (i, item) {
+                        if (item.status == "SUBMIT" || item.status == "APPROVED" || item.status == "PRINTED") {
+                            purchaserequisition_col.addPurchaseRequisitiontoArray(item.id, item.prcode, item.pocode, item.supplierid, item.status, item.remark, item.totalAmount, item.purchaseRequisitionMaterials, item.quotationno);
+                        }
+                    });
+                    setValues(selectedcode);
+                    fadepageloder();
+                },
+                error: function (xhr, status, error) {
+                    fadepageloder();
+                }
+            })
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Warning!',
+                text: 'You don\'t have permission to perform this action.Please contact the Administrator(a.c:AI00105)',
+            });
+        }
     }
     //definded functions
     function submit() {
@@ -249,17 +265,17 @@ $(function () {
         let purchaseordercode = purchaserequisitionClassesInstence.PurchaseRequisitionSerial.genaratePurchaseOrderCode(purchaseorderlist.length, selectedcode);
         return purchaseordercode;
     }
-    function commaSeparateNumber(val){
-        while (/(\d+)(\d{3})/.test(val.toString())){
-          val = val.toString().replace(/(\d+)(\d{3})/, '$1'+','+'$2');
+    function commaSeparateNumber(val) {
+        while (/(\d+)(\d{3})/.test(val.toString())) {
+            val = val.toString().replace(/(\d+)(\d{3})/, '$1' + ',' + '$2');
         }
         if (val != "") {
             if (val.indexOf('.') == -1) {
                 val = val + ".00";
-            }else{
+            } else {
                 val = val;
             }
-        }else{
+        } else {
             val = val;
         }
         return val;
@@ -280,7 +296,9 @@ $(function () {
     })
 
     //end of triggers
+    jwtPayload = getJwtPayload();
     formctrl();
     refreshtable();
+
 });
 

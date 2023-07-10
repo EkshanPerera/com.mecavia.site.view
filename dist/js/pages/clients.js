@@ -7,6 +7,7 @@ $(function () {
     let cli_contactobj = clientClassesInstence.client_contacts;
     var addmoddel = undefined;
     var selectedcode = undefined;
+    var jwtPayload = undefined;
     var selectedaddrcode = undefined;
     var selectedcontcode = undefined;
     var t9 = $("#table9").DataTable({
@@ -323,7 +324,15 @@ $(function () {
             }
         });
         //definded functions
+        function getJwtPayload() {
+            var parts = jwt.split('.');
+            var encodedPayload = parts[1];
+            var decodedPayload = atob(encodedPayload.replace(/-/g, '+').replace(/_/g, '/'));
+            var payload = JSON.parse(decodedPayload);
+            return payload;
+        }
         function refreshtable() {
+            if (jwtPayload.roleid.accIconList.find(accicon => accicon.status == "ACTIVE" && accicon.code == "AI05029") != undefined || jwtPayload.businessRole == "ADMIN") {
             cli_col.clear()
             addmoddel = undefined;
             selectedaddrcode = undefined;
@@ -333,9 +342,9 @@ $(function () {
                 url: "http://localhost:8080/api/clientctrl/getclients",
                 dataType: "JSON",
                 headers: {
-                "Authorization": jwt
-            },
-            success: function (data) {
+                    "Authorization": jwt
+                },
+                success: function (data) {
                     $.each(data.content, function (i, item) {
                         $.each(item.addresses, function (i, item) {
                             cli_col.addAddresstoArry(item.id, item.code, item.line01, item.line02, item.line03, item.line04, item.isdef, item.status);
@@ -344,24 +353,30 @@ $(function () {
                             cli_col.addContactstoArry(item.id, item.code, item.description, item.tpno, item.isdef, item.status);
                         });
                         cli_col.addClitoArray(item.id, item.code, item.firstname, item.middlename, item.lastname, item.email, item.businessRole, item.status, item.clientGroupid, item.roleid);
-                        t9.row.add([item.code, item.firstname, item.lastname, item.email,item.businessRole]).draw(false);
+                        t9.row.add([item.code, item.firstname, item.lastname, item.email, item.businessRole]).draw(false);
                     });
                     setValues();
                     fadepageloder();
                     var $tableRow = $("#table9 tr td:contains('" + selectedcode + "')").closest("tr");
                     $tableRow.trigger("click");
                 },
-                error:function(xhr, status, error){
+                error: function (xhr, status, error) {
                     fadepageloder();
                 }
             });
-
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Warning!',
+                text: 'You don\'t have permission to perform this action.Please contact the Administrator(a.c:AI05029)',
+            });
+        }
         }
         function submit() {
             showpageloder();
             var url;
             var method;
-    
+
             switch (addmoddel) {
                 case "add":
                     url = "http://localhost:8080/api/clientctrl/saveclient";
@@ -379,16 +394,16 @@ $(function () {
                     method = "POST";
                     break;
             }
-            
+
             $.ajax({
                 url: url,
                 method: method,
                 data: JSON.stringify(cli_obj),
                 contentType: 'application/json',
                 headers: {
-                "Authorization": jwt
-            },
-            success: function (data) {
+                    "Authorization": jwt
+                },
+                success: function (data) {
                     refreshtable();
 
                 }
@@ -588,173 +603,244 @@ $(function () {
         $(document).off("click", "#removeClientContbtn");
 
         $(document).on("click", "#addClientbtn", function () {
-            selectedcode = "";
-            setValues();
-            addmoddel = "add";
-            let clilist = cli_col.allClients()
-            let clicode = clientClassesInstence.CliSerial.genarateClientCode(clilist.length);
-            $("#client_code").val(clicode);
-            $("#table9 tbody tr").removeClass('selected');
-            enablefillin("#client_firstname");
-            enablefillin("#client_lastname");
-            enablefillin("#client_email");
-            enablefillin("#client_brole");
-            enablefillin("#client_addresses");
-            enablefillin("#client_contactNumbers");
-
-
-            $("#client_status").val("ACTIVE");
-        });
-        $(document).on("click", "#addClientAddrbtn", function () {
-            if (selectedcode) {
-                let addrcode = clientClassesInstence.CliSerial.genarateClientAddrCode(cli_obj.addresses.length, cli_obj.code);
-                selectedaddrcode = "";
-                setAddressValues();
-                addmoddel = "modaddr";
-                $("#table10 tbody tr").removeClass('selected');
-                enablefillin("#cli_addr_line01");
-                enablefillin("#cli_addr_line02");
-                enablefillin("#cli_addr_line03");
-                enablefillin("#cli_addr_line04");
-                $("#cli_addr_code").val(addrcode);
-                $("#cli_addr_status").val("ACTIVE");
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Please select a client!',
-                })
-            }
-        });
-        $(document).on("click", "#addClientContbtn", function () {
-            if (selectedcode) {
-                let contcode = clientClassesInstence.CliSerial.genarateClientContCode(cli_obj.contactNumbers.length, cli_obj.code);
-                selectedcontcode = "";
-                setContactValues();
-                addmoddel = "modcont";
-                $("#table11 tbody tr").removeClass('selected');
-                enablefillin("#cli_cont_desc");
-                enablefillin("#cli_cont_tpno");
-                $("#cli_cont_code").val(contcode);
-                $("#cli_cont_status").val("ACTIVE");
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Please select a client!',
-                })
-            }
-        });
-        $(document).on("click", "#setClientbtn", function () {
-            if (selectedcode) {
-                setValues(selectedcode);
-                addmoddel = "mod";
+            if (jwtPayload.roleid.accIconList.find(accicon => accicon.status == "ACTIVE" && accicon.code == "AI05024") != undefined || jwtPayload.businessRole == "ADMIN") {
+                selectedcode = "";
+                setValues();
+                addmoddel = "add";
+                let clilist = cli_col.allClients()
+                let clicode = clientClassesInstence.CliSerial.genarateClientCode(clilist.length);
+                $("#client_code").val(clicode);
+                $("#table9 tbody tr").removeClass('selected');
                 enablefillin("#client_firstname");
                 enablefillin("#client_lastname");
                 enablefillin("#client_email");
                 enablefillin("#client_brole");
                 enablefillin("#client_addresses");
                 enablefillin("#client_contactNumbers");
-
+                $("#client_status").val("ACTIVE");
             } else {
                 Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Please select a client!',
-                })
+                    icon: 'warning',
+                    title: 'Warning!',
+                    text: 'You don\'t have permission to perform this action.Please contact the Administrator(a.c:AI05024)',
+                });
             }
         });
-        $(document).on("click", "#setClientAddrbtn", function () {
-            if (selectedaddrcode) {
-                setAddressValues(selectedcode, selectedaddrcode);
-                addmoddel = "modaddr";
-                enablefillin("#cli_addr_line01");
-                enablefillin("#cli_addr_line02");
-                enablefillin("#cli_addr_line03");
-                enablefillin("#cli_addr_line04");
+        $(document).on("click", "#addClientAddrbtn", function () {
+            if (jwtPayload.roleid.accIconList.find(accicon => accicon.status == "ACTIVE" && accicon.code == "AI05028") != undefined || jwtPayload.businessRole == "ADMIN") {
+                if (selectedcode) {
+                    let addrcode = clientClassesInstence.CliSerial.genarateClientAddrCode(cli_obj.addresses.length, cli_obj.code);
+                    selectedaddrcode = "";
+                    setAddressValues();
+                    addmoddel = "modaddr";
+                    $("#table10 tbody tr").removeClass('selected');
+                    enablefillin("#cli_addr_line01");
+                    enablefillin("#cli_addr_line02");
+                    enablefillin("#cli_addr_line03");
+                    enablefillin("#cli_addr_line04");
+                    $("#cli_addr_code").val(addrcode);
+                    $("#cli_addr_status").val("ACTIVE");
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Please select a client!',
+                    })
+                }
             } else {
                 Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Please select an address!',
-                })
+                    icon: 'warning',
+                    title: 'Warning!',
+                    text: 'You don\'t have permission to perform this action.Please contact the Administrator(a.c:AI05028)',
+                });
+            }
+        });
+        $(document).on("click", "#addClientContbtn", function () {
+            if (jwtPayload.roleid.accIconList.find(accicon => accicon.status == "ACTIVE" && accicon.code == "AI05027") != undefined || jwtPayload.businessRole == "ADMIN") {
+                if (selectedcode) {
+                    let contcode = clientClassesInstence.CliSerial.genarateClientContCode(cli_obj.contactNumbers.length, cli_obj.code);
+                    selectedcontcode = "";
+                    setContactValues();
+                    addmoddel = "modcont";
+                    $("#table11 tbody tr").removeClass('selected');
+                    enablefillin("#cli_cont_desc");
+                    enablefillin("#cli_cont_tpno");
+                    $("#cli_cont_code").val(contcode);
+                    $("#cli_cont_status").val("ACTIVE");
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Please select a client!',
+                    })
+                }
+            } else {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Warning!',
+                    text: 'You don\'t have permission to perform this action.Please contact the Administrator(a.c:AI05027)',
+                });
+            }
+        });
+        $(document).on("click", "#setClientbtn", function () {
+            if (jwtPayload.roleid.accIconList.find(accicon => accicon.status == "ACTIVE" && accicon.code == "AI05025") != undefined || jwtPayload.businessRole == "ADMIN") {
+                if (selectedcode) {
+                    setValues(selectedcode);
+                    addmoddel = "mod";
+                    enablefillin("#client_firstname");
+                    enablefillin("#client_lastname");
+                    enablefillin("#client_email");
+                    enablefillin("#client_brole");
+                    enablefillin("#client_addresses");
+                    enablefillin("#client_contactNumbers");
+
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Please select a client!',
+                    })
+                }
+            } else {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Warning!',
+                    text: 'You don\'t have permission to perform this action.Please contact the Administrator(a.c:AI05025)',
+                });
+            }
+
+        });
+        $(document).on("click", "#setClientAddrbtn", function () {
+            if (jwtPayload.roleid.accIconList.find(accicon => accicon.status == "ACTIVE" && accicon.code == "AI05028") != undefined || jwtPayload.businessRole == "ADMIN") {
+                if (selectedaddrcode) {
+                    setAddressValues(selectedcode, selectedaddrcode);
+                    addmoddel = "modaddr";
+                    enablefillin("#cli_addr_line01");
+                    enablefillin("#cli_addr_line02");
+                    enablefillin("#cli_addr_line03");
+                    enablefillin("#cli_addr_line04");
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Please select an address!',
+                    })
+                }
+            } else {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Warning!',
+                    text: 'You don\'t have permission to perform this action.Please contact the Administrator(a.c:AI05028)',
+                });
             }
         });
         $(document).on("click", "#setClientContbtn", function () {
-            if (selectedcontcode) {
-                setContactValues(selectedcode, selectedcontcode);
-                addmoddel = "modcont";
-                enablefillin("#cli_cont_desc");
-                enablefillin("#cli_cont_tpno");
+            if (jwtPayload.roleid.accIconList.find(accicon => accicon.status == "ACTIVE" && accicon.code == "AI05027") != undefined || jwtPayload.businessRole == "ADMIN") {
+                if (selectedcontcode) {
+                    setContactValues(selectedcode, selectedcontcode);
+                    addmoddel = "modcont";
+                    enablefillin("#cli_cont_desc");
+                    enablefillin("#cli_cont_tpno");
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Please select a contact number!',
+                    })
+                }
             } else {
                 Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Please select a contact number!',
-                })
+                    icon: 'warning',
+                    title: 'Warning!',
+                    text: 'You don\'t have permission to perform this action.Please contact the Administrator(a.c:AI05027)',
+                });
             }
         });
         $(document).on("click", "#removeClientbtn", function () {
-            if (selectedcode) {
-                if (cli_obj.status != "INACTIVE") {
-                    setValues(selectedcode);
-                    addmoddel = "del";
-                    $("#client_status").val("INACTIVE");
+            if (jwtPayload.roleid.accIconList.find(accicon => accicon.status == "ACTIVE" && accicon.code == "AI05026") != undefined || jwtPayload.businessRole == "ADMIN") {
+                if (selectedcode) {
+                    if (cli_obj.status != "INACTIVE") {
+                        setValues(selectedcode);
+                        addmoddel = "del";
+                        $("#client_status").val("INACTIVE");
+                    } else {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Warning!',
+                            text: 'The client you are attempting to delete is currently inactive!',
+                        });
+                    }
                 } else {
                     Swal.fire({
-                        icon: 'warning',
-                        title: 'Warning!',
-                        text: 'The client you are attempting to delete is currently inactive!',
-                    });
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Please select a client!',
+                    })
                 }
             } else {
                 Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Please select a client!',
-                })
+                    icon: 'warning',
+                    title: 'Warning!',
+                    text: 'You don\'t have permission to perform this action.Please contact the Administrator(a.c:AI05026)',
+                });
             }
         });
         $(document).on("click", "#removeClientAddrbtn", function () {
-            if (selectedaddrcode) {
-                if (cli_addressobj.status != "INACTIVE") {
-                    setAddressValues(selectedcode, selectedaddrcode);
-                    addmoddel = "modaddr";
-                    $("#cli_addr_status").val("INACTIVE");
+            if (jwtPayload.roleid.accIconList.find(accicon => accicon.status == "ACTIVE" && accicon.code == "AI05028") != undefined || jwtPayload.businessRole == "ADMIN") {
+                if (selectedaddrcode) {
+                    if (cli_addressobj.status != "INACTIVE") {
+                        setAddressValues(selectedcode, selectedaddrcode);
+                        addmoddel = "modaddr";
+                        $("#cli_addr_status").val("INACTIVE");
+                    } else {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Warning!',
+                            text: 'The address you are attempting to delete is currently inactive!',
+                        });
+                    }
                 } else {
                     Swal.fire({
-                        icon: 'warning',
-                        title: 'Warning!',
-                        text: 'The address you are attempting to delete is currently inactive!',
-                    });
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Please select an address!',
+                    })
                 }
             } else {
                 Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Please select an address!',
-                })
+                    icon: 'warning',
+                    title: 'Warning!',
+                    text: 'You don\'t have permission to perform this action.Please contact the Administrator(a.c:AI05028)',
+                });
             }
         });
         $(document).on("click", "#removeClientContbtn", function () {
-            if (selectedcontcode) {
-                if (cli_contactobj.status != "INACTIVE") {
-                    setContactValues(selectedcode, selectedcontcode);
-                    addmoddel = "modaddr";
-                    $("#cli_cont_status").val("INACTIVE");
+            if (jwtPayload.roleid.accIconList.find(accicon => accicon.status == "ACTIVE" && accicon.code == "AI05027") != undefined || jwtPayload.businessRole == "ADMIN") {
+                if (selectedcontcode) {
+                    if (cli_contactobj.status != "INACTIVE") {
+                        setContactValues(selectedcode, selectedcontcode);
+                        addmoddel = "modaddr";
+                        $("#cli_cont_status").val("INACTIVE");
+                    } else {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Warning!',
+                            text: 'The contact number you are attempting to delete is currently inactive!',
+                        });
+                    }
                 } else {
                     Swal.fire({
-                        icon: 'warning',
-                        title: 'Warning!',
-                        text: 'The contact number you are attempting to delete is currently inactive!',
-                    });
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Please select a contact number!',
+                    })
                 }
             } else {
                 Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Please select a contact number!',
-                })
+                    icon: 'warning',
+                    title: 'Warning!',
+                    text: 'You don\'t have permission to perform this action.Please contact the Administrator(a.c:AI05027)',
+                });
             }
         });
         $(document).on('input', '#cli_cont_tpno', function () {
@@ -764,9 +850,10 @@ $(function () {
         });
 
         //end of triggers
-
+        jwtPayload = getJwtPayload();
         formctrl();
         refreshtable();
+
 
     });
 });

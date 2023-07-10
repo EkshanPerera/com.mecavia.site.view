@@ -8,8 +8,9 @@ $(function () {
     let uomobj = uomClassesInstence.uom;
     var addmoddel = undefined;
     var selectedcode = undefined;
+    var jwtPayload = undefined;
     var t12 = $("#table12").DataTable({
-        "order": [[ 0, "desc" ]],
+        "order": [[0, "desc"]],
         dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>'
     });
     var t13 = $("#table13").DataTable({
@@ -80,7 +81,7 @@ $(function () {
                                     else uomid = undefined;
                                     setNewValues(code, materialType, description, uomid, status);
                                     submit();
-                                    
+
                                     break;
                                 case "mod":
                                     var code = undefined;
@@ -92,7 +93,7 @@ $(function () {
                                     else uomid = undefined;
                                     setNewValues(code, materialType, description, uomid, status);
                                     submit();
-                                    
+
                                     break;
                                 case "del":
                                     var code = undefined;
@@ -129,33 +130,48 @@ $(function () {
         }
     });
     //definded functions
+    function getJwtPayload() {
+        var parts = jwt.split('.');
+        var encodedPayload = parts[1];
+        var decodedPayload = atob(encodedPayload.replace(/-/g, '+').replace(/_/g, '/'));
+        var payload = JSON.parse(decodedPayload);
+        return payload;
+    }
     function refreshtable() {
-        material_col.clear();
-        uom_col.clear();
-        addmoddel = undefined;
-        t12.clear().draw(false);
-        $.ajax({
-            url: "http://localhost:8080/api/materialctrl/getmaterials",
-            dataType: "JSON",
-            headers: {
-                "Authorization": jwt
-            },
-            success: function (data) {
-                $.each(data.content, function (i, item) {
-                    material_col.addMaterialtoArray(item.id, item.code, item.description, item.materialType, item.uomid, item.status,item.price);
-                    if(item.status == "ACTIVE") t12.row.add([item.code, item.description]).draw(false);
-                })
-                setValues();
-                fadepageloder();
-                var $tableRow = $("#table12 tr td:contains('" + selectedcode + "')").closest("tr");
-                $tableRow.trigger("click");
-                refreshuomtable();
-                
-            },
-            error:function(xhr, status, error){
-                fadepageloder();
-            }
-        })
+        if (jwtPayload.roleid.accIconList.find(accicon => accicon.status == "ACTIVE" && accicon.code == "AI00509") != undefined || jwtPayload.businessRole == "ADMIN") {
+            material_col.clear();
+            uom_col.clear();
+            addmoddel = undefined;
+            t12.clear().draw(false);
+            $.ajax({
+                url: "http://localhost:8080/api/materialctrl/getmaterials",
+                dataType: "JSON",
+                headers: {
+                    "Authorization": jwt
+                },
+                success: function (data) {
+                    $.each(data.content, function (i, item) {
+                        material_col.addMaterialtoArray(item.id, item.code, item.description, item.materialType, item.uomid, item.status, item.price);
+                        if (item.status == "ACTIVE") t12.row.add([item.code, item.description]).draw(false);
+                    })
+                    setValues();
+                    fadepageloder();
+                    var $tableRow = $("#table12 tr td:contains('" + selectedcode + "')").closest("tr");
+                    $tableRow.trigger("click");
+                    refreshuomtable();
+
+                },
+                error: function (xhr, status, error) {
+                    fadepageloder();
+                }
+            })
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Warning!',
+                text: 'You don\'t have permission to perform this action.Please contact the Administrator(a.c:AI00509)',
+            });
+        }
     }
     //definded functions
     function refreshuomtable() {
@@ -171,7 +187,7 @@ $(function () {
             success: function (data) {
                 $.each(data.content, function (i, item) {
                     uom_col.addUOMtoArray(item.id, item.code, item.scode, item.description, item.status);
-                    if(item.status == "ACTIVE"){
+                    if (item.status == "ACTIVE") {
                         t13.row.add([item.code, item.scode]).draw(false);
                     }
                 })
@@ -196,7 +212,7 @@ $(function () {
                 method = "POST";
                 break;
         }
-        
+
         $.ajax({
             url: url,
             method: method,
@@ -230,7 +246,7 @@ $(function () {
                         break;
                 }
                 refreshtable();
-            },error:function(xhr,status,error){
+            }, error: function (xhr, status, error) {
                 Swal.fire(
                     'Error!',
                     'Please contact the Administator',
@@ -298,21 +314,21 @@ $(function () {
         $(element).find(".is-invalid").removeClass("is-invalid");
         $(element).find(".is-valid").removeClass("is-valid");
     }
-    function fillter(type){
-        if(type!=""){
+    function fillter(type) {
+        if (type != "") {
             t12.clear().draw(false);
             var fillteredarry = material_col.allMaterial().filter(material => (material.materialType == type));
             $.each(fillteredarry, function (i, item) {
-                if(item.status == "ACTIVE"){
-                t12.row.add([item.code, item.description]).draw(false);
+                if (item.status == "ACTIVE") {
+                    t12.row.add([item.code, item.description]).draw(false);
                 }
             })
-        }else{
+        } else {
             t12.clear().draw(false);
             var fillteredarry = material_col.allMaterial()
             $.each(fillteredarry, function (i, item) {
-                if(item.status == "ACTIVE"){
-                t12.row.add([item.code, item.description]).draw(false);
+                if (item.status == "ACTIVE") {
+                    t12.row.add([item.code, item.description]).draw(false);
                 }
             })
         }
@@ -342,7 +358,7 @@ $(function () {
             setUOMValues($(this).children("td:nth-child(1)").text());
         }
     });
-    
+
     $(document).off("click", "#addMaterials");
     $(document).off("click", "#setMaterials");
     $(document).off("click", "#removaMaterials");
@@ -350,52 +366,76 @@ $(function () {
     $(document).off("click", "#filter_material_type");
 
     $(document).on("click", "#addMaterials", function () {
-        selectedcode = "";
-        setValues(undefined);
-        addmoddel = "add";
-        let materiallist = material_col.allMaterial()
-        let materialcode = materialClassesInstence.MaterialSerial.genarateMaterialCode(materiallist.length);
-        $("#material_code").val(materialcode);
-        $("#table12 tbody tr").removeClass('selected');
-        enablefillin("#material_type");
-        enablefillin("#uombtn");
-        enablefillin("#material_description");
-        $("#material_status").val("ACTIVE");
-    });
-    $(document).on("click", "#setMaterials", function () {
-        if (selectedcode) {
-            setValues(selectedcode);
-            addmoddel = "mod";
+        if (jwtPayload.roleid.accIconList.find(accicon => accicon.status == "ACTIVE" && accicon.code == "AI05010") != undefined || jwtPayload.businessRole == "ADMIN") {
+            selectedcode = "";
+            setValues(undefined);
+            addmoddel = "add";
+            let materiallist = material_col.allMaterial()
+            let materialcode = materialClassesInstence.MaterialSerial.genarateMaterialCode(materiallist.length);
+            $("#material_code").val(materialcode);
+            $("#table12 tbody tr").removeClass('selected');
             enablefillin("#material_type");
-            enablefillin("#material_description");
             enablefillin("#uombtn");
+            enablefillin("#material_description");
+            $("#material_status").val("ACTIVE");
         } else {
             Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: 'Please select a material!',
-            })
+                icon: 'warning',
+                title: 'Warning!',
+                text: 'You don\'t have permission to perform this action.Please contact the Administrator(a.c:AI05010)',
+            });
         }
     });
-    $(document).on("click", "#removaMaterials", function () {
-        if (selectedcode) {
-            if (materialobj.status != "INACTIVE") {
+    $(document).on("click", "#setMaterials", function () {
+        if (jwtPayload.roleid.accIconList.find(accicon => accicon.status == "ACTIVE" && accicon.code == "AI05011") != undefined || jwtPayload.businessRole == "ADMIN") {
+            if (selectedcode) {
                 setValues(selectedcode);
-                addmoddel = "del";
-                $("#material_status").val("INACTIVE");
+                addmoddel = "mod";
+                enablefillin("#material_type");
+                enablefillin("#material_description");
+                enablefillin("#uombtn");
             } else {
                 Swal.fire({
-                    icon: 'warning',
-                    title: 'Warning!',
-                    text: 'The material you are attempting to delete is currently inactive!',
-                });
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Please select a material!',
+                })
             }
         } else {
             Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: 'Please select a material!',
-            })
+                icon: 'warning',
+                title: 'Warning!',
+                text: 'You don\'t have permission to perform this action.Please contact the Administrator(a.c:AI05011)',
+            });
+        }
+    });
+    $(document).on("click", "#removaMaterials", function () {
+        if (jwtPayload.roleid.accIconList.find(accicon => accicon.status == "ACTIVE" && accicon.code == "AI05012") != undefined || jwtPayload.businessRole == "ADMIN") {
+            if (selectedcode) {
+                if (materialobj.status != "INACTIVE") {
+                    setValues(selectedcode);
+                    addmoddel = "del";
+                    $("#material_status").val("INACTIVE");
+                } else {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Warning!',
+                        text: 'The material you are attempting to delete is currently inactive!',
+                    });
+                }
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Please select a material!',
+                })
+            }
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Warning!',
+                text: 'You don\'t have permission to perform this action.Please contact the Administrator(a.c:AI05012)',
+            });
         }
     });
     $(document).on("click", "#cancelMat", function () {
@@ -406,7 +446,9 @@ $(function () {
         fillter($("#filter_material_type").val());
     });
     //end of triggers
+    jwtPayload = getJwtPayload();
     formctrl();
     refreshtable();
+
 });
 

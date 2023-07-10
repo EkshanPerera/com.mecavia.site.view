@@ -11,6 +11,7 @@ $(function () {
     var outstangingcount = 0;
     var addmoddel = undefined;
     var selectedcode = undefined;
+    var jwtPayload = undefined;
     var selectedcopcode = undefined;
 
     var t28 = $("#table28").DataTable({
@@ -35,7 +36,7 @@ $(function () {
         showConfirmButton: false,
         timer: 3000
     });
-    $('#fgin_padate').datepicker({ dateFormat: 'dd/mm/yy'});
+    $('#fgin_padate').datepicker({ dateFormat: 'dd/mm/yy' });
     //end of variables
     //functions
     //defalt functions
@@ -90,22 +91,22 @@ $(function () {
                 }).then((result) => {
                     if (result.isConfirmed) {
                         var year = new Date().getFullYear();
-                        var month =  new Date().getMonth();
+                        var month = new Date().getMonth();
                         var day = new Date().getDate();
                         var date = day + "/" + (parseInt(month) + 1) + "/" + year;
                         let index = finishedgoodsinnote_col.getFGINsByJobId(selectedcode).length
                         let code = customerorderobj.code;
-                        let fgincode = fginClassesInstence.FinishedGoodsInSerial.genarateFGINCode(index,code);
+                        let fgincode = fginClassesInstence.FinishedGoodsInSerial.genarateFGINCode(index, code);
                         var panumber = $("#fgin_pano").val();
                         var padate = $("#fgin_padate").val();
                         var fgicode = fgincode;
-                        
+
                         var enterddate = date;
                         var remark = $("#fgin_remark").val();
                         var status = "SUBMIT";
                         var customerOrder = customerorderobj;
                         var finishedGoodsInNoteProducts = finishedgoodsinnote_col.allNewFGINNProducts();
-                        setNewValues(panumber,padate,fgicode,enterddate,remark,status,customerOrder,finishedGoodsInNoteProducts,);
+                        setNewValues(panumber, padate, fgicode, enterddate, remark, status, customerOrder, finishedGoodsInNoteProducts,);
                         submit();
                     }
                 })
@@ -119,61 +120,77 @@ $(function () {
         }
     });
     //definded functions
-    function refreshtable() {
-        customerorder_col.clear();
-        finishedgoodsinnote_col.clear();
-        addmoddel = undefined;
-        t28.clear().draw(false);
-        t29.clear().draw(false);
-        $.ajax({
-            url: "http://localhost:8080/api/customerorderctrl/getcustomerorders",
-            dataType: "JSON",
-            headers: {
-                "Authorization": jwt
-            },
-            success: function (data) {
-                $.each(data.content, function (i, item) {
-                    if (item.status == "ACCEPTED") {
-                        $.each(item.customerOrderProducts, function (i, item) {
-                            customerorder_col.addcustomerOrderProductstoArray(item.id, item.code, item.product, item.unitrate, item.quantity);
-                        })
-                        customerorder_col.addCustomerOrdertoArray(item.id,item.code,item.jobID,item.jobNumber,item.customerid,item.totalAmount,item.grossAmount,item.remark,item.customerOrderProducts,item.printeddate,item.status);
-                    }
-                });
-                $.ajax({
-                    url: "http://localhost:8080/api/finishedgoodsinnotectrl/getfinishedgoodsinnotes",
-                    dataType: "JSON",
-                    headers: {
-                "Authorization": jwt
-            },
-            success: function (data) {
-                        $.each(data.content, function (i, item) {
-                            $.each(item.finishedGoodsInNoteProducts, function (i, item) {
-                                finishedgoodsinnote_col.addFGINProductstoArray(item.id,item.code,item.cordercode,item.finishedGoodsInNoteDto,item.coproduct,item.finishedCount);
-                            });
-                            finishedgoodsinnote_col.addFGINtoArray(item.id,item.code,item.panumber,item.padate,item.enterddate,item.remark,item.status,item.customerOrder,item.finishedGoodsInNoteProducts,item.printeddate);
-                        });
-                        setValues(selectedcode);
-                        fadepageloder();
-                    },
-                    error:function(xhr, status, error){
-                        fadepageloder();
-                    }
-                })
 
-                fadepageloder();
-            },
-            error:function(xhr, status, error){
-                fadepageloder();
-            }
-        })
-
+    function getJwtPayload() {
+        var parts = jwt.split('.');
+        var encodedPayload = parts[1];
+        var decodedPayload = atob(encodedPayload.replace(/-/g, '+').replace(/_/g, '/'));
+        var payload = JSON.parse(decodedPayload);
+        return payload;
     }
-    function refreshfginmtable(){
+    function refreshtable() {
+        if (jwtPayload.roleid.accIconList.find(accicon => accicon.status == "ACTIVE" && accicon.code == "AI00403") != undefined || jwtPayload.businessRole == "ADMIN") {
+
+            customerorder_col.clear();
+            finishedgoodsinnote_col.clear();
+            addmoddel = undefined;
+            t28.clear().draw(false);
+            t29.clear().draw(false);
+            $.ajax({
+                url: "http://localhost:8080/api/customerorderctrl/getcustomerorders",
+                dataType: "JSON",
+                headers: {
+                    "Authorization": jwt
+                },
+                success: function (data) {
+                    $.each(data.content, function (i, item) {
+                        if (item.status == "ACCEPTED") {
+                            $.each(item.customerOrderProducts, function (i, item) {
+                                customerorder_col.addcustomerOrderProductstoArray(item.id, item.code, item.product, item.unitrate, item.quantity);
+                            })
+                            customerorder_col.addCustomerOrdertoArray(item.id, item.code, item.jobID, item.jobNumber, item.customerid, item.totalAmount, item.grossAmount, item.remark, item.customerOrderProducts, item.printeddate, item.status);
+                        }
+                    });
+                    $.ajax({
+                        url: "http://localhost:8080/api/finishedgoodsinnotectrl/getfinishedgoodsinnotes",
+                        dataType: "JSON",
+                        headers: {
+                            "Authorization": jwt
+                        },
+                        success: function (data) {
+                            $.each(data.content, function (i, item) {
+                                $.each(item.finishedGoodsInNoteProducts, function (i, item) {
+                                    finishedgoodsinnote_col.addFGINProductstoArray(item.id, item.code, item.cordercode, item.finishedGoodsInNoteDto, item.coproduct, item.finishedCount);
+                                });
+                                finishedgoodsinnote_col.addFGINtoArray(item.id, item.code, item.panumber, item.padate, item.enterddate, item.remark, item.status, item.customerOrder, item.finishedGoodsInNoteProducts, item.printeddate);
+                            });
+                            setValues(selectedcode);
+                            fadepageloder();
+                        },
+                        error: function (xhr, status, error) {
+                            fadepageloder();
+                        }
+                    })
+
+                    fadepageloder();
+                },
+                error: function (xhr, status, error) {
+                    fadepageloder();
+                }
+            })
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Warning!',
+                text: 'You don\'t have permission to perform this action.Please contact the Administrator(a.c:AI00403)',
+            });
+        }
+    }
+    function refreshfginmtable() {
         t30.clear().draw(false);
         let fginmlist = finishedgoodsinnote_col.allNewFGINNProducts();
-        $.each(fginmlist,function(i,item){
-            t30.row.add([item.code,item.cordercode,item.finishedCount]).draw(false);
+        $.each(fginmlist, function (i, item) {
+            t30.row.add([item.code, item.cordercode, item.finishedCount]).draw(false);
         })
     }
     //definded functions
@@ -209,7 +226,7 @@ $(function () {
             finishedGoodsInNoteProductsobjarr = [];
             finishedGoodsInNoteProductsobjarr = finishedgoodsinnote_col.allFGINsByOrderCode(cordercode).FGINMs;
             setOutstanding(cordercode);
-            if(addmoddel=="add"){
+            if (addmoddel == "add") {
                 $("#fgin_orderno").val(selectedcopcode);
             }
             if (finishedGoodsInNoteProductsobjarr.length != 0) {
@@ -227,14 +244,13 @@ $(function () {
             $("#fgin_finishedcount").val(undefined)
         }
     }
-    function setOutstanding(cordercode){
-        if(cordercode){
+    function setOutstanding(cordercode) {
+        if (cordercode) {
             var totfinished = finishedgoodsinnote_col.allFGINsByOrderCode(cordercode).totfinished;
             copobj = customerorder_col.getFGINPsByOrderCode(cordercode);
-            console.log(copobj);
             outstangingcount = copobj.quantity - totfinished;
             $("#fgin_outstanding").val(outstangingcount);
-        }else{
+        } else {
             outstangingcount = 0;
             $("#fgin_outstanding").val(undefined);
         }
@@ -242,18 +258,18 @@ $(function () {
     function setGRMValues() {
         setOutstanding(selectedcopcode);
         var index = finishedgoodsinnote_col.getFGINNProductsByOrderCode(selectedcopcode).length;
-        var fginmcode = fginClassesInstence.FinishedGoodsInSerial.genarateFGINMCode(index,selectedcopcode);
+        var fginmcode = fginClassesInstence.FinishedGoodsInSerial.genarateFGINMCode(index, selectedcopcode);
         var finishedCount = $("#fgin_finishedcount").val();
-        var res = finishedgoodsinnote_col.addNewFGINProductstoArray(undefined,fginmcode,selectedcopcode,finishedgoodsinnoteobj,copobj,finishedCount,outstangingcount);
-        
-        if(res){
+        var res = finishedgoodsinnote_col.addNewFGINProductstoArray(undefined, fginmcode, selectedcopcode, finishedgoodsinnoteobj, copobj, finishedCount, outstangingcount);
+
+        if (res) {
             Swal.fire(
                 'Added!',
                 'The new record has been added.',
                 'success'
             )
             refreshfginmtable();
-        }else{
+        } else {
             Swal.fire({
                 icon: 'error',
                 title: 'Oops...',
@@ -310,27 +326,27 @@ $(function () {
             $("#fgin_code").val(undefined);
             $("#fgin_pano").val(undefined);
             $("#fgin_padate").val(undefined);
-           
+
             $("#fgin_remark").val(undefined);
-            
+
         }
     }
-    function setNewValues(panumber,padate,code,enterddate,remark,status,customerOrder,finishedGoodsInNoteProducts,printeddate) {
+    function setNewValues(panumber, padate, code, enterddate, remark, status, customerOrder, finishedGoodsInNoteProducts, printeddate) {
         finishedgoodsinnoteobj = fginClassesInstence.finishedgoodsinnote;
-        if(panumber)finishedgoodsinnoteobj.panumber = panumber;
-        if(padate)finishedgoodsinnoteobj.padate = padate;
-        if(code)finishedgoodsinnoteobj.code = code;
-        if(enterddate)finishedgoodsinnoteobj.enterddate = enterddate;
-        if(remark)finishedgoodsinnoteobj.remark = remark;
-        if(status)finishedgoodsinnoteobj.status = status;
-        if(customerOrder)finishedgoodsinnoteobj.customerOrder = customerOrder;
-        if(finishedGoodsInNoteProducts)finishedgoodsinnoteobj.finishedGoodsInNoteProducts = finishedGoodsInNoteProducts;
-        
+        if (panumber) finishedgoodsinnoteobj.panumber = panumber;
+        if (padate) finishedgoodsinnoteobj.padate = padate;
+        if (code) finishedgoodsinnoteobj.code = code;
+        if (enterddate) finishedgoodsinnoteobj.enterddate = enterddate;
+        if (remark) finishedgoodsinnoteobj.remark = remark;
+        if (status) finishedgoodsinnoteobj.status = status;
+        if (customerOrder) finishedgoodsinnoteobj.customerOrder = customerOrder;
+        if (finishedGoodsInNoteProducts) finishedgoodsinnoteobj.finishedGoodsInNoteProducts = finishedGoodsInNoteProducts;
+
     }
     //end of functions
     //triggers
     $('#table28 tbody').on('click', 'tr', function () {
-        if (customerOrderProductsobjarr.length != 0 &&  addmoddel == "add") {
+        if (customerOrderProductsobjarr.length != 0 && addmoddel == "add") {
             if ($(this).hasClass('selected')) {
                 $(this).removeClass('selected');
                 setCOPValues();
@@ -358,7 +374,7 @@ $(function () {
             addmoddel = "add";
             let index = finishedgoodsinnote_col.getFGINsByJobId(selectedcode).length
             let code = customerorderobj.code;
-            let fgincode = fginClassesInstence.FinishedGoodsInSerial.genarateFGINCode(index,code);
+            let fgincode = fginClassesInstence.FinishedGoodsInSerial.genarateFGINCode(index, code);
             $("#fgin_code").val(fgincode);
             enablefillin("#fgin_finishedcount");
             enablefillin("#fgin_pano");
@@ -369,10 +385,12 @@ $(function () {
     $(document).on("click", "#addCOP", function () {
         setGRMValues()
     })
-    
+
     //end of triggers
     $("#podiv").hide();
+    jwtPayload = getJwtPayload();
     formctrl();
     refreshtable();
+
 });
 

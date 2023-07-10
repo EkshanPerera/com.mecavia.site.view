@@ -6,6 +6,7 @@ $(function () {
     let usr_roleobj = usergroupClassesInstence.user_role;
     var addmoddel = undefined;
     var selectedcode = undefined;
+    var jwtPayload = undefined;
     var selectedrolecode = undefined;
     var t = $("#table1").DataTable({
         "order": [[0, "desc"]],
@@ -185,41 +186,55 @@ $(function () {
         }
     });
     //definded functions
+    function getJwtPayload() {
+        var parts = jwt.split('.');
+        var encodedPayload = parts[1];
+        var decodedPayload = atob(encodedPayload.replace(/-/g, '+').replace(/_/g, '/'));
+        var payload = JSON.parse(decodedPayload);
+        return payload;
+    }
     function refreshtable() {
-        grp_col.clear()
-        addmoddel = undefined;
-        selectedrolecode = undefined;
-        t.clear().draw(false);
-        $.ajax({
-            url: "http://localhost:8080/api/usergroupctrl/getusergroups",
-            dataType: "JSON",
-            headers: {
-                "Authorization": jwt
-            },
-            crossDomain: true,
-            success: function (data) {
-                $.each(data.content, function (i, item) {
-                    $.each(item.userslist, function (i, item) {
-                        if (item.status = "ACTIVE") grp_col.addUsertoArry(item.code, item.firstname, item.lastname, item.email, item.businessRole, item.status);
-                    });
-                    $.each(item.roleslist, function (i, item) {
-                        grp_col.addRoletoArry(item.id, item.description, item.code, item.status);
-                    });
-                    grp_col.addUsrGrptoArray(item.id, item.code, item.description, item.status);
-                    if (item.status == "ACTIVE")
-                        t.row.add([item.code, item.description]).draw(false);
-                })
-                setValues();
-                fadepageloder();
-                var $tableRow = $("#table1 tr td:contains('" + selectedcode + "')").closest("tr");
-                $tableRow.trigger("click");
+        if (jwtPayload.roleid.accIconList.find(accicon => accicon.status == "ACTIVE" && accicon.code == "AI00501") != undefined || jwtPayload.businessRole == "ADMIN") {
+            grp_col.clear()
+            addmoddel = undefined;
+            selectedrolecode = undefined;
+            t.clear().draw(false);
+            $.ajax({
+                url: "http://localhost:8080/api/usergroupctrl/getusergroups",
+                dataType: "JSON",
+                headers: {
+                    "Authorization": jwt
+                },
+                crossDomain: true,
+                success: function (data) {
+                    $.each(data.content, function (i, item) {
+                        $.each(item.userslist, function (i, item) {
+                            if (item.status = "ACTIVE") grp_col.addUsertoArry(item.id, item.code, item.firstname, item.lastname, item.email, item.businessRole, item.status);
+                        });
+                        $.each(item.roleslist, function (i, item) {
+                            grp_col.addRoletoArry(item.id, item.description, item.code, item.status, item.accIconList);
+                        });
+                        grp_col.addUsrGrptoArray(item.id, item.code, item.description, item.status);
+                        if (item.status == "ACTIVE")
+                            t.row.add([item.code, item.description]).draw(false);
+                    })
+                    setValues();
+                    fadepageloder();
+                    var $tableRow = $("#table1 tr td:contains('" + selectedcode + "')").closest("tr");
+                    $tableRow.trigger("click");
 
-            },
-            error: function (xhr, status, error) {
-                fadepageloder();
-            }
-        })
-
+                },
+                error: function (xhr, status, error) {
+                    fadepageloder();
+                }
+            })
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Warning!',
+                text: 'You don\'t have permission to perform this action.Please contact the Administrator(a.c:AI00501)',
+            });
+        }
     }
     function submit() {
         showpageloder();
@@ -271,7 +286,7 @@ $(function () {
             $("#usr_grp_description").val(usr_grpobj.description);
             $("#usr_grp_status").val(usr_grpobj.status);
             $.each(usr_grpobj.userslist, function (i, item) {
-                t2.row.add([item.code, item.firstname, item.lastname, item.email, item.role]).draw(false);
+                t2.row.add([item.code, item.firstname, item.lastname, item.email, item.businessRole]).draw(false);
             })
             $.each(usr_grpobj.roleslist, function (i, item) {
                 if (item.status == "ACTIVE")
@@ -369,106 +384,155 @@ $(function () {
     $(document).off("click", "#removaUserRoles");
 
     $(document).on("click", "#addUserGroups", function () {
-        selectedcode = "";
-        setValues(undefined);
-        addmoddel = "add";
-        let grplist = grp_col.allUsrGrp()
-        let grpcode = usergroupClassesInstence.UsrGrpSerial.genarateUserGroupCode(grplist.length);
-        console.log(grp_col.allUsrGrp());
-        $("#usr_grp_code").val(grpcode);
-        $("#table1 tbody tr").removeClass('selected');
-        enablefillin("#usr_grp_description");
-        $("#usr_grp_status").val("ACTIVE");
-    });
-    $(document).on("click", "#addUserRoles", function () {
-        if (selectedcode) {
-            let rolecode = usergroupClassesInstence.UsrGrpSerial.genarateUserRoleCode(usr_grpobj.roleslist.length, usr_grpobj.code);
-            selectedrolecode = "";
-            setRoleValues();
-            addmoddel = "modrole";
-            $("#table3 tbody tr").removeClass('selected');
-            enablefillin("#usr_role_description");
-            $("#usr_role_code").val(rolecode);
-            $("#usr_role_status").val("ACTIVE");
+        if (jwtPayload.roleid.accIconList.find(accicon => accicon.status == "ACTIVE" && accicon.code == "AI00502") != undefined || jwtPayload.businessRole == "ADMIN") {
+            selectedcode = "";
+            setValues(undefined);
+            addmoddel = "add";
+            let grplist = grp_col.allUsrGrp()
+            let grpcode = usergroupClassesInstence.UsrGrpSerial.genarateUserGroupCode(grplist.length);
+            $("#usr_grp_code").val(grpcode);
+            $("#table1 tbody tr").removeClass('selected');
+            enablefillin("#usr_grp_description");
+            $("#usr_grp_status").val("ACTIVE");
         } else {
             Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: 'Please select a user group!',
-            })
+                icon: 'warning',
+                title: 'Warning!',
+                text: 'You don\'t have permission to perform this action.Please contact the Administrator(a.c:AI00502)',
+            });
+        }
+    });
+    $(document).on("click", "#addUserRoles", function () {
+        if (jwtPayload.roleid.accIconList.find(accicon => accicon.status == "ACTIVE" && accicon.code == "AI00502") != undefined || jwtPayload.businessRole == "ADMIN") {
+            if (selectedcode) {
+                let rolecode = usergroupClassesInstence.UsrGrpSerial.genarateUserRoleCode(usr_grpobj.roleslist.length, usr_grpobj.code);
+                selectedrolecode = "";
+                setRoleValues();
+                addmoddel = "modrole";
+                $("#table3 tbody tr").removeClass('selected');
+                enablefillin("#usr_role_description");
+                $("#usr_role_code").val(rolecode);
+                $("#usr_role_status").val("ACTIVE");
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Please select a user group!',
+                })
+            }
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Warning!',
+                text: 'You don\'t have permission to perform this action.Please contact the Administrator(a.c:AI00502)',
+            });
         }
     });
     $(document).on("click", "#setUserGroups", function () {
-        console.log("test")
-        if (selectedcode) {
-            setValues(selectedcode);
-            addmoddel = "mod";
-            enablefillin("#usr_grp_description");
+        if (jwtPayload.roleid.accIconList.find(accicon => accicon.status == "ACTIVE" && accicon.code == "AI00503") != undefined || jwtPayload.businessRole == "ADMIN") {
+            if (selectedcode) {
+                setValues(selectedcode);
+                addmoddel = "mod";
+                enablefillin("#usr_grp_description");
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Please select a user group!',
+                })
+            }
         } else {
             Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: 'Please select a user group!',
-            })
+                icon: 'warning',
+                title: 'Warning!',
+                text: 'You don\'t have permission to perform this action.Please contact the Administrator(a.c:AI00503)',
+            });
         }
     });
     $(document).on("click", "#setUserRoles", function () {
-        if (selectedrolecode) {
-            setRoleValues(selectedcode, selectedrolecode);
-            addmoddel = "modrole";
-            enablefillin("#usr_role_description");
+        if (jwtPayload.roleid.accIconList.find(accicon => accicon.status == "ACTIVE" && accicon.code == "AI00503") != undefined || jwtPayload.businessRole == "ADMIN") {
+
+            if (selectedrolecode) {
+                setRoleValues(selectedcode, selectedrolecode);
+                addmoddel = "modrole";
+                enablefillin("#usr_role_description");
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Please select a user role!',
+                })
+            }
         } else {
             Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: 'Please select a user role!',
-            })
+                icon: 'warning',
+                title: 'Warning!',
+                text: 'You don\'t have permission to perform this action.Please contact the Administrator(a.c:AI00503)',
+            });
         }
     });
     $(document).on("click", "#removaUserGroups", function () {
-        if (selectedcode) {
-            if (usr_grpobj.status != "INACTIVE") {
-                setValues(selectedcode);
-                addmoddel = "del";
-                $("#usr_grp_status").val("INACTIVE");
+        if (jwtPayload.roleid.accIconList.find(accicon => accicon.status == "ACTIVE" && accicon.code == "AI00504") != undefined || jwtPayload.businessRole == "ADMIN") {
+            if (selectedcode) {
+                if (usr_grpobj.status != "INACTIVE") {
+                    setValues(selectedcode);
+                    addmoddel = "del";
+                    $("#usr_grp_status").val("INACTIVE");
+                } else {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Warning!',
+                        text: 'The user group you are attempting to delete is currently inactive!',
+                    });
+                }
             } else {
                 Swal.fire({
-                    icon: 'warning',
-                    title: 'Warning!',
-                    text: 'The user group you are attempting to delete is currently inactive!',
-                });
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Please select a user group!',
+                })
             }
         } else {
             Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: 'Please select a user group!',
-            })
+                icon: 'warning',
+                title: 'Warning!',
+                text: 'You don\'t have permission to perform this action.Please contact the Administrator(a.c:AI00504)',
+            });
         }
     });
     $(document).on("click", "#removaUserRoles", function () {
-        if (selectedrolecode) {
-            if (usr_roleobj.status != "INACTIVE") {
-                setRoleValues(selectedcode, selectedrolecode);
-                addmoddel = "modrole";
-                $("#usr_role_status").val("INACTIVE");
+        if (jwtPayload.roleid.accIconList.find(accicon => accicon.status == "ACTIVE" && accicon.code == "AI00504") != undefined || jwtPayload.businessRole == "ADMIN") {
+            if (selectedrolecode) {
+                if (usr_roleobj.status != "INACTIVE") {
+                    setRoleValues(selectedcode, selectedrolecode);
+                    addmoddel = "modrole";
+                    $("#usr_role_status").val("INACTIVE");
+                } else {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Warning!',
+                        text: 'The user role you are attempting to delete is currently inactive!',
+                    });
+                }
             } else {
                 Swal.fire({
-                    icon: 'warning',
-                    title: 'Warning!',
-                    text: 'The user role you are attempting to delete is currently inactive!',
-                });
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Please select a user role!',
+                })
             }
         } else {
             Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: 'Please select a user role!',
-            })
+                icon: 'warning',
+                title: 'Warning!',
+                text: 'You don\'t have permission to perform this action.Please contact the Administrator(a.c:AI00504)',
+            });
         }
     });
     //end of triggers
+    jwtPayload = getJwtPayload();
     formctrl();
     refreshtable();
+
 });
 

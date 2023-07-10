@@ -5,8 +5,9 @@ $(function () {
     let uomobj = uomClassesInstence.uom;
     var addmoddel = undefined;
     var selectedcode = undefined;
+    var jwtPayload = undefined;
     var t16 = $("#table16").DataTable({
-        "order": [[ 0, "desc" ]],
+        "order": [[0, "desc"]],
         dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>'
     });
     //end of variables
@@ -74,7 +75,7 @@ $(function () {
                                 var status = undefined;
                                 setNewValues(code, scode, description, status);
                                 submit();
-                               
+
                                 break;
                             case "del":
                                 var code = undefined;
@@ -83,7 +84,7 @@ $(function () {
                                 var status = "INACTIVE";
                                 setNewValues(code, scode, description, status);
                                 submit();
-                                
+
                                 break;
                             default:
                                 Swal.fire({
@@ -104,30 +105,45 @@ $(function () {
         }
     });
     //definded functions
+    function getJwtPayload() {
+        var parts = jwt.split('.');
+        var encodedPayload = parts[1];
+        var decodedPayload = atob(encodedPayload.replace(/-/g, '+').replace(/_/g, '/'));
+        var payload = JSON.parse(decodedPayload);
+        return payload;
+    }
     function refreshtable() {
-        uom_col.clear()
-        addmoddel = undefined;
-        t16.clear().draw(false);
-        $.ajax({
-            url: "http://localhost:8080/api/uomctrl/getuoms",
-            dataType: "JSON",
-            headers: {
-                "Authorization": jwt
-            },
-            success: function (data) {
-                $.each(data.content, function (i, item) {
-                    uom_col.addUOMtoArray(item.id, item.code, item.scode, item.description, item.status);
-                    if (item.status == "ACTIVE")t16.row.add([item.code, item.scode, item.description]).draw(false);
-                })
-                setValues();
-                var $tableRow = $("#table16 tr td:contains('" + selectedcode + "')").closest("tr");
-                $tableRow.trigger("click");
-                fadepageloder();
-            },
-            error:function(xhr, status, error){
-                fadepageloder();
-            }
-        })
+        if (jwtPayload.roleid.accIconList.find(accicon => accicon.status == "ACTIVE" && accicon.code == "AI05021") != undefined || jwtPayload.businessRole == "ADMIN") {
+            uom_col.clear()
+            addmoddel = undefined;
+            t16.clear().draw(false);
+            $.ajax({
+                url: "http://localhost:8080/api/uomctrl/getuoms",
+                dataType: "JSON",
+                headers: {
+                    "Authorization": jwt
+                },
+                success: function (data) {
+                    $.each(data.content, function (i, item) {
+                        uom_col.addUOMtoArray(item.id, item.code, item.scode, item.description, item.status);
+                        if (item.status == "ACTIVE") t16.row.add([item.code, item.scode, item.description]).draw(false);
+                    })
+                    setValues();
+                    var $tableRow = $("#table16 tr td:contains('" + selectedcode + "')").closest("tr");
+                    $tableRow.trigger("click");
+                    fadepageloder();
+                },
+                error: function (xhr, status, error) {
+                    fadepageloder();
+                }
+            })
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Warning!',
+                text: 'You don\'t have permission to perform this action.Please contact the Administrator(a.c:AI05021)',
+            });
+        }
     }
     function submit() {
         showpageloder();
@@ -181,7 +197,7 @@ $(function () {
                         break;
                 }
                 refreshtable();
-            },error:function(xhr,status,error){
+            }, error: function (xhr, status, error) {
                 Swal.fire(
                     'Error!',
                     'Please contact the Administator',
@@ -249,61 +265,87 @@ $(function () {
     $(document).off("click", "#setUOMs");
     $(document).off("click", "#removaUOMs");
     $(document).off("click", "#cancelUOM");
-    
+
     $(document).on("click", "#addUOMs", function () {
-        selectedcode = "";
-        setValues(undefined);
-        addmoddel = "add";
-        let uomlist = uom_col.allUOM()
-        let uomcode = uomClassesInstence.UOMSerial.genarateUOMCode(uomlist.length);
-        $("#uom_code").val(uomcode);
-        $("#table16 tbody tr").removeClass('selected');
-        enablefillin("#uom_scode");
-        enablefillin("#uom_description");
-        $("#uom_status").val("ACTIVE");
-    });
-    $(document).on("click", "#setUOMs", function () {
-        if (selectedcode) {
-            setValues(selectedcode);
-            addmoddel = "mod";
+        if (jwtPayload.roleid.accIconList.find(accicon => accicon.status == "ACTIVE" && accicon.code == "AI05017") != undefined || jwtPayload.businessRole == "ADMIN") {
+            selectedcode = "";
+            setValues(undefined);
+            addmoddel = "add";
+            let uomlist = uom_col.allUOM()
+            let uomcode = uomClassesInstence.UOMSerial.genarateUOMCode(uomlist.length);
+            $("#uom_code").val(uomcode);
+            $("#table16 tbody tr").removeClass('selected');
             enablefillin("#uom_scode");
             enablefillin("#uom_description");
+            $("#uom_status").val("ACTIVE");
         } else {
             Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: 'Please select a record!',
-            })
+                icon: 'warning',
+                title: 'Warning!',
+                text: 'You don\'t have permission to perform this action.Please contact the Administrator(a.c:AI05017)',
+            });
         }
     });
-    $(document).on("click", "#removaUOMs", function () {
-        if (selectedcode) {
-            if (uomobj.status != "INACTIVE") {
+    $(document).on("click", "#setUOMs", function () {
+        if (jwtPayload.roleid.accIconList.find(accicon => accicon.status == "ACTIVE" && accicon.code == "AI05018") != undefined || jwtPayload.businessRole == "ADMIN") {
+            if (selectedcode) {
                 setValues(selectedcode);
-                addmoddel = "del";
-                $("#uom_status").val("INACTIVE");
+                addmoddel = "mod";
+                enablefillin("#uom_scode");
+                enablefillin("#uom_description");
             } else {
                 Swal.fire({
-                    icon: 'warning',
-                    title: 'Warning!',
-                    text: 'The record you are attempting to delete is currently inactive!',
-                });
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Please select a record!',
+                })
             }
         } else {
             Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: 'Please select a record!',
-            })
+                icon: 'warning',
+                title: 'Warning!',
+                text: 'You don\'t have permission to perform this action.Please contact the Administrator(a.c:AI05018)',
+            });
+        }
+    });
+    $(document).on("click", "#removaUOMs", function () {
+        if (jwtPayload.roleid.accIconList.find(accicon => accicon.status == "ACTIVE" && accicon.code == "AI05019") != undefined || jwtPayload.businessRole == "ADMIN") {
+            if (selectedcode) {
+                if (uomobj.status != "INACTIVE") {
+                    setValues(selectedcode);
+                    addmoddel = "del";
+                    $("#uom_status").val("INACTIVE");
+                } else {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Warning!',
+                        text: 'The record you are attempting to delete is currently inactive!',
+                    });
+                }
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Please select a record!',
+                })
+            }
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Warning!',
+                text: 'You don\'t have permission to perform this action.Please contact the Administrator(a.c:AI05019)',
+            });
         }
     });
     $(document).on("click", "#cancelUOM", function () {
         selectedcode = "";
         setValues();
     });
-    
+
     //end of triggers
+    jwtPayload = getJwtPayload();
     formctrl();
     refreshtable();
+
 });
 

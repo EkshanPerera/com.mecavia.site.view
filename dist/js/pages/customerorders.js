@@ -10,19 +10,20 @@ $(function () {
     var clientClassesInstence = clientClasses.clientClassesInstence();
     let cli_col = clientClassesInstence.cli_service;
     let cli_obj = clientClassesInstence.client;
-    var unitrate = undefined; 
+    var unitrate = undefined;
     var addmoddel = undefined;
     var selectedcode = undefined;
+    var jwtPayload = undefined;
     var producthash;
     var t32 = $("#table32").DataTable({
         "autoWidth": false,
-        "order": [[ 0, "desc" ]],
+        "order": [[0, "desc"]],
         pageLength: 5,
         dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>'
     });
     var t31 = $("#table31").DataTable({
         "autoWidth": false,
-        "order": [[ 0, "desc" ]],
+        "order": [[0, "desc"]],
         pageLength: 5,
         dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
         columns: [
@@ -37,9 +38,9 @@ $(function () {
                     } else {
                         return data;
                     }
-                    
+
                 },
-                
+
             },
             null,
         ]
@@ -81,7 +82,7 @@ $(function () {
             customerorderremark: {
                 required: true
             },
-            customerorderjobno:{
+            customerorderjobno: {
                 required: true
             }
         },
@@ -89,7 +90,7 @@ $(function () {
             customerorderremark: {
                 required: "Please fillout the remark!"
             },
-            customerorderjobno:{
+            customerorderjobno: {
                 required: "Please fillout the job number!"
             }
         },
@@ -242,6 +243,14 @@ $(function () {
         }
     });
     //definded functions
+
+    function getJwtPayload() {
+        var parts = jwt.split('.');
+        var encodedPayload = parts[1];
+        var decodedPayload = atob(encodedPayload.replace(/-/g, '+').replace(/_/g, '/'));
+        var payload = JSON.parse(decodedPayload);
+        return payload;
+    }
     function refreshtable() {
         customerorder_col.clear();
         product_col.clear();
@@ -259,7 +268,7 @@ $(function () {
             },
             success: function (data) {
                 $.each(data.content, function (i, item) {
-                    customerorder_col.addCustomerOrdertoArray(item.id,item.code,item.jobID,item.jobNumber,item.customerid,item.totalAmount,item.grossAmount,item.remark,item.customerOrderProducts,item.printeddate,item.status);
+                    customerorder_col.addCustomerOrdertoArray(item.id, item.code, item.jobID, item.jobNumber, item.customerid, item.totalAmount, item.grossAmount, item.remark, item.customerOrderProducts, item.printeddate, item.status);
                     t32.row.add([item.code, item.jobID, item.customerid.code, item.customerid.firstname + " " + item.customerid.lastname, item.status]).draw(false);
                 });
                 setValues();
@@ -267,9 +276,9 @@ $(function () {
                 $tableRow.trigger("click");
                 refreshproducttable();
                 fadepageloder();
-               
+
             },
-            error:function(xhr, status, error){
+            error: function (xhr, status, error) {
                 fadepageloder();
             }
         })
@@ -280,9 +289,9 @@ $(function () {
         var total = 0;
         $.each(customerOrderProductsobjarr, function (i, item) {
             var hashval;
-            if(item.hash==undefined){
-                hashval+=i
-            }else{
+            if (item.hash == undefined) {
+                hashval += i
+            } else {
                 hashval = item.hash
             }
             t31.row.add([hashval, item.product.name, item.unitrate, item.quantity]).draw(false);
@@ -303,7 +312,7 @@ $(function () {
             success: function (data) {
                 $.each(data.content, function (i, item) {
                     if (item.status == "ACTIVE") {
-                        product_col.addProducttoArray(item.id,item.code,item.desc,item.name,item.status,item.pricelist);
+                        product_col.addProducttoArray(item.id, item.code, item.desc, item.name, item.status, item.pricelist);
                         t33.row.add([item.code, item.name]).draw(false);
                     }
                 })
@@ -335,17 +344,17 @@ $(function () {
         });
 
     }
-    function commaSeparateNumber(val){
-        while (/(\d+)(\d{3})/.test(val.toString())){
-          val = val.toString().replace(/(\d+)(\d{3})/, '$1'+','+'$2');
+    function commaSeparateNumber(val) {
+        while (/(\d+)(\d{3})/.test(val.toString())) {
+            val = val.toString().replace(/(\d+)(\d{3})/, '$1' + ',' + '$2');
         }
         if (val != "") {
             if (val.indexOf('.') == -1) {
                 val = val + ".00";
-            }else{
+            } else {
                 val = val;
             }
-        }else{
+        } else {
             val = val;
         }
         return val;
@@ -401,7 +410,7 @@ $(function () {
                         break;
                 }
                 refreshtable();
-            },error:function(xhr,error,status){
+            }, error: function (xhr, error, status) {
                 Swal.fire(
                     'Error!',
                     'Please contact the Administator',
@@ -457,7 +466,7 @@ $(function () {
             $("#customerorder_totalamount").val(undefined);
             $("#customerorder_status").val(undefined);
             $("#customerorder_customerid").val(undefined);
-            
+
 
         }
     }
@@ -477,20 +486,20 @@ $(function () {
         $("#modal-productlist").modal("hide");
         if (code) {
             product_obj = product_col.getProduct(code);
-            var proprice  =  product_col.getActivePrice(code);
-            if (proprice){
-                if(proprice.price) unitrate = proprice.price;
+            var proprice = product_col.getActivePrice(code);
+            if (proprice) {
+                if (proprice.price) unitrate = proprice.price;
                 else unitrate = undefined;
-            }else unitrate = undefined;
-            if(unitrate!=undefined){
+            } else unitrate = undefined;
+            if (unitrate != undefined) {
                 $("#customerorder_unitrate").val(commaSeparateNumber(String(unitrate)));
-            }else{
+            } else {
                 $("#customerorder_unitrate").val(" ");
             }
 
         } else {
             product_obj = undefined;
-            unitrate =  undefined;
+            unitrate = undefined;
             $("#customerorder_unitrate").val(undefined);
 
         }
@@ -571,7 +580,7 @@ $(function () {
     $(document).off("click", "#customerorder_unitrate");
     $(document).off("click", "#customerorder_quntity");
     $(document).off("click", "#removeProductbtn");
-    
+
 
     $(document).on("click", "#addProductbtn", function () {
         if ($("#table33 tbody tr").hasClass('selected')) {
@@ -586,148 +595,172 @@ $(function () {
         refreshcoproducttable();
     })
     $(document).on("click", "#addCustomerOrders", function () {
-        selectedcode = "";
-        setValues(undefined);
-        addmoddel = "add";
-        $("#customerorder_code").val(genaratecode());
-        $("#table32 tbody tr").removeClass('selected');
-        enablefillin("#customerorder_quntity");
-        enablefillin("#customerorder_remark");
-        enablefillin("#customerbtn");
-        enablefillin("#productbtn");
-        enablefillin("#addProductbtn");
-        enablefillin("#removeProductbtn");
-        enablefillin("#customerorder_jobno");
-        $("#customerorder_status").val("PENDING");
+        if (jwtPayload.roleid.accIconList.find(accicon => accicon.status == "ACTIVE" && accicon.code == "AI00301") != undefined || jwtPayload.businessRole == "ADMIN") {
+            selectedcode = "";
+            setValues(undefined);
+            addmoddel = "add";
+            $("#customerorder_code").val(genaratecode());
+            $("#table32 tbody tr").removeClass('selected');
+            enablefillin("#customerorder_quntity");
+            enablefillin("#customerorder_remark");
+            enablefillin("#customerbtn");
+            enablefillin("#productbtn");
+            enablefillin("#addProductbtn");
+            enablefillin("#removeProductbtn");
+            enablefillin("#customerorder_jobno");
+            $("#customerorder_status").val("PENDING");
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Warning!',
+                text: 'You don\'t have permission to perform this action.Please contact the Administrator(a.c:AI00301)',
+            });
+        }
     });
     $(document).on("click", "#setCustomerOrders", function () {
-        if (selectedcode) {
-            if (customerorderobj.status == "INITIATED") {
-                setValues(selectedcode);
-                addmoddel = "mod";
-                $("#customerorder_status").val("SUBMIT");
-                Toast.fire({
-                    icon: 'info',
-                    title: 'Please press save to compleate!'
-                });
-            } else {
-                switch (customerorderobj.status) {
-                    case "EXPIRE":
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Warning!',
-                            text: 'The PR you are attempting to submit is currently expired!',
-                        });
-                        break;
-                    case "ACCEPTED":
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Warning!',
-                            text: 'The PR you are attempting to submit is currently accepted!',
-                        });
-                        break;
-                    case "REJECTED":
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Warning!',
-                            text: 'The PR you are attempting to submit is rejected!',
-                        });
-                        break;
-                    case "SUBMIT":
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Warning!',
-                            text: 'The PR you are attempting to submit is already submitted!',
-                        });
-                        break;
-                    case "PRINTED":
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Warning!',
-                            text: 'PO is genarated under this PR!',
-                        });
-                    case "PENDING":
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Warning!',
-                            text: 'Please make sure enter the BOM',
-                        });
-                        break;
-                }
+        if (jwtPayload.roleid.accIconList.find(accicon => accicon.status == "ACTIVE" && accicon.code == "AI00305") != undefined || jwtPayload.businessRole == "ADMIN") {
+            if (selectedcode) {
+                if (customerorderobj.status == "INITIATED") {
+                    setValues(selectedcode);
+                    addmoddel = "mod";
+                    $("#customerorder_status").val("SUBMIT");
+                    Toast.fire({
+                        icon: 'info',
+                        title: 'Please press save to compleate!'
+                    });
+                } else {
+                    switch (customerorderobj.status) {
+                        case "EXPIRE":
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Warning!',
+                                text: 'The PR you are attempting to submit is currently expired!',
+                            });
+                            break;
+                        case "ACCEPTED":
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Warning!',
+                                text: 'The PR you are attempting to submit is currently accepted!',
+                            });
+                            break;
+                        case "REJECTED":
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Warning!',
+                                text: 'The PR you are attempting to submit is rejected!',
+                            });
+                            break;
+                        case "SUBMIT":
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Warning!',
+                                text: 'The PR you are attempting to submit is already submitted!',
+                            });
+                            break;
+                        case "PRINTED":
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Warning!',
+                                text: 'PO is genarated under this PR!',
+                            });
+                        case "PENDING":
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Warning!',
+                                text: 'Please make sure enter the BOM',
+                            });
+                            break;
+                    }
 
+                }
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Please select a PR!',
+                })
             }
         } else {
             Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: 'Please select a PR!',
-            })
+                icon: 'warning',
+                title: 'Warning!',
+                text: 'You don\'t have permission to perform this action.Please contact the Administrator(a.c:AI00305)',
+            });
         }
     });
     $(document).on("click", "#removaCustomerOrders", function () {
-        if (selectedcode) {
-            if (customerorderobj.status == "PENDING") {
-                setValues(selectedcode);
-                addmoddel = "del";
-                $("#customerorder_status").val("EXPIRE");
-                Toast.fire({
-                    icon: 'info',
-                    title: 'Please press save to compleate!'
-                });
-            } else {
-                switch (customerorderobj.status) {
-                    case "EXPIRE":
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Warning!',
-                            text: 'The PR you are attempting to expire is already expired!',
-                        });
-                        break;
-                    case "ACCEPTED":
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Warning!',
-                            text: 'The PR you are attempting to expire is currently accepted!',
-                        });
-                        break;
-                    case "REJECTED":
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Warning!',
-                            text: 'The PR you are attempting to expire is rejected!',
-                        });
-                        break;
-                    case "INITIATED":
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Warning!',
-                            text: 'The PR you are attempting to expire is currently initiated!',
-                        });
-                        break;
-                    case "SUBMIT":
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Warning!',
-                            text: 'The PR you are attempting to expire is currently submitted!',
-                        });
-                        break;
-                    case "PRINTED":
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Warning!',
-                            text: 'PO is genarated under this PR!',
-                        });
-                        break;
+        if (jwtPayload.roleid.accIconList.find(accicon => accicon.status == "ACTIVE" && accicon.code == "AI00306") != undefined || jwtPayload.businessRole == "ADMIN") {
+            if (selectedcode) {
+                if (customerorderobj.status == "PENDING") {
+                    setValues(selectedcode);
+                    addmoddel = "del";
+                    $("#customerorder_status").val("EXPIRE");
+                    Toast.fire({
+                        icon: 'info',
+                        title: 'Please press save to compleate!'
+                    });
+                } else {
+                    switch (customerorderobj.status) {
+                        case "EXPIRE":
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Warning!',
+                                text: 'The PR you are attempting to expire is already expired!',
+                            });
+                            break;
+                        case "ACCEPTED":
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Warning!',
+                                text: 'The PR you are attempting to expire is currently accepted!',
+                            });
+                            break;
+                        case "REJECTED":
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Warning!',
+                                text: 'The PR you are attempting to expire is rejected!',
+                            });
+                            break;
+                        case "INITIATED":
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Warning!',
+                                text: 'The PR you are attempting to expire is currently initiated!',
+                            });
+                            break;
+                        case "SUBMIT":
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Warning!',
+                                text: 'The PR you are attempting to expire is currently submitted!',
+                            });
+                            break;
+                        case "PRINTED":
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Warning!',
+                                text: 'PO is genarated under this PR!',
+                            });
+                            break;
+                    }
+
+
                 }
-
-
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Please select a PR!',
+                })
             }
         } else {
             Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: 'Please select a PR!',
-            })
+                icon: 'warning',
+                title: 'Warning!',
+                text: 'You don\'t have permission to perform this action.Please contact the Administrator(a.c:AI00306)',
+            });
         }
     });
     $(document).on('input', '#customerorder_unitrate', function () {
@@ -755,7 +788,9 @@ $(function () {
         $('#customerorder_quntity').val(value);
     });
     //end of triggers
+    jwtPayload = getJwtPayload();
     formctrl();
     refreshtable();
+
 });
 

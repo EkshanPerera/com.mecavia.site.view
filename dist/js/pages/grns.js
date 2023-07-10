@@ -11,6 +11,7 @@ $(function () {
     var outstangingcount = 0;
     var addmoddel = undefined;
     var selectedcode = undefined;
+    var jwtPayload = undefined;
     var selectedpomcode = undefined;
     var temphash;
     var t25 = $("#table25").DataTable({
@@ -168,55 +169,69 @@ $(function () {
         }
     });
     //definded functions
+    function getJwtPayload() {
+        var parts = jwt.split('.');
+        var encodedPayload = parts[1];
+        var decodedPayload = atob(encodedPayload.replace(/-/g, '+').replace(/_/g, '/'));
+        var payload = JSON.parse(decodedPayload);
+        return payload;
+    }
     function refreshtable() {
-        purchaserequisition_col.clear();
-        goodsreceivednote_col.clear();
-        addmoddel = undefined;
-        t25.clear().draw(false);
-        t26.clear().draw(false);
-        $.ajax({
-            url: "http://localhost:8080/api/purchaserequisitionctrl/getpurchaserequisitions",
-            dataType: "JSON",
-            headers: {
-                "Authorization": jwt
-            },
-            success: function (data) {
-                $.each(data.content, function (i, item) {
-                    if (item.status == "PRINTED") {
-                        $.each(item.purchaseRequisitionMaterials, function (i, item) {
-                            purchaserequisition_col.addpurchaseRequisitionMaterialstoArray(item.id, item.code, item.material, item.unitrate, item.quantity);
-                        })
-                        purchaserequisition_col.addPurchaseRequisitiontoArray(item.id, item.prcode, item.pocode, item.supplierid, item.status, item.remark, item.totalAmount, item.purchaseRequisitionMaterials, item.printeddate);
-                    }
-                });
-                $.ajax({
-                    url: "http://localhost:8080/api/goodsreceivednotectrl/getgoodsreceivednotes",
-                    dataType: "JSON",
-                    headers: {
-                        "Authorization": jwt
-                    },
-                    success: function (data) {
-                        $.each(data.content, function (i, item) {
-                            $.each(item.goodsReceivedNoteMaterials, function (i, item) {
-                                goodsreceivednote_col.addGRNMaterialstoArray(item.id, item.code, item.ordercode, item.goodsReceivedNote, item.prmaterial, item.arrivedCount);
+        if (jwtPayload.roleid.accIconList.find(accicon => accicon.status == "ACTIVE" && accicon.code == "AI05010") != undefined || jwtPayload.businessRole == "ADMIN") {
+            purchaserequisition_col.clear();
+            goodsreceivednote_col.clear();
+            addmoddel = undefined;
+            t25.clear().draw(false);
+            t26.clear().draw(false);
+            $.ajax({
+                url: "http://localhost:8080/api/purchaserequisitionctrl/getpurchaserequisitions",
+                dataType: "JSON",
+                headers: {
+                    "Authorization": jwt
+                },
+                success: function (data) {
+                    $.each(data.content, function (i, item) {
+                        if (item.status == "PRINTED") {
+                            $.each(item.purchaseRequisitionMaterials, function (i, item) {
+                                purchaserequisition_col.addpurchaseRequisitionMaterialstoArray(item.id, item.code, item.material, item.unitrate, item.quantity);
+                            })
+                            purchaserequisition_col.addPurchaseRequisitiontoArray(item.id, item.prcode, item.pocode, item.supplierid, item.status, item.remark, item.totalAmount, item.purchaseRequisitionMaterials, item.printeddate);
+                        }
+                    });
+                    $.ajax({
+                        url: "http://localhost:8080/api/goodsreceivednotectrl/getgoodsreceivednotes",
+                        dataType: "JSON",
+                        headers: {
+                            "Authorization": jwt
+                        },
+                        success: function (data) {
+                            $.each(data.content, function (i, item) {
+                                $.each(item.goodsReceivedNoteMaterials, function (i, item) {
+                                    goodsreceivednote_col.addGRNMaterialstoArray(item.id, item.code, item.ordercode, item.goodsReceivedNote, item.prmaterial, item.arrivedCount);
+                                });
+                                goodsreceivednote_col.addGRNtoArray(item.id, item.invoicenumber, item.invocedate, item.code, item.mradate, item.mrano, item.enterddate, item.remark, item.status, item.purchaseRequisition, item.goodsReceivedNoteMaterials, item.printeddate);
                             });
-                            goodsreceivednote_col.addGRNtoArray(item.id, item.invoicenumber, item.invocedate, item.code, item.mradate, item.mrano, item.enterddate, item.remark, item.status, item.purchaseRequisition, item.goodsReceivedNoteMaterials, item.printeddate);
-                        });
-                        setValues(selectedcode);
-                        fadepageloder();
-                    },
-                    error: function (xhr, status, error) {
-                        fadepageloder();
-                    }
-                })
+                            setValues(selectedcode);
+                            fadepageloder();
+                        },
+                        error: function (xhr, status, error) {
+                            fadepageloder();
+                        }
+                    })
 
-                fadepageloder();
-            },
-            error: function (xhr, status, error) {
-                fadepageloder();
-            }
-        })
-
+                    fadepageloder();
+                },
+                error: function (xhr, status, error) {
+                    fadepageloder();
+                }
+            })
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Warning!',
+                text: 'You don\'t have permission to perform this action.Please contact the Administrator(a.c:AI00506)',
+            });
+        }
     }
     function refreshgrnmtable() {
         t27.clear().draw(false);
@@ -225,17 +240,17 @@ $(function () {
             t27.row.add([item.hash, item.ordercode, item.arrivedCount, item.prmaterial.material.uomid.scode]).draw(false);
         })
     }
-    function commaSeparateNumber(val){
-        while (/(\d+)(\d{3})/.test(val.toString())){
-          val = val.toString().replace(/(\d+)(\d{3})/, '$1'+','+'$2');
+    function commaSeparateNumber(val) {
+        while (/(\d+)(\d{3})/.test(val.toString())) {
+            val = val.toString().replace(/(\d+)(\d{3})/, '$1' + ',' + '$2');
         }
         if (val != "") {
             if (val.indexOf('.') == -1) {
                 val = val + ".00";
-            }else{
+            } else {
                 val = val;
             }
-        }else{
+        } else {
             val = val;
         }
         return val;
@@ -265,7 +280,7 @@ $(function () {
                 )
                 refreshtable();
                 setValues();
-            },error:function(xhr,error,status){
+            }, error: function (xhr, error, status) {
                 Swal.fire(
                     'Error!',
                     'Please contact the Administator',
@@ -463,16 +478,16 @@ $(function () {
         if (val != "") {
             if (val.indexOf('.') == -1) {
                 val = val + ".00";
-            }else{
+            } else {
                 val = val;
             }
-        }else{
+        } else {
             val = val;
         }
         $("#grn_arrivedcount").val(val)
     })
     $(document).on("click", "#removePOM", function () {
-        if(temphash!=undefined){
+        if (temphash != undefined) {
             goodsreceivednote_col.removeNewGRNMaterialstoArray(temphash);
             refreshgrnmtable();
         }
@@ -480,7 +495,9 @@ $(function () {
 
     //end of triggers
     $("#podiv").hide();
+    jwtPayload = getJwtPayload();
     formctrl();
     refreshtable();
+
 });
 

@@ -3,6 +3,7 @@ $(function () {
     var purchaserequisitionClassesInstence = purchaserequisitionClasses.purchaserequisitionClassesInstence();
     let purchaserequisition_col = purchaserequisitionClassesInstence.purchaserequisition_service;
     let purchaserequisitioarr = [];
+    var jwtPayload = undefined;
     var total = 0;
     var t18 = $("#table18").DataTable({
         "order": [[0, "desc"]],
@@ -11,7 +12,7 @@ $(function () {
         columns: [
             null,
             null,
-            
+
             {
                 render: function (data, type, row, meta) {
                     if (type === 'display') {
@@ -20,9 +21,9 @@ $(function () {
                     } else {
                         return data;
                     }
-                    
+
                 },
-                
+
             },
             null,
             {
@@ -34,9 +35,9 @@ $(function () {
                     } else {
                         return data;
                     }
-                    
+
                 },
-                
+
             },
             {
                 render: function (data, type, row, meta) {
@@ -47,9 +48,9 @@ $(function () {
                     } else {
                         return data;
                     }
-                    
+
                 },
-                
+
             }
         ]
     });
@@ -79,7 +80,7 @@ $(function () {
         unhighlight: function (element, errorClass, validClass) {
             $(element).removeClass('is-invalid');
         }, submitHandler: function () {
-           
+
             Swal.fire({
                 title: 'Are you sure?',
                 text: "You won't be able to get another original copy!",
@@ -90,7 +91,7 @@ $(function () {
                 confirmButtonText: 'Yes, print it!'
             }).then((result) => {
                 if (result.isConfirmed) {
-                   
+
                     // setNewValues(date);
                     // submit();
                     $("#podiv").show();
@@ -102,36 +103,51 @@ $(function () {
         }
     });
     //definded functions
-    function refreshtable() {
-        t18.clear().draw(false);
-        $.ajax({
-            url: "http://localhost:8080/api/purchaserequisitionctrl/getpurchaserequisitions",
-            dataType: "JSON",
-            headers: {
-                "Authorization": jwt
-            },
-            success: function (data) {
-                $.each(data.content, function (i, item) {
-                    purchaserequisition_col.addPurchaseEequisitiontoArray(item.id,item.prcode,item.pocode,item.supplierid,item.status, item.remark,item.totalAmount,item.purchaseRequisitionMaterials,item.quotationno,item.printeddate);
-                });
-                setValues();
-                fadepageloder();
-            }
-        })
+    function getJwtPayload() {
+        var parts = jwt.split('.');
+        var encodedPayload = parts[1];
+        var decodedPayload = atob(encodedPayload.replace(/-/g, '+').replace(/_/g, '/'));
+        var payload = JSON.parse(decodedPayload);
+        return payload;
     }
-    
+    function refreshtable() {
+        if (jwtPayload.roleid.accIconList.find(accicon => accicon.status == "ACTIVE" && accicon.code == "AI00602") != undefined || jwtPayload.businessRole == "ADMIN") {
+            t18.clear().draw(false);
+            $.ajax({
+                url: "http://localhost:8080/api/purchaserequisitionctrl/getpurchaserequisitions",
+                dataType: "JSON",
+                headers: {
+                    "Authorization": jwt
+                },
+                success: function (data) {
+                    $.each(data.content, function (i, item) {
+                        purchaserequisition_col.addPurchaseEequisitiontoArray(item.id, item.prcode, item.pocode, item.supplierid, item.status, item.remark, item.totalAmount, item.purchaseRequisitionMaterials, item.quotationno, item.printeddate);
+                    });
+                    setValues();
+                    fadepageloder();
+                }
+            })
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Warning!',
+                text: 'You don\'t have permission to perform this action.Please contact the Administrator(a.c:AI00602)',
+            });
+        }
+    }
+
     //definded functions
-    function commaSeparateNumber(val){
-        while (/(\d+)(\d{3})/.test(val.toString())){
-          val = val.toString().replace(/(\d+)(\d{3})/, '$1'+','+'$2');
+    function commaSeparateNumber(val) {
+        while (/(\d+)(\d{3})/.test(val.toString())) {
+            val = val.toString().replace(/(\d+)(\d{3})/, '$1' + ',' + '$2');
         }
         if (val != "") {
             if (val.indexOf('.') == -1) {
                 val = val + ".00";
-            }else{
+            } else {
                 val = val;
             }
-        }else{
+        } else {
             val = val;
         }
         return val;
@@ -140,24 +156,23 @@ $(function () {
     function setValues() {
         total = 0;
         purchaserequisitioarr = purchaserequisition_col.allPurchaseEequisitions();
-        console.log(purchaserequisitioarr);
         t18.clear().draw(false);
         var dataset = "";
         $.each(purchaserequisitioarr, function (i, item) {
             // if(item.materialid.status == "ACTIVE"){
             // t18.row.add([item.materialid.code, item.materialid.description, item.itemcount, item.materialid.uomid.scode, item.materialid.price, item.itemcount*item.materialid.price]).draw(false);
             var prmdataset = "";
-            var totarrivedcoutset = ""; 
-            var quantityset = ""; 
+            var totarrivedcoutset = "";
+            var quantityset = "";
             var brset;
-            $.each(item.purchaseRequisitionMaterials,function(i,itemprm){
-                if((i+1) < item.purchaseRequisitionMaterials.length) brset = "<br>";
-                else brset = ""; 
+            $.each(item.purchaseRequisitionMaterials, function (i, itemprm) {
+                if ((i + 1) < item.purchaseRequisitionMaterials.length) brset = "<br>";
+                else brset = "";
                 prmdataset += itemprm.material.code + brset;
-                quantityset += commaSeparateNumber(String(itemprm.quantity)) + itemprm.material.uomid.scode  + brset;
+                quantityset += commaSeparateNumber(String(itemprm.quantity)) + itemprm.material.uomid.scode + brset;
                 totarrivedcoutset += commaSeparateNumber(String(itemprm.totArrivedCount)) + itemprm.material.uomid.scode + brset;
             })
-            dataset += "<tr><td>" + (i+1) + "</td><td>" + item.prcode + "</td><td>" + item.pocode + "</td><td>" + item.supplierid.firstname + " " + item.supplierid.lastname + "</td><td>" + prmdataset + "</td><td><div style=\"text-align: right;\"> " + quantityset + "</div></td><td><div style=\"text-align: right;\">" + totarrivedcoutset + "</div></td><td>" + item.printeddate + "</td></td><td>" + item.status + "</td></tr>";
+            dataset += "<tr><td>" + (i + 1) + "</td><td>" + item.prcode + "</td><td>" + item.pocode + "</td><td>" + item.supplierid.firstname + " " + item.supplierid.lastname + "</td><td>" + prmdataset + "</td><td><div style=\"text-align: right;\"> " + quantityset + "</div></td><td><div style=\"text-align: right;\">" + totarrivedcoutset + "</div></td><td>" + item.printeddate + "</td></td><td>" + item.status + "</td></tr>";
         })
         var year = new Date().getFullYear();
         var month = new Date().getMonth();
@@ -183,6 +198,8 @@ $(function () {
 
     //end of triggers
     $("#podiv").hide();
+    jwtPayload = getJwtPayload();
     refreshtable();
+
 });
 

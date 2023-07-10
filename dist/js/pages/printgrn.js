@@ -5,6 +5,7 @@ $(function () {
     let goodsreceivednoteobjarr = [];
     var goodsreceivednoteobj = undefined;
     var selectedcode = undefined;
+    var jwtPayload = undefined;
 
     var t18 = $("#table18").DataTable({
         "order": [[0, "desc"]],
@@ -24,9 +25,9 @@ $(function () {
                     } else {
                         return data;
                     }
-                    
+
                 },
-                
+
             },
             null
         ]
@@ -45,6 +46,14 @@ $(function () {
     // $.validator.setDefaults({ 
     // });
     // Get the input element
+
+    function getJwtPayload() {
+        var parts = jwt.split('.');
+        var encodedPayload = parts[1];
+        var decodedPayload = atob(encodedPayload.replace(/-/g, '+').replace(/_/g, '/'));
+        var payload = JSON.parse(decodedPayload);
+        return payload;
+    }
     $('#quickForm8').validate({
         errorElement: 'span',
         errorPlacement: function (error, element) {
@@ -57,7 +66,7 @@ $(function () {
         unhighlight: function (element, errorClass, validClass) {
             $(element).removeClass('is-invalid');
         }, submitHandler: function () {
-            if (goodsreceivednoteobj != undefined ) {
+            if (goodsreceivednoteobj != undefined) {
                 Swal.fire({
                     title: 'Are you sure?',
                     text: "You won't be able to get another original copy!",
@@ -89,40 +98,48 @@ $(function () {
             }
         }
     });
-    
+
     //definded functions
     function refreshtable() {
-        goodsreceivednote_col.clear();
-        t18.clear().draw(false);
-        $.ajax({
-            url: "http://localhost:8080/api/goodsreceivednotectrl/getgoodsreceivednotes",
-            dataType: "JSON",
-            headers: {
-                "Authorization": jwt
-            },
-            success: function (data) {
-                $.each(data.content, function (i, item) {
-                    goodsreceivednote_col.addGRNtoArray(item.id, item.invoicenumber, item.invocedate, item.code, item.mradate, item.mrano, item.enterddate, item.remark, item.status, item.purchaseRequisition, item.goodsReceivedNoteMaterials, item.printeddate);
-                });
-                setValues(selectedcode);
-                fadepageloder();
-            }
-        })
+        if (jwtPayload.roleid.accIconList.find(accicon => accicon.status == "ACTIVE" && accicon.code == "AI00108") != undefined || jwtPayload.businessRole == "ADMIN") {
+            goodsreceivednote_col.clear();
+            t18.clear().draw(false);
+            $.ajax({
+                url: "http://localhost:8080/api/goodsreceivednotectrl/getgoodsreceivednotes",
+                dataType: "JSON",
+                headers: {
+                    "Authorization": jwt
+                },
+                success: function (data) {
+                    $.each(data.content, function (i, item) {
+                        goodsreceivednote_col.addGRNtoArray(item.id, item.invoicenumber, item.invocedate, item.code, item.mradate, item.mrano, item.enterddate, item.remark, item.status, item.purchaseRequisition, item.goodsReceivedNoteMaterials, item.printeddate);
+                    });
+                    setValues(selectedcode);
+                    fadepageloder();
+                }
+            })
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Warning!',
+                text: 'You don\'t have permission to perform this action.Please contact the Administrator(a.c:AI00108)',
+            });
+        }
     }
     function formctrl() {
         $(".formfillin").prop("disabled", true);
     }
-    function commaSeparateNumber(val){
-        while (/(\d+)(\d{3})/.test(val.toString())){
-          val = val.toString().replace(/(\d+)(\d{3})/, '$1'+','+'$2');
+    function commaSeparateNumber(val) {
+        while (/(\d+)(\d{3})/.test(val.toString())) {
+            val = val.toString().replace(/(\d+)(\d{3})/, '$1' + ',' + '$2');
         }
         if (val != "") {
             if (val.indexOf('.') == -1) {
                 val = val + ".00";
-            }else{
+            } else {
                 val = val;
             }
-        }else{
+        } else {
             val = val;
         }
         return val;
@@ -145,16 +162,16 @@ $(function () {
                     var dataset = "";
                     var icont = 1;
                     $.each(goodsreceivednoteobj.goodsReceivedNoteMaterials, function (i, item) {
-                        icont += 1; 
+                        icont += 1;
                         t18.row.add([i + 1, item.prmaterial.material.description, item.code, item.ordercode, item.arrivedCount, item.prmaterial.material.uomid.scode]).draw(false);
-                        dataset += "<tr><td>" + (i + 1) + "</td><td>" + item.prmaterial.material.description + "</td><td>"+ item.code +"</td><td>"+ item.ordercode +"</td><td><div style=\"text-align: right;\">" + commaSeparateNumber(String(item.arrivedCount)) + item.prmaterial.material.uomid.scode + "</div></td></tr>";
+                        dataset += "<tr><td>" + (i + 1) + "</td><td>" + item.prmaterial.material.description + "</td><td>" + item.code + "</td><td>" + item.ordercode + "</td><td><div style=\"text-align: right;\">" + commaSeparateNumber(String(item.arrivedCount)) + item.prmaterial.material.uomid.scode + "</div></td></tr>";
                     })
                     do {
-                        dataset+="<tr><td>"+ icont + "</td><td> </td><td> </td><td> </td><td> </td></tr>"
-                        icont ++;
-                      }
-                      while (icont < 21);
-              
+                        dataset += "<tr><td>" + icont + "</td><td> </td><td> </td><td> </td><td> </td></tr>"
+                        icont++;
+                    }
+                    while (icont < 21);
+
                     $("#potablebody").html(dataset);
                 }
                 $("#grnid").text(goodsreceivednoteobj.code);
@@ -199,7 +216,9 @@ $(function () {
 
     //end of triggers
     $("#podiv").hide();
+    jwtPayload = getJwtPayload();
     formctrl();
     refreshtable();
+
 });
 

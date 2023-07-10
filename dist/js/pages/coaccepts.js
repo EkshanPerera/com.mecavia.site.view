@@ -13,9 +13,10 @@ $(function () {
 
     var addmoddel = undefined;
     var selectedcode = undefined;
+    var jwtPayload = undefined;
 
     var t35 = $("#table35").DataTable({
-        "order": [[ 0, "desc" ]],
+        "order": [[0, "desc"]],
         pageLength: 5,
         dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>'
     });
@@ -80,7 +81,7 @@ $(function () {
                             )
                         }
                     })
-                }else if(customerorderobj.status == "ACCEPTED" || customerorderobj.status == "PRINTED"){
+                } else if (customerorderobj.status == "ACCEPTED" || customerorderobj.status == "PRINTED") {
                     Swal.fire({
                         icon: 'warning',
                         title: 'Warning!',
@@ -97,31 +98,46 @@ $(function () {
         }
     });
     //definded functions
+    function getJwtPayload() {
+        var parts = jwt.split('.');
+        var encodedPayload = parts[1];
+        var decodedPayload = atob(encodedPayload.replace(/-/g, '+').replace(/_/g, '/'));
+        var payload = JSON.parse(decodedPayload);
+        return payload;
+    }
     function refreshtable() {
-        customerorder_col.clear();
-        product_col.clear();
-        cli_col.clear();
-        addmoddel = undefined;
-        t35.clear().draw(false);
-        $.ajax({
-            url: "http://localhost:8080/api/customerorderctrl/getcustomerorders",
-            dataType: "JSON",
-            headers: {
-                "Authorization": jwt
-            },
-            success: function (data) {
-                $.each(data.content, function (i, item) {
-                    if (item.status == "SUBMIT" || item.status == "ACCEPTED" || item.status == "PRINTED") {
-                        customerorder_col.addCustomerOrdertoArray(item.id,item.code,item.jobID,item.jobNumber,item.customerid,item.totalAmount,item.grossAmount,item.remark,item.customerOrderProducts,item.printeddate,item.status);
-                    }
-                });
-                setValues(selectedcode);
-                fadepageloder();
-            },
-            error:function(xhr, status, error){
-                fadepageloder();
-            }
-        })
+        if (jwtPayload.roleid.accIconList.find(accicon => accicon.status == "ACTIVE" && accicon.code == "AI00401") != undefined || jwtPayload.businessRole == "ADMIN") {
+            customerorder_col.clear();
+            product_col.clear();
+            cli_col.clear();
+            addmoddel = undefined;
+            t35.clear().draw(false);
+            $.ajax({
+                url: "http://localhost:8080/api/customerorderctrl/getcustomerorders",
+                dataType: "JSON",
+                headers: {
+                    "Authorization": jwt
+                },
+                success: function (data) {
+                    $.each(data.content, function (i, item) {
+                        if (item.status == "SUBMIT" || item.status == "ACCEPTED" || item.status == "PRINTED") {
+                            customerorder_col.addCustomerOrdertoArray(item.id, item.code, item.jobID, item.jobNumber, item.customerid, item.totalAmount, item.grossAmount, item.remark, item.customerOrderProducts, item.printeddate, item.status);
+                        }
+                    });
+                    setValues(selectedcode);
+                    fadepageloder();
+                },
+                error: function (xhr, status, error) {
+                    fadepageloder();
+                }
+            })
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Warning!',
+                text: 'You don\'t have permission to perform this action.Please contact the Administrator(a.c:AI00401)',
+            });
+        }
     }
     //definded functions
     function submit() {
@@ -152,7 +168,7 @@ $(function () {
         addmoddel = undefined;
         if (code) {
             customerorderobj = customerorder_col.getCustomerOrder(code);
-            if(customerorderobj!=undefined){
+            if (customerorderobj != undefined) {
                 customerOrderProductsobjarr = customerorderobj.customerOrderProducts;
                 $("#customerorder_code").val(customerorderobj.code);
                 $("#customerorder_jobcode").val(customerorderobj.jobID);
@@ -176,7 +192,7 @@ $(function () {
                         t35.row.add([i + 1, item.product.name, item.quantity]).draw(false);
                     })
                 }
-            }else{
+            } else {
                 Swal.fire({
                     icon: 'error',
                     title: 'Oops...',
@@ -225,7 +241,9 @@ $(function () {
     })
 
     //end of triggers
+    jwtPayload = getJwtPayload();
     formctrl();
     refreshtable();
+
 });
 

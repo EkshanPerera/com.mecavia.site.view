@@ -374,7 +374,7 @@
                                         <p>Material Requisition</p>
                                     </a>
                                 </li>
-                                <li class="nav-item" id="mron">
+                                <li class="nav-item leaf-node" id="lnkmron">
                                     <a href="#" class="nav-link">
                                         <i class="nav-icon fas fa-circle"></i>
                                         <p>Material Out Note</p>
@@ -529,8 +529,25 @@
                                 <li class="nav-item">
                                     <a href="#" class="nav-link">
                                         <i class="nav-icon fas fa-circle"></i>
-                                        <p>Access Config</p>
+                                        <p>
+                                            Access Config
+                                            <i class="right fas fa-angle-left"></i>
+                                        </p>
                                     </a>
+                                    <ul class="nav nav-treeview" style="display: none;">
+                                        <li class="nav-item leaf-node" id="lnkappicon">
+                                            <a href="#" class="nav-link">
+                                                <i class="far fa-circle nav-icon"></i>
+                                                <p>App icons</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item leaf-node" id="lnkaccessctrl">
+                                            <a href="#" class="nav-link">
+                                                <i class="far fa-circle nav-icon"></i>
+                                                <p>Access Control</p>
+                                            </a>
+                                        </li>
+                                    </ul>
                                 </li>
                                 <li class="nav-item">
                                     <a href="#" class="nav-link">
@@ -592,7 +609,7 @@
             <div class="float-right d-none d-sm-block">
                 <b>Version</b> 1.0.1
             </div>
-            <strong>Copyright &copy; 2023 <a href="https://adminlte.io">mecavia.com</a>.</strong> All rights
+            <strong>Copyright &copy; 2023 <a href="https://www.mecavia.com">mecavia.com</a>.</strong> All rights
             reserved.
         </footer>
 
