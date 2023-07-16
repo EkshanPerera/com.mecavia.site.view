@@ -393,10 +393,10 @@ $(function () {
         } else {
             addmoddel = undefined;
             var fmtstr = "";
-            console.log(res.falsematerials)
             $.each(res.falsematerials, function (i, item) {
                 fmtstr += item.code + ", ";
             })
+            fmtstr = fmtstr.replace(/,\s*$/, "");
             Swal.fire({
                 icon: 'warning',
                 title: 'Warning!',

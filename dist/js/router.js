@@ -94,6 +94,9 @@
     $("#lnkmron").click(function () {
         $("#content").load("../pages/corporate/materialoutnote.html");
     });
+    $("#lnkfgon").click(function () {
+        $("#content").load("../pages/corporate/fgon.html");
+    });
     
     // GRN click event handler
     $("#grn").click(function () {

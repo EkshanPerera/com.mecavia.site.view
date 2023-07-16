@@ -1,7 +1,7 @@
 var customerorderClasses = (function () {
     //classescodematerial
     class customerorder {
-        constructor(id, code, JobID, JobNumber, customerid, totalAmount, grossAmount, remark, customerOrderProducts, printeddate, status,enteredUser,enteredDate,acceptedUser,acceptedDate) {
+        constructor(id, code, JobID, JobNumber, customerid, totalAmount, grossAmount, remark, customerOrderProducts, printeddate, status,enteredUser,enteredDate,acceptedUser,acceptedDate,invoices) {
             this.id = id;
             this.code = code;
             this.jobID = JobID;
@@ -17,6 +17,7 @@ var customerorderClasses = (function () {
             this.enteredDate = enteredDate;
             this.acceptedUser = acceptedUser;
             this.acceptedDate = acceptedDate;
+            this.invoices = invoices;
         }
     }
     class customerOrderProducts {
@@ -38,8 +39,8 @@ var customerorderClasses = (function () {
             this.customerorder;
             this.hash = 0;
         }
-        addCustomerOrdertoArray(id, code, JobID, JobNumber, customerid, totalAmount, grossAmount, remark, customerOrderProducts, printeddate, status,enteredUser,enteredDate,acceptedUser,acceptedDate) {
-            let customerorder_arritem = new customerorder(id, code, JobID, JobNumber, customerid, totalAmount, grossAmount, remark, customerOrderProducts, printeddate, status,enteredUser,enteredDate,acceptedUser,acceptedDate);
+        addCustomerOrdertoArray(id, code, JobID, JobNumber, customerid, totalAmount, grossAmount, remark, customerOrderProducts, printeddate, status,enteredUser,enteredDate,acceptedUser,acceptedDate,invoices) {
+            let customerorder_arritem = new customerorder(id, code, JobID, JobNumber, customerid, totalAmount, grossAmount, remark, customerOrderProducts, printeddate, status,enteredUser,enteredDate,acceptedUser,acceptedDate,invoices);
             this.customerorders.push(customerorder_arritem);
         }
         addcustomerOrderProductstoArray(id, code, product, unitrate, quantity, totFinishedCount) {
@@ -49,6 +50,10 @@ var customerorderClasses = (function () {
         }
         removeCustomerOrderProductfromArray(hash) {
             this.customerOrderProducts = this.customerOrderProducts.filter(customerOrderProduct => customerOrderProduct.hash != hash);
+        }
+        allInvoicedCustomerOrders(){
+            var customerorders = this.customerorders.filter(customerorder => customerorder.status == "INVOICED");
+            return customerorders;
         }
         allCustomerOrder() {
             return this.customerorders;

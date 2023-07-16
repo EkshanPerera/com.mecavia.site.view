@@ -1,7 +1,7 @@
 //classescodeproduct
 var fginClasses = (function(){
     class customerorder {
-        constructor(id, code, JobID, JobNumber, customerid, totalAmount, grossAmount, remark, customerOrderProducts, printeddate, status,enteredUser,enteredDate,acceptedUser,acceptedDate) {
+        constructor(id, code, JobID, JobNumber, customerid, totalAmount, grossAmount, remark, customerOrderProducts, printeddate, status,enteredUser,enteredDate,acceptedUser,acceptedDate,invoices) {
             this.id = id;
             this.code = code;
             this.jobID = JobID;
@@ -17,6 +17,7 @@ var fginClasses = (function(){
             this.enteredDate = enteredDate;
             this.acceptedUser = acceptedUser;
             this.acceptedDate = acceptedDate;
+            this.invoices = invoices;
         }
     }
 class customerOrderProduct {
@@ -168,8 +169,8 @@ class customerorder_service {
         this.customerOrderProduct;
 
     }
-    addCustomerOrdertoArray(id, code, JobID, JobNumber, customerid, totalAmount, grossAmount, remark, customerOrderProducts, printeddate, status,enteredUser,enteredDate,acceptedUser,acceptedDate) {
-        let customerorder_arritem = new customerorder(id, code, JobID, JobNumber, customerid, totalAmount, grossAmount, remark, customerOrderProducts, printeddate, status,enteredUser,enteredDate,acceptedUser,acceptedDate);
+    addCustomerOrdertoArray(id, code, JobID, JobNumber, customerid, totalAmount, grossAmount, remark, customerOrderProducts, printeddate, status,enteredUser,enteredDate,acceptedUser,acceptedDate,invoices) {
+        let customerorder_arritem = new customerorder(id, code, JobID, JobNumber, customerid, totalAmount, grossAmount, remark, customerOrderProducts, printeddate, status,enteredUser,enteredDate,acceptedUser,acceptedDate,invoices);
         this.customerorders.push(customerorder_arritem);
     }
     addcustomerOrderProductstoArray(id, code, product, unitrate, quantity,totFinishedCount) {

@@ -149,14 +149,14 @@ $(function () {
                 },
                 success: function (data) {
                     $.each(data.content, function (i, item) {
-                        if (item.status == "ACCEPTED") {
+                        if (item.status == "ACCEPTED" || item.status == "INVOICED" ) {
                             $.each(item.customerOrderProducts, function (i, item) {
                                 customerorder_col.addcustomerOrderProductstoArray(item.id, item.code, item.product, item.unitrate, item.quantity,item.totFinishedCount);
                             })
                             t13.row.add([item.jobID,item.code,item.jobNumber]).draw(false);
                             var $tableRow = $("#table13 tr td:contains('" + selectedcode + "')").closest("tr");
                             $tableRow.addClass("selected");
-                            customerorder_col.addCustomerOrdertoArray(item.id, item.code, item.jobID, item.jobNumber, item.customerid, item.totalAmount, item.grossAmount, item.remark, item.customerOrderProducts, item.printeddate, item.status);
+                            customerorder_col.addCustomerOrdertoArray(item.id, item.code, item.jobID, item.jobNumber, item.customerid, item.totalAmount, item.grossAmount, item.remark, item.customerOrderProducts, item.printeddate, item.status,item.enteredUser,item.enteredDate,item.acceptedUser,item.acceptedDate,item.invoices);
                         }
                     });
                     $.ajax({

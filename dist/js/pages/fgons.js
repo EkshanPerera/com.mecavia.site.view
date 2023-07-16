@@ -1,10 +1,10 @@
 $(function () {
     //variables
     var customerorderClassesInstence = customerorderClasses.customerorderClassesInstence();
-    var monClassesInstence = finishedGoodsOutNoteClasses.FinishedGoodsOutNoteClassesInstence();
-    var monObject = monClassesInstence.FinishedGoodsOutNoteDto;
-    var finishedGoodsOutNote_col = monClassesInstence.finishedGoodsOutNote_service;
-    let customerorder_col = customerorderClassesInstence.customerOrder_service;
+    var finishedGoodsOutNoteClassesInstence = finishedGoodsOutNoteClasses.FinishedGoodsOutNoteClassesInstence();
+    var finishedGoodsOutNoteObject = finishedGoodsOutNoteClassesInstence.FinishedGoodsOutNoteDto;
+    var finishedGoodsOutNote_col = finishedGoodsOutNoteClassesInstence.finishedGoodsOutNote_service;
+    let customerorder_col = customerorderClassesInstence.customerorder_service;
     let customerorderobj = customerorderClassesInstence.customerorder;
     var GeneralStoreDtosInstence = genaralStoreClasses.genaralStoreClassesInstence();
     let GeneralStoreDtos_col = GeneralStoreDtosInstence.GeneralStoreDto_service;
@@ -27,6 +27,7 @@ $(function () {
             null,
             null,
             null,
+            null,
             {
                 render: function (data, type, row, meta) {
                     if (type === 'display') {
@@ -39,7 +40,7 @@ $(function () {
                 },
 
             },
-            null
+            
         ]
     });
     var t24 = $("#table24").DataTable({
@@ -129,14 +130,14 @@ $(function () {
                         var day = new Date().getDate();
                         var date = day + "/" + (parseInt(month) + 1) + "/" + year;
                         let index = finishedGoodsOutNote_col.allFGON().length;
-                        let customerordercode = monClassesInstence.FGONSerial.genarateFGONCode(index);
+                        let customerordercode = finishedGoodsOutNoteClassesInstence.FGONSerial.genarateFGONCode(index);
                         var code = customerordercode;
                         var enterddate = date;
-                        var status = "PENDING";
-                        var finishedGoodsOutNoteMaterials = finishedGoodsOutNote_col.allFGONP();
+                        var status = "CLOSED";
+                        var finishedGoodsOutNoteProducts = finishedGoodsOutNote_col.allFGONP();
                         var remark = $("#finishedgoodsoutnote_remark").val();
                         var customerOrder = customerorderobj;
-                        setNewValues(code, enterddate, customerOrder, finishedGoodsOutNoteMaterials, undefined, remark, status);
+                        setNewValues(code, enterddate, customerOrder, finishedGoodsOutNoteProducts, undefined, remark, status);
                         submit();
                         Swal.fire(
                             'Submitted!',
@@ -177,12 +178,12 @@ $(function () {
                 },
                 success: function (data) {
                     $.each(data.content, function (i, item) {
-                        $.each(item.customerOrderMaterials, function (i, item) {
+                        $.each(item.customerOrderProducts, function (i, item) {
                             customerorder_col.addcustomerOrderProductstoArray(item.id, item.code, item.ordercode, item.customerOrder, item.bommaterial, item.requestedCount);
                         });
-                        customerorder_col.addCustomerOrdertoArray(item.id, item.code, item.jobID, item.jobNumber, item.customerid, item.totalAmount, item.grossAmount, item.remark, item.customerOrderProducts, item.printeddate, item.status);
+                        customerorder_col.addCustomerOrdertoArray(item.id, item.code, item.jobID, item.jobNumber, item.customerid, item.totalAmount, item.grossAmount, item.remark, item.customerOrderProducts, item.printeddate, item.status,item.enteredUser,item.enteredDate,item.acceptedUser,item.acceptedDate,item.invoices);
                         if (item.status == "INVOICED")
-                            t22.row.add([item.code, item.billOfMaterial.customerOrder.code, item.billOfMaterial.code, item.enterddate]).draw(false);
+                            t22.row.add([item.code, item.jobID, item.jobNumber, item.enteredDate]).draw(false);
                     });
                     setValues();
                     fadepageloder();
@@ -200,25 +201,6 @@ $(function () {
             });
         }
     }
-    function refreshgsmtable() {
-        t24.clear().draw(false);
-        $.ajax({
-            url: "http://localhost:8080/api/generalstorectrl/getgeneralstorelist",
-            dataType: "JSON",
-            headers: {
-                "Authorization": jwt
-            },
-            success: function (data) {
-                $.each(data.content, function (i, item) {
-                    if (item.status == "ACTIVE") {
-                        t24.row.add([item.materialid.code, item.materialid.description, item.itemcount - item.releasedItemcount, item.materialid.uomid.scode, item.requestedItemcount - item.releasedItemcount, item.materialid.uomid.scode]).draw(false);
-                        GeneralStoreDtos_col.addGeneralStoreDtostoArray(item.id, item.materialid, item.itemcount, item.requestedItemcount, item.releasedItemcount, item.status, item.enteredUser);
-                    }
-                });
-
-            }
-        })
-    }
     function refreshfinishedgoodsoutnotes() {
         $.ajax({
             url: "http://localhost:8080/api/finishedgoodsoutnotectrl/getfinishedgoodsoutnotes",
@@ -228,9 +210,8 @@ $(function () {
             },
             success: function (data) {
                 $.each(data.content, function (i, item) {
-                    finishedGoodsOutNote_col.addFGONtoArray(item.id, item.code, item.enterddate, item.customerOrder, item.finishedGoodsOutNoteMaterials, item.printeddate, item.remark, item.status)
+                    finishedGoodsOutNote_col.addFGONtoArray(item.id, item.code, item.enterddate, item.customerOrder, item.finishedGoodsOutNoteProducts, item.printeddate, item.remark, item.status)
                 });
-                refreshgsmtable();
             }
         })
     }
@@ -244,40 +225,13 @@ $(function () {
         $.ajax({
             url: url,
             method: method,
-            data: JSON.stringify(monObject),
+            data: JSON.stringify(finishedGoodsOutNoteObject),
             contentType: 'application/json',
             headers: {
                 "Authorization": jwt
             },
             success: function (data) {
-                var enteredUser = customerorderobj.enteredUser
-                var enteredUserEmail = enteredUser.email;
-                var enteredUserTpNo = enteredUser.contactNumbers.find(contactnoitem => contactnoitem.isdef == true).tpno
-                sendEmail(enteredUserEmail,"Material Out Note (MR IR: "+customerorderobj.code+")","Hello "+ enteredUser.firstname +",\nMaterial Requisition ID of "+ customerorderobj.code + " which is requested by you, have been released by "+jwtPayload.firstname +" " +jwtPayload.lastname +". The Material Out Note ID is "+ monObject.code +".");
-                sendSMS(enteredUserTpNo,"Hello%20"+ enteredUser.firstname +",%20Material%20Requisition%20ID%20of%20"+ customerorderobj.code +"%20which%20is%20entered%20by%20you,%20have%20been%20released%20by%20"+jwtPayload.firstname +"%20" +jwtPayload.lastname +".%20The%20Material%20Out%20Note%20ID%20is%20"+ monObject.code +".");
                 refreshtable();
-            }
-        })
-    }
-    function sendEmail(recipent,subject,body){
-        $.ajax({
-            url: "http://localhost:8080/api/emailctrl/sendemail",
-            method: "POST",
-            data: JSON.stringify({"toEmail": recipent,"subject":subject,"body":body}),
-            contentType: 'application/json',
-            headers: {
-                "Authorization": jwt
-            }
-        })
-    }
-    function sendSMS(receiver,massage){
-        $.ajax({
-            url: "http://localhost:8080/api/smsctrl/sendsms",
-            method: "POST",
-            data: JSON.stringify({"receiver":receiver,"massage":massage}),
-            contentType: 'application/json',
-            headers: {
-                "Authorization": jwt
             }
         })
     }
@@ -292,15 +246,15 @@ $(function () {
         addmoddel = undefined;
         t23.clear().draw(false);
         if (ordercode) {
-            customerorderobj = customerorder_col.getMR(ordercode);
-            customerOrderMaterialsobjarr = customerorderobj.customerOrderMaterials;
-            $.each(customerorderobj.customerOrderMaterials, function (i, item) {
-                t23.row.add([item.ordercode, item.bommaterial.material.code, item.bommaterial.material.description, item.requestedCount, item.bommaterial.material.uomid.scode]).draw(false);
+            customerorderobj = customerorder_col.getCustomerOrder(ordercode);
+            customerOrderProductsobjarr = customerorderobj.customerOrderProducts;
+            $.each(customerorderobj.customerOrderProducts, function (i, item) {
+                t23.row.add([item.code, item.product.code,item.product.name, item.product.desc, item.quantity]).draw(false);
             });
-            $("#finishedgoodsoutnote_customerid").val(customerorderobj.billOfMaterial.customerOrder.customerid.code + " - " + customerorderobj.billOfMaterial.customerOrder.customerid.firstname + " " + customerorderobj.billOfMaterial.customerOrder.customerid.lastname);
+            $("#finishedgoodsoutnote_customerid").val(customerorderobj.customerid.code + " - " + customerorderobj.customerid.firstname + " " + customerorderobj.customerid.lastname);
         } else {
             customerorderobj = null;
-            customerOrderMaterialsobjarr = [];
+            customerOrderProductsobjarr = [];
             addmoddel = undefined;
             materialavild = undefined;
             bomMaterialsobjarr = [];
@@ -310,54 +264,43 @@ $(function () {
             
         }
     }
-    function setNewValues(code, enterddate, customerOrder, finishedGoodsOutNoteMaterials, printeddate, remark, status) {
-        monObject = monClassesInstence.FinishedGoodsOutNoteDto;
-        if (code) monObject.code = code;
-        if (enterddate) monObject.enterddate = enterddate;
-        if (customerOrder) monObject.customerOrder = customerOrder;
-        if (finishedGoodsOutNoteMaterials) monObject.finishedGoodsOutNoteMaterials = finishedGoodsOutNoteMaterials;
-        if (printeddate) monObject.printeddate = printeddate;
-        if (remark) monObject.remark = remark;
-        if (status) monObject.status = status;
-        if (!monObject.enteredUser) monObject.enteredUser = jwtPayload;
-    }
-    function getgsdata(materilaid) {
-        var gsdto = GeneralStoreDtos_col.getGeneralStoreDtoByMaterialCode(materilaid);
-        if (((gsdto.itemcount - gsdto.releasedItemcount) - (gsdto.requestedItemcount - gsdto.releasedItemcount)) > 0) {
-            return true;
-        } else {
-            return false;
-        }
+    function setNewValues(code, enterddate, customerOrder, finishedGoodsOutNoteProducts, printeddate, remark, status) {
+        finishedGoodsOutNoteObject = finishedGoodsOutNoteClassesInstence.FinishedGoodsOutNoteDto;
+        if (code) finishedGoodsOutNoteObject.code = code;
+        if (enterddate) finishedGoodsOutNoteObject.enterddate = enterddate;
+        if (customerOrder) finishedGoodsOutNoteObject.customerOrder = customerOrder;
+        if (finishedGoodsOutNoteProducts) finishedGoodsOutNoteObject.finishedGoodsOutNoteProducts = finishedGoodsOutNoteProducts;
+        if (printeddate) finishedGoodsOutNoteObject.printeddate = printeddate;
+        if (remark) finishedGoodsOutNoteObject.remark = remark;
+        if (status) finishedGoodsOutNoteObject.status = status;
+        if (!finishedGoodsOutNoteObject.enteredUser) finishedGoodsOutNoteObject.enteredUser = jwtPayload;
     }
     function checkavilability() {
         var response = [];
-        var truematerials = [];
-        var falsematerials = [];
-        $.each(customerOrderMaterialsobjarr, function (i, item) {
-            if (getgsdata(item.bommaterial.material.code) == true) {
-                var code = item.bommaterial.material.code;
-                var truematerial = truematerials.find(material => material.code === code);
-                if (!truematerial) {
-                    item.bommaterial.material.releaseCount = item.requestedCount;
-                    truematerials.push(item.bommaterial.material);
+        var trueproducts = [];
+        var falseproducts = [];
+        $.each(customerOrderProductsobjarr, function (i, item) {
+            if ((item.quantity - item.totFinishedCount) <= 0) {
+                var trueproduct = trueproducts.find(product => product.code === item.code);
+                if (!trueproduct) {
+                    trueproducts.push(item);
                 } else {
-                    truematerial.releaseCount += item.requestedCount;
+                    trueproduct.totFinishedCount += item.totFinishedCount;
                 }
             } else {
-                var code = item.bommaterial.material.code;
-                if (!falsematerials.find(material => material.code === code)) {
-                    falsematerials.push(item.bommaterial.material);
+                if (!falseproducts.find(product => product.code === item.code)) {
+                    falseproducts.push(item);
                 }
             }
         });
-        response["truematerials"] = truematerials;
-        response["falsematerials"] = falsematerials;
+        response["trueproducts"] = trueproducts;
+        response["falseproducts"] = falseproducts;
         return response;
     }
     //end of functions
     //triggers
     $('#table22 tbody').on('click', 'tr', function () {
-        if (customerorder_col.allMRPending().length != 0) {
+        if (customerorder_col.allInvoicedCustomerOrders().length != 0) {
             if ($(this).hasClass('selected')) {
                 $(this).removeClass('selected');
                 setValues();
@@ -381,36 +324,33 @@ $(function () {
     })
     $(document).on("click", "#addFGON", function () {
         var res = checkavilability();
-        if (res.falsematerials.length == 0 && res.truematerials.length != 0) {
+        if (res.falseproducts.length == 0 && res.trueproducts.length != 0) {
             addmoddel = "add";
             let index = finishedGoodsOutNote_col.allFGON().length;
-            let customerordercode = monClassesInstence.FGONSerial.genarateFGONCode(index);
+            let customerordercode = finishedGoodsOutNoteClassesInstence.FGONSerial.genarateFGONCode(index);
             $("#finishedgoodsoutnote_id").val(customerordercode);
             enablefillin("#finishedgoodsoutnote_remark");
-            $.each(res.truematerials, function (i, item) {
+            $.each(res.trueproducts, function (i, item) {
                 finishedGoodsOutNote_col.addFGONPtoArray(undefined, undefined, undefined, item, item.releaseCount)
             })
         } else {
             addmoddel = undefined;
             var fmtstr = "";
-            console.log(res.falsematerials)
-            $.each(res.falsematerials, function (i, item) {
+            console.log(res.falseproducts)
+            $.each(res.falseproducts, function (i, item) {
                 fmtstr += item.code + ", ";
             })
+            fmtstr = fmtstr.replace(/,\s*$/, "")
             Swal.fire({
                 icon: 'warning',
                 title: 'Warning!',
                 text: 'Material Shortage on ' + fmtstr + '. Therefor, material Out note can not process at the moment.',
             });
         }
-
-
     })
     $(document).on("click", "#addPOM", function () {
         setMRMValues()
     })
-
-    //end of triggers
     $("#podiv").hide();
     jwtPayload = getJwtPayload();
     formctrl();
