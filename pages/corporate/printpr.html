@@ -7,6 +7,10 @@
         .usr-card-body.met {
             min-height: 370px;
         }
+
+        .usr-card-body.popup {
+            min-height: 310px;
+        }
     </style>
 </head>
 
@@ -122,8 +126,7 @@
                                             </div>
                                         </div>
                                         <div class="col-lg-6 table-bordered ">
-                                            <label for=""
-                                                    class="col-form-label">Material Details</label>
+                                            <label for="" class="col-form-label">Material Details</label>
                                             <div class="row">
                                                 <div class="card-body">
                                                     <table id="table18" class="table table-bordered table-striped">
@@ -178,7 +181,8 @@
                                             id="acceptPurchaseRequisitions">
                                             <i class="fas fa-check-circle"></i>
                                             Print</button>
-                                            <button type="button" class="btn btn-default formbtn" data-dismiss="modal" id="cancelPRPrint">
+                                        <button type="button" class="btn btn-default formbtn" data-dismiss="modal"
+                                            id="cancelPRPrint">
                                             <i class="fa fa-times" aria-hidden="true"></i> Cancel</button>
                                     </div>
                                 </div>
@@ -212,7 +216,7 @@
                     <div class="row">
                         <div class="col-12">
                             <h2 class="page-header">
-                                <i class="fa-globe"></i> G R S Garment & Industries(PVT)Ltd.
+                                <i class="fa fa-globe"></i> G R S Garment & Industries(PVT)Ltd.
                                 <small class="float-right"><span>Purchase Requisition</span></small>
                             </h2>
                         </div>
@@ -351,6 +355,38 @@
             </div>
         </div>
     </div>
+    <!-- usergroup list modal -->
+    <div class="modal fade" id="modal-prlist" style="display: none;" tabindex="-1" role="dialog"
+        aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">List of Pending and Submited PRs</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="card-body">
+                        <table id="table13" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>PR ID</th>
+                                    <th>Quotation No</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- /.users group modal -->
     <!-- ./wrapper -->
     <script src="../../dist/js/pages/clientclasses.js"></script>
     <script src="../../dist/js/pages/materialclasses.js"></script>

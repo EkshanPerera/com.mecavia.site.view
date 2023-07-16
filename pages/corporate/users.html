@@ -1,9 +1,9 @@
-
 <head>
     <style>
         .usr-card-body {
-            min-height:530px;
+            min-height: 530px;
         }
+
         .usr-card-body.popup {
             min-height: 310px;
         }
@@ -16,256 +16,250 @@
             <div class="bar"></div>
             <div class="bar"></div>
             <div class="bar"></div>
-          </div>
+        </div>
     </div>
-    <div class="wrapper"> 
-            <!-- Content Header (Page header) -->
-            <section class="content-header">
-                <div class="container-fluid">
-                    <div class="row mb-2">
-                        <div class="col-sm-6">
-                            <h1>User</h1>
-                        </div>
-                        <div class="col-sm-6">
-                            <ol class="breadcrumb float-sm-right">
-                                <li class="breadcrumb-item"><a href="#">Home</a></li>
-                                <li class="breadcrumb-item ">Corporate Data</li>
-                                <li class="breadcrumb-item active">Users</li>
-                            </ol>
-                        </div>
+    <div class="wrapper">
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1>User</h1>
                     </div>
-                </div><!-- /.container-fluid -->
-            </section>
-
-            <!-- Main content -->
-            <section class="content">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-6">
-                            <div class="card card card-primary card-outline">
-                                <div class="card-header">
-                                    <h3 class="card-title">User Details</h3>
-                                </div>
-                                <!-- /.card-header -->
-                                <div class="card-body" id="usrrole-card-body">
-                                    <!-- table of user details  -->
-                                    <table id="table4" class="table table-bordered table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th>User ID</th>
-                                                <th>First Name</th>
-                                                <th>Last Name</th>
-                                                <th>Email</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <!-- /.card-body -->
-                            </div>
-                            <!-- /.card -->
-                        </div>
-                        <div class="col-6">
-                            <!-- /.card -->
-                            <div class="card card-info">
-                                <!-- form start -->
-                                <form class="form-horizontal" id="quickForm03">
-                                    <div class="card-header">
-                                        <!-- set user details  -->
-                                        <h3 class="card-title">User Settings</h3>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="row">
-                                            <div class="col-lg-6">
-                                                <div class="form-group">
-                                                    <!-- user id -->
-                                                    <label for="user_code" class="col-form-label">User ID</label>
-                                                    <div class="col-sm-10">
-                                                        <input type="input" name="userid"
-                                                            class="form-control formfillin" id="user_code"
-                                                             placeholder=""><!-- autofill -->
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-lg-6">
-                                                <div class="form-group">
-                                                    <!-- user firstname -->
-                                                    <label for="user_firstname" class="col-form-label">First
-                                                        Name</label>
-                                                    <div class="col-sm-10">
-                                                        <input type="input" name="firstname"
-                                                            class="form-control formfillin" id="user_firstname"
-                                                            placeholder=""> <!-- input field -->
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-6">
-                                                <div class="form-group">
-                                                    <!-- user firstname -->
-                                                    <label for="user_lastname" class="col-form-label">Last Name</label>
-                                                    <div class="col-sm-10">
-                                                        <input type="input" name="lastname"
-                                                            class="form-control formfillin" id="user_lastname"
-                                                            placeholder="">  <!-- input field -->
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-lg-6">
-                                                <div class="form-group">
-                                                    <label for="user_email" class="col-form-label">E-mail</label>
-                                                    <div class="col-sm-10">
-                                                        <input type="input" name="email" class="form-control formfillin"
-                                                            id="user_email" placeholder="">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-6">
-                                                <div class="form-group">
-                                                    <label for="user_password" class="col-form-label">Password</label>
-                                                    <div class="col-sm-10">
-                                                        <input type="input" name="password"
-                                                            class="form-control formfillin" id="user_password"
-                                                            placeholder="">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-lg-6">
-                                                <div class="form-group">
-                                                    <label for="user_brole" class="col-form-label">Business
-                                                        Role</label>
-                                                    <div class="col-sm-10">
-                                                        <select class="form-control  formfillin" id="user_brole"
-                                                            name="businessrole">
-                                                            <option>USER</option>
-                                                            <option>SUPER USER</option>
-                                                            <option>ADMIN</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-lg-6">
-                                                <div class="form-group">
-                                                    <label for="user_group" class="col-form-label">User Group</label>
-                                                    <div class="col-sm-10">
-                                                        <div class="input-group input-group-sm">
-                                                            <input type="text" name="usergroup"
-                                                                class="form-control formfillin" id="user_userGroupid">
-                                                            <span class="input-group-append">
-                                                                <button type="button" id="user_userGroupidbtn"
-                                                                    class="btn btn-info btn-flat formfillin"
-                                                                    data-toggle="modal"
-                                                                    data-target="#modal-grouplist">Select</button>
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-6">
-                                                <div class="form-group">
-                                                    <label for="user_role_select" class="col-form-label">User
-                                                        Role</label>
-                                                    <div class="col-sm-10">
-                                                        <div class="input-group input-group-sm">
-                                                            <input type="text" name="userrole"
-                                                                class="form-control formfillin" id="user_roleid">
-                                                            <span class="input-group-append">
-                                                                <button type="button" id="user_roleidbtn"
-                                                                    class="btn btn-info btn-flat formfillin"
-                                                                    data-toggle="modal"
-                                                                    data-target="#modal-rolelist">Select</button>
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-lg-6">
-                                                <div class="form-group">
-                                                    <label for="user_status" class="col-form-label">Addresses</label>
-                                                    <div class="col-sm-10">
-                                                        <button type="button" class="btn btn-block btn-outline-info"
-                                                            data-toggle="modal"
-                                                            data-target="#modal_addresslist">Show</button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-6">
-                                                <div class="form-group">
-                                                    <label for="user_status" class="col-form-label">Contact
-                                                        Numbers</label>
-                                                    <div class="col-sm-10">
-                                                        <button type="button" class="btn btn-block btn-outline-info"
-                                                            data-toggle="modal"
-                                                            data-target="#modal_contactlist">Show</button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-lg-6">
-                                                <div class="form-group">
-                                                    <label for="user_status" class="col-form-label">Status</label>
-                                                    <div class="col-sm-10">
-                                                        <input type="input" name="status"
-                                                            class="form-control formfillin" id="user_status"
-                                                            placeholder="">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-lg-6">
-                                                <div class="form-group">
-                                                    <div class="custom-control custom-checkbox">
-                                                        <input class="custom-control-input" type="checkbox"
-                                                            id="user_firstLogin">
-                                                        <label for="user_firstLogin" class="custom-control-label">First
-                                                            login</label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- /.card-body -->
-                                    <div class="card-footer">
-                                        <button type="button" class="btn btn-primary formbtn" id="addUserbtn"><i
-                                                class="fa fa-plus" aria-hidden="true"></i> Add</button>
-                                        <button type="button" class="btn btn-warning formbtn" id="setUserbtn"> <i
-                                                class="far fa-edit"></i> Modify</button>
-                                        <button type="button" class="btn btn-danger formbtn" id="removeUserbtn"> <i
-                                                class="far fa-trash-alt"></i> Delete</button>
-                                        <div class="float-right">
-                                            <button type="submit" class="btn btn-success formbtn" id="submitUserbtn">
-                                                <i class="far fa-save"></i> Save</button>
-                                        </div>
-                                    </div>
-                                    <!-- /.card-footer -->
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- /.row -->
-                    <div class="row">
-                        <!-- /.col -->
-                        <div class="col-6">
-
-                        </div>
-
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="#">Home</a></li>
+                            <li class="breadcrumb-item ">Corporate Data</li>
+                            <li class="breadcrumb-item active">Users</li>
+                        </ol>
                     </div>
                 </div>
-                <!-- /.container-fluid -->
-            </section>
-            <!-- /.content -->
+            </div><!-- /.container-fluid -->
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-6">
+                        <div class="card card card-primary card-outline">
+                            <div class="card-header">
+                                <h3 class="card-title">User Details</h3>
+                            </div>
+                            <!-- /.card-header -->
+                            <div class="card-body" id="usrrole-card-body">
+                                <!-- table of user details  -->
+                                <table id="table4" class="table table-bordered table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>User ID</th>
+                                            <th>First Name</th>
+                                            <th>Last Name</th>
+                                            <th>Email</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!-- /.card-body -->
+                        </div>
+                        <!-- /.card -->
+                    </div>
+                    <div class="col-6">
+                        <!-- /.card -->
+                        <div class="card card-info">
+                            <!-- form start -->
+                            <form class="form-horizontal" id="quickForm03">
+                                <div class="card-header">
+                                    <!-- set user details  -->
+                                    <h3 class="card-title">User Settings</h3>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <div class="form-group">
+                                                <!-- user id -->
+                                                <label for="user_code" class="col-form-label">User ID</label>
+                                                <div class="col-sm-10">
+                                                    <input type="input" name="userid" class="form-control formfillin"
+                                                        id="user_code" placeholder=""><!-- autofill -->
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <div class="form-group">
+                                                <!-- user firstname -->
+                                                <label for="user_firstname" class="col-form-label">First
+                                                    Name</label>
+                                                <div class="col-sm-10">
+                                                    <input type="input" name="firstname" class="form-control formfillin"
+                                                        id="user_firstname" placeholder=""> <!-- input field -->
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="form-group">
+                                                <!-- user firstname -->
+                                                <label for="user_lastname" class="col-form-label">Last Name</label>
+                                                <div class="col-sm-10">
+                                                    <input type="input" name="lastname" class="form-control formfillin"
+                                                        id="user_lastname" placeholder=""> <!-- input field -->
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <div class="form-group">
+                                                <label for="user_email" class="col-form-label">E-mail</label>
+                                                <div class="col-sm-10">
+                                                    <input type="input" name="email" class="form-control formfillin"
+                                                        id="user_email" placeholder="">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="form-group">
+                                                <label for="user_password" class="col-form-label">Password</label>
+                                                <div class="col-sm-10">
+                                                    <input type="input" name="password" class="form-control formfillin"
+                                                        id="user_password" placeholder="">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <div class="form-group">
+                                                <label for="user_brole" class="col-form-label">Business
+                                                    Role</label>
+                                                <div class="col-sm-10">
+                                                    <select class="form-control  formfillin" id="user_brole"
+                                                        name="businessrole">
+                                                        <option>USER</option>
+                                                        <option>SUPER USER</option>
+                                                        <option>ADMIN</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <div class="form-group">
+                                                <label for="user_group" class="col-form-label">User Group</label>
+                                                <div class="col-sm-10">
+                                                    <div class="input-group input-group-sm">
+                                                        <input type="text" name="usergroup"
+                                                            class="form-control formfillin" id="user_userGroupid">
+                                                        <span class="input-group-append">
+                                                            <button type="button" id="user_userGroupidbtn"
+                                                                class="btn btn-info btn-flat formfillin"
+                                                                data-toggle="modal"
+                                                                data-target="#modal-grouplist">Select</button>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="form-group">
+                                                <label for="user_role_select" class="col-form-label">User
+                                                    Role</label>
+                                                <div class="col-sm-10">
+                                                    <div class="input-group input-group-sm">
+                                                        <input type="text" name="userrole"
+                                                            class="form-control formfillin" id="user_roleid">
+                                                        <span class="input-group-append">
+                                                            <button type="button" id="user_roleidbtn"
+                                                                class="btn btn-info btn-flat formfillin"
+                                                                data-toggle="modal"
+                                                                data-target="#modal-rolelist">Select</button>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <div class="form-group">
+                                                <label for="user_status" class="col-form-label">Addresses</label>
+                                                <div class="col-sm-10">
+                                                    <button type="button" class="btn btn-block btn-outline-info"
+                                                        data-toggle="modal"
+                                                        data-target="#modal_addresslist">Show</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="form-group">
+                                                <label for="user_status" class="col-form-label">Contact
+                                                    Numbers</label>
+                                                <div class="col-sm-10">
+                                                    <button type="button" class="btn btn-block btn-outline-info"
+                                                        data-toggle="modal"
+                                                        data-target="#modal_contactlist">Show</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <div class="form-group">
+                                                <label for="user_status" class="col-form-label">Status</label>
+                                                <div class="col-sm-10">
+                                                    <input type="input" name="status" class="form-control formfillin"
+                                                        id="user_status" placeholder="">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <div class="form-group">
+                                                <div class="custom-control custom-checkbox">
+                                                    <input class="custom-control-input" type="checkbox"
+                                                        id="user_firstLogin">
+                                                    <label for="user_firstLogin" class="custom-control-label">First
+                                                        login</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- /.card-body -->
+                                <div class="card-footer">
+                                    <button type="button" class="btn btn-primary formbtn" id="addUserbtn"><i
+                                            class="fa fa-plus" aria-hidden="true"></i> Add</button>
+                                    <button type="button" class="btn btn-warning formbtn" id="setUserbtn"> <i
+                                            class="far fa-edit"></i> Modify</button>
+                                    <button type="button" class="btn btn-danger formbtn" id="removeUserbtn"> <i
+                                            class="far fa-trash-alt"></i> Delete</button>
+                                    <div class="float-right">
+                                        <button type="submit" class="btn btn-success formbtn" id="submitUserbtn">
+                                            <i class="far fa-save"></i> Save</button>
+                                    </div>
+                                </div>
+                                <!-- /.card-footer -->
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.row -->
+                <div class="row">
+                    <!-- /.col -->
+                    <div class="col-6">
+
+                    </div>
+
+                </div>
+            </div>
+            <!-- /.container-fluid -->
+        </section>
+        <!-- /.content -->
         <!-- Control Sidebar -->
         <aside class="control-sidebar control-sidebar-dark">
             <!-- Control sidebar content goes here -->
@@ -563,7 +557,7 @@
                             <button type="submit" class="btn btn-success formbtn" id="submitUserContbtn">
                                 <i class="far fa-save"></i> Save</button>
                             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                            
+
                         </div>
                     </div>
                 </form>
@@ -574,8 +568,8 @@
     </div>
     <!-- /.users contacts modal -->
     <script src="../../dist/js/pages/usergroupclasses.js"></script>
-    <script src = "../../dist/js/pages/userclasses.js"></script>
-    <script src = "../../dist/js/pages/users.js"></script>
+    <script src="../../dist/js/pages/userclasses.js"></script>
+    <script src="../../dist/js/pages/users.js"></script>
     <!-- Page specific script -->
-    
+
 </body>

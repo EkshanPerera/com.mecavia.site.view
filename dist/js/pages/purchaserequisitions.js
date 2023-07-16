@@ -279,7 +279,7 @@ $(function () {
                 },
                 success: function (data) {
                     $.each(data.content, function (i, item) {
-                        purchaserequisition_col.addPurchaseRequisitiontoArray(item.id, item.prcode, item.pocode, item.supplierid, item.status, item.remark, item.totalAmount, item.purchaseRequisitionMaterials, item.quotationno);
+                        purchaserequisition_col.addPurchaseRequisitiontoArray(item.id, item.prcode, item.pocode, item.supplierid, item.status, item.remark, item.totalAmount, item.purchaseRequisitionMaterials, item.quotationno, item.enteredUser, item.printededUser, item.acceptedUser ,item.poPrintededUser );
                         t17.row.add([item.prcode, item.pocode, item.quotationno, item.supplierid.code, item.supplierid.firstname + " " + item.supplierid.lastname, item.status]).draw(false);
                     });
                     setValues();
@@ -520,7 +520,7 @@ $(function () {
             if (supplierid) purchaserequisitionobj.supplierid = supplierid;
             if (purchaseRequisitionMaterials) purchaserequisitionobj.purchaseRequisitionMaterials = purchaseRequisitionMaterials;
             if (quotationno) purchaserequisitionobj.quotationno = quotationno;
-
+            if (!purchaserequisitionobj.enteredUser)purchaserequisitionobj.enteredUser = jwtPayload;
         } else {
             purchaserequisitionobj = purchaserequisitionClassesInstence.purchaserequisition;
             setNewValues(code, remark, totalamount, status, supplierid, purchaseRequisitionMaterials, quotationno);

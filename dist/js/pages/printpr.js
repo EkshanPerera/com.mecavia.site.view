@@ -49,7 +49,12 @@ $(function () {
             null
         ]
     });
-
+    var t13 = $("#table13").DataTable({
+        "order": [[0, "desc"]],
+        pageLength: 5,
+        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body popup"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+        "autoWidth": false,
+    })
     var Toast = Swal.mixin({
         toast: true,
         position: 'top-end',
@@ -95,7 +100,6 @@ $(function () {
                         $("#podiv").show();
                         $("#podiv").print();
                         $("#podiv").hide();
-
                     }
                 })
             } else {
@@ -121,6 +125,7 @@ $(function () {
             purchaserequisition_col.clear();
             material_col.clear();
             cli_col.clear();
+            t13.clear().draw(false);
             t18.clear().draw(false);
             $.ajax({
                 url: "http://localhost:8080/api/purchaserequisitionctrl/getpurchaserequisitions",
@@ -128,12 +133,15 @@ $(function () {
                 headers: {
                     "Authorization": jwt
                 },
-                success: function (data) {
+                success: function (data) { 
                     $.each(data.content, function (i, item) {
                         if (item.status == "PENDING" || item.status == "SUBMIT") {
-                            purchaserequisition_col.addPurchaseRequisitiontoArray(item.id, item.prcode, item.pocode, item.supplierid, item.status, item.remark, item.totalAmount, item.purchaseRequisitionMaterials, item.quotationno, item.prprinteddate);
+                            purchaserequisition_col.addPurchaseRequisitiontoArray(item.id, item.prcode, item.pocode, item.supplierid, item.status, item.remark, item.totalAmount, item.purchaseRequisitionMaterials, item.quotationno, item.prprinteddate, item.enteredUser, item.printededUser, item.acceptedUser, item.poPrintededUser);
+                            t13.row.add([item.prcode,item.quotationno]).draw("false")
                         }
                     });
+                    var $tableRow = $("#table13 tr td:contains('" + selectedcode + "')").closest("tr");
+                    $tableRow.addClass("selected");
                     setValues(selectedcode);
                     fadepageloder();
                 }
@@ -294,18 +302,35 @@ $(function () {
     function setNewValues(prprinteddate) {
         if (purchaserequisitionobj) {
             if (!purchaserequisitionobj.prprinteddate) purchaserequisitionobj.prprinteddate = prprinteddate;
+            if (!purchaserequisitionobj.printededUser) purchaserequisitionobj.printededUser = jwtPayload;
         } else {
             purchaserequisitionobj = purchaserequisitionClassesInstenceInstence.purchaserequisition;
-            setNewValues(status);
+            setNewValues(prprinteddate);
         }
     }
     //end of functions
     //triggers
+    $('#table13 tbody').on('click', 'tr', function () {
+        $("#modal-prlist").modal("hide");
+        if ($(this).hasClass('selected')) {
+            $(this).removeClass('selected');
+            selectedcode = undefined;
+            $("#purchaserequisition_code").val(selectedcode)
+            refreshtable();
+        } else {
+            t13.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+            selectedcode = $(this).children("td:nth-child(1)").text();
+            $("#purchaserequisition_code").val(selectedcode)
+            refreshtable();
+        }
+    });
     $(document).off("click", "#btnprmpo");
     $(document).off("click", "#cancelPRPrint");
     $(document).on("click", "#btnprmpo", function () {
-        selectedcode = $("#purchaserequisition_code").val();
-        refreshtable();
+        $("#modal-prlist").modal("show");
+        // selectedcode = $("#purchaserequisition_code").val();
+        // refreshtable();
     })
     $(document).on("click", "#cancelPRPrint", function () {
         selectedcode = "";

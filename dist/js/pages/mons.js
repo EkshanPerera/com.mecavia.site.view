@@ -138,6 +138,11 @@ $(function () {
                         var materialRequisition = materialrequisitionobj;
                         setNewValues(code, enterddate, materialRequisition, materialOutNoteMaterials, undefined, remark, status);
                         submit();
+                        Swal.fire(
+                            'Submitted!',
+                            'The PR has been approved.',
+                            'success'
+                        )
                     }
                 })
             } else {
@@ -175,19 +180,16 @@ $(function () {
                         $.each(item.materialRequisitionMaterials, function (i, item) {
                             materialrequisition_col.addMRMaterialstoArray(item.id, item.code, item.ordercode, item.materialRequisition, item.bommaterial, item.requestedCount);
                         });
-                        materialrequisition_col.addMRtoArray(item.id, item.code, item.enterddate, item.billOfMaterial, item.materialRequisitionMaterials, item.printeddate, item.status);
+                        materialrequisition_col.addMRtoArray(item.id, item.code, item.enterddate, item.billOfMaterial, item.materialRequisitionMaterials, item.printeddate, item.status,item.enteredUser);
                         if (item.status == "PENDING")
                             t22.row.add([item.code, item.billOfMaterial.customerOrder.code, item.billOfMaterial.code, item.enterddate]).draw(false);
                     });
-                    setValues(selectedcode);
+                    setValues();
                     fadepageloder();
-                    refreshgsmtable();
-                    refreshmaterialoutnotes()
+                    refreshmaterialoutnotes();
                 },
                 error: function (xhr, status, error) {
                     fadepageloder();
-                    refreshgsmtable();
-                    refreshmaterialoutnotes();
                 }
             })
         } else {
@@ -210,9 +212,8 @@ $(function () {
                 $.each(data.content, function (i, item) {
                     if (item.status == "ACTIVE") {
                         t24.row.add([item.materialid.code, item.materialid.description, item.itemcount - item.releasedItemcount, item.materialid.uomid.scode, item.requestedItemcount - item.releasedItemcount, item.materialid.uomid.scode]).draw(false);
-                        GeneralStoreDtos_col.addGeneralStoreDtostoArray(item.id, item.materialid, item.itemcount, item.requestedItemcount, item.releasedItemcount, item.status);
+                        GeneralStoreDtos_col.addGeneralStoreDtostoArray(item.id, item.materialid, item.itemcount, item.requestedItemcount, item.releasedItemcount, item.status, item.enteredUser);
                     }
-
                 });
 
             }
@@ -229,7 +230,7 @@ $(function () {
                 $.each(data.content, function (i, item) {
                     materialOutNote_col.addMONtoArray(item.id, item.code, item.enterddate, item.materialRequisition, item.materialOutNoteMaterials, item.printeddate, item.remark, item.status)
                 });
-
+                refreshgsmtable();
             }
         })
     }
@@ -249,8 +250,34 @@ $(function () {
                 "Authorization": jwt
             },
             success: function (data) {
+                var enteredUser = materialrequisitionobj.enteredUser
+                var enteredUserEmail = enteredUser.email;
+                var enteredUserTpNo = enteredUser.contactNumbers.find(contactnoitem => contactnoitem.isdef == true).tpno
+                sendEmail(enteredUserEmail,"Material Out Note (MR IR: "+materialrequisitionobj.code+")","Hello "+ enteredUser.firstname +",\nMaterial Requisition ID of "+ materialrequisitionobj.code + " which is requested by you, have been released by "+jwtPayload.firstname +" " +jwtPayload.lastname +". The Material Out Note ID is "+ monObject.code +".");
+                sendSMS(enteredUserTpNo,"Hello%20"+ enteredUser.firstname +",%20Material%20Requisition%20ID%20of%20"+ materialrequisitionobj.code +"%20which%20is%20entered%20by%20you,%20have%20been%20released%20by%20"+jwtPayload.firstname +"%20" +jwtPayload.lastname +".%20The%20Material%20Out%20Note%20ID%20is%20"+ monObject.code +".");
                 refreshtable();
-
+            }
+        })
+    }
+    function sendEmail(recipent,subject,body){
+        $.ajax({
+            url: "http://localhost:8080/api/emailctrl/sendemail",
+            method: "POST",
+            data: JSON.stringify({"toEmail": recipent,"subject":subject,"body":body}),
+            contentType: 'application/json',
+            headers: {
+                "Authorization": jwt
+            }
+        })
+    }
+    function sendSMS(receiver,massage){
+        $.ajax({
+            url: "http://localhost:8080/api/smsctrl/sendsms",
+            method: "POST",
+            data: JSON.stringify({"receiver":receiver,"massage":massage}),
+            contentType: 'application/json',
+            headers: {
+                "Authorization": jwt
             }
         })
     }
@@ -278,6 +305,9 @@ $(function () {
             materialavild = undefined;
             bomMaterialsobjarr = [];
             $("#materialoutnote_customerid").val(undefined);
+            $("#materialoutnote_id").val(undefined);
+            $("#materialoutnote_remark").val(undefined);
+            
         }
     }
     function setNewValues(code, enterddate, materialRequisition, materialOutNoteMaterials, printeddate, remark, status) {
@@ -289,6 +319,7 @@ $(function () {
         if (printeddate) monObject.printeddate = printeddate;
         if (remark) monObject.remark = remark;
         if (status) monObject.status = status;
+        if (!monObject.enteredUser) monObject.enteredUser = jwtPayload;
     }
     function getgsdata(materilaid) {
         var gsdto = GeneralStoreDtos_col.getGeneralStoreDtoByMaterialCode(materilaid);
@@ -361,7 +392,8 @@ $(function () {
             })
         } else {
             addmoddel = undefined;
-            var fmtstr;
+            var fmtstr = "";
+            console.log(res.falsematerials)
             $.each(res.falsematerials, function (i, item) {
                 fmtstr += item.code + ", ";
             })

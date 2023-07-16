@@ -29,7 +29,12 @@ $(function () {
         pageLength: 5,
         dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>'
     });
-
+    var t13 = $("#table13").DataTable({
+        "order": [[0, "desc"]],
+        pageLength: 5,
+        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body popup"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+        "autoWidth": false,
+    })
     var Toast = Swal.mixin({
         toast: true,
         position: 'top-end',
@@ -130,12 +135,12 @@ $(function () {
     }
     function refreshtable() {
         if (jwtPayload.roleid.accIconList.find(accicon => accicon.status == "ACTIVE" && accicon.code == "AI00403") != undefined || jwtPayload.businessRole == "ADMIN") {
-
             customerorder_col.clear();
             finishedgoodsinnote_col.clear();
             addmoddel = undefined;
             t28.clear().draw(false);
             t29.clear().draw(false);
+            t13.clear().draw(false);
             $.ajax({
                 url: "http://localhost:8080/api/customerorderctrl/getcustomerorders",
                 dataType: "JSON",
@@ -146,8 +151,11 @@ $(function () {
                     $.each(data.content, function (i, item) {
                         if (item.status == "ACCEPTED") {
                             $.each(item.customerOrderProducts, function (i, item) {
-                                customerorder_col.addcustomerOrderProductstoArray(item.id, item.code, item.product, item.unitrate, item.quantity);
+                                customerorder_col.addcustomerOrderProductstoArray(item.id, item.code, item.product, item.unitrate, item.quantity,item.totFinishedCount);
                             })
+                            t13.row.add([item.jobID,item.code,item.jobNumber]).draw(false);
+                            var $tableRow = $("#table13 tr td:contains('" + selectedcode + "')").closest("tr");
+                            $tableRow.addClass("selected");
                             customerorder_col.addCustomerOrdertoArray(item.id, item.code, item.jobID, item.jobNumber, item.customerid, item.totalAmount, item.grossAmount, item.remark, item.customerOrderProducts, item.printeddate, item.status);
                         }
                     });
@@ -198,7 +206,6 @@ $(function () {
         showpageloder();
         var url;
         var method;
-
         url = "http://localhost:8080/api/finishedgoodsinnotectrl/savefinishedgoodsinnote";
         method = "POST";
         $.ajax({
@@ -214,6 +221,7 @@ $(function () {
             }
         })
     }
+
     function formctrl() {
         $(".formfillin").prop("disabled", true);
     }
@@ -360,14 +368,29 @@ $(function () {
         }
 
     });
-
+    $('#table13 tbody').on('click', 'tr', function () {
+        $("#modal-colist").modal("hide");
+        if ($(this).hasClass('selected')) {
+            $(this).removeClass('selected');
+            selectedcode = undefined;
+            $("#purchaserequisition_code").val(selectedcode)
+            refreshtable();
+        } else {
+            t13.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+            selectedcode = $(this).children("td:nth-child(1)").text();
+            $("#purchaserequisition_code").val(selectedcode)
+            refreshtable();
+        }
+    });
     $(document).off("click", "#btncoppo");
     $(document).off("click", "#addFGIN");
     $(document).off("click", "#addCOP");
 
     $(document).on("click", "#btncoppo", function () {
-        selectedcode = $("#purchaseorder_code").val();
-        refreshtable();
+        $("#modal-colist").modal("show");
+        // selectedcode = $("#purchaseorder_code").val();
+        // refreshtable();
     })
     $(document).on("click", "#addFGIN", function () {
         if (customerorderobj) {

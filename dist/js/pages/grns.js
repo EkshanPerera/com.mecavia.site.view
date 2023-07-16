@@ -37,6 +37,12 @@ $(function () {
             null
         ]
     });
+    var t13 = $("#table13").DataTable({
+        "order": [[0, "desc"]],
+        pageLength: 5,
+        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body popup"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+        "autoWidth": false,
+    })
     var t26 = $("#table26").DataTable({
         "order": [[0, "desc"]],
         pageLength: 5,
@@ -127,7 +133,7 @@ $(function () {
         unhighlight: function (element, errorClass, validClass) {
             $(element).removeClass('is-invalid');
         }, submitHandler: function () {
-            if (addmoddel) {
+            if (addmoddel && goodsreceivednote_col.allNewGRNNMaterials() != 0) {
                 Swal.fire({
                     title: 'Are you sure?',
                     text: "You won't be able to get another original copy!",
@@ -160,11 +166,20 @@ $(function () {
                     }
                 })
             } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Please enter the valid PR number!',
-                });
+                if(addmoddel == undefined){
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Please enter the valid PR number!',
+                    });
+                }else{
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Arrived Material List can not be empty!',
+                    });
+                }
+                
             }
         }
     });
@@ -181,6 +196,7 @@ $(function () {
             purchaserequisition_col.clear();
             goodsreceivednote_col.clear();
             addmoddel = undefined;
+            t13.clear().draw(false);
             t25.clear().draw(false);
             t26.clear().draw(false);
             $.ajax({
@@ -195,8 +211,11 @@ $(function () {
                             $.each(item.purchaseRequisitionMaterials, function (i, item) {
                                 purchaserequisition_col.addpurchaseRequisitionMaterialstoArray(item.id, item.code, item.material, item.unitrate, item.quantity);
                             })
+                            t13.row.add([item.pocode,item.prcode,item.quotationno]).draw("false")
                             purchaserequisition_col.addPurchaseRequisitiontoArray(item.id, item.prcode, item.pocode, item.supplierid, item.status, item.remark, item.totalAmount, item.purchaseRequisitionMaterials, item.printeddate);
                         }
+                        var $tableRow = $("#table13 tr td:contains('" + selectedcode + "')").closest("tr");
+                        $tableRow.addClass("selected");
                     });
                     $.ajax({
                         url: "http://localhost:8080/api/goodsreceivednotectrl/getgoodsreceivednotes",
@@ -359,6 +378,20 @@ $(function () {
             purchaserequisitionobj = purchaserequisition_col.getPurchaseOrder(code);
             if (purchaserequisitionobj) {
                 purchaseRequisitionMaterialsobjarr = purchaserequisitionobj.purchaseRequisitionMaterials;
+                $("#purchaserequisition_code").val(undefined);
+                $("#purchaserequisition_supplierid").val(undefined);
+                $("#grn_lastgrn").val(undefined);
+                $("#grn_arrivedcount").val(undefined)
+                $("#grn_code").val(undefined);
+                $("#grn_invoiceno").val(undefined);
+                $("#grn_invoicedate").val(undefined);
+                $("#grn_mrano").val(undefined);
+                $("#grn_mradate").val(undefined);
+                $("#grn_remark").val(undefined);
+                $("#grn_orderno").val(undefined);
+                $("#grn_outstanding").val(undefined);
+                goodsreceivednote_col.cleargrnm();
+                t27.clear().draw(false);
                 $("#purchaserequisition_code").val(purchaserequisitionobj.prcode);
                 $("#purchaseorder_code").val(purchaserequisitionobj.pocode);
                 $("#grn_lastgrn").val(goodsreceivednote_col.getlastGRNByPOCode(code));
@@ -395,7 +428,6 @@ $(function () {
             $("#purchaserequisition_code").val(undefined);
             $("#purchaserequisition_supplierid").val(undefined);
             $("#grn_lastgrn").val(undefined);
-            $("#purchaserequisition_supplierid").val(undefined);
             $("#grn_arrivedcount").val(undefined)
             $("#grn_code").val(undefined);
             $("#grn_invoiceno").val(undefined);
@@ -449,12 +481,28 @@ $(function () {
             }
         }
     });
+    $('#table13 tbody').on('click', 'tr', function () {
+        $("#modal-polist").modal("hide");
+        if ($(this).hasClass('selected')) {
+            $(this).removeClass('selected');
+            selectedcode = undefined;
+            $("#purchaserequisition_code").val(selectedcode)
+            refreshtable();
+        } else {
+            t13.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+            selectedcode = $(this).children("td:nth-child(1)").text();
+            $("#purchaserequisition_code").val(selectedcode)
+            refreshtable();
+        }
+    });
     $(document).off("click", "#btnprmpo");
     $(document).off("click", "#addGRN");
     $(document).off("click", "#addPOM");
     $(document).on("click", "#btnprmpo", function () {
-        selectedcode = $("#purchaseorder_code").val();
-        refreshtable();
+        $("#modal-polist").modal("show");
+        // selectedcode = $("#purchaseorder_code").val();
+        // refreshtable();
     })
     $(document).on("click", "#addGRN", function () {
         if (purchaserequisitionobj) {
@@ -475,7 +523,7 @@ $(function () {
     })
     $(document).on("focusout", "#addPOM", function () {
         var val = $("#grn_arrivedcount").val();
-        if (val != "") {
+        if (String(val) != "") {
             if (val.indexOf('.') == -1) {
                 val = val + ".00";
             } else {

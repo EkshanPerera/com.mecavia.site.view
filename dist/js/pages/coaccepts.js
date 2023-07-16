@@ -27,6 +27,12 @@ $(function () {
         showConfirmButton: false,
         timer: 3000
     });
+    var t13 = $("#table13").DataTable({
+        "order": [[0, "desc"]],
+        pageLength: 5,
+        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body popup"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+        "autoWidth": false,
+    })
     //end of variables
     //functions
     //defalt functions
@@ -72,7 +78,11 @@ $(function () {
                         if (result.isConfirmed) {
                             var code = genaratecode();
                             var status = "ACCEPTED";
-                            setNewValues(code, status);
+                            var year = new Date().getFullYear();
+                            var month = new Date().getMonth();
+                            var day = new Date().getDate();
+                            var date = day + "/" + (parseInt(month) + 1) + "/" + year;
+                            setNewValues(code, status, date);
                             submit();
                             Swal.fire(
                                 'Submitted!',
@@ -112,6 +122,7 @@ $(function () {
             cli_col.clear();
             addmoddel = undefined;
             t35.clear().draw(false);
+            t13.clear().draw(false);
             $.ajax({
                 url: "http://localhost:8080/api/customerorderctrl/getcustomerorders",
                 dataType: "JSON",
@@ -121,9 +132,12 @@ $(function () {
                 success: function (data) {
                     $.each(data.content, function (i, item) {
                         if (item.status == "SUBMIT" || item.status == "ACCEPTED" || item.status == "PRINTED") {
-                            customerorder_col.addCustomerOrdertoArray(item.id, item.code, item.jobID, item.jobNumber, item.customerid, item.totalAmount, item.grossAmount, item.remark, item.customerOrderProducts, item.printeddate, item.status);
+                            customerorder_col.addCustomerOrdertoArray(item.id, item.code, item.jobID, item.jobNumber, item.customerid, item.totalAmount, item.grossAmount, item.remark, item.customerOrderProducts, item.printeddate, item.status,item.enteredUser,item.enteredDate,item.acceptedUser,item.acceptedDate);
+                            if(item.status == "SUBMIT") t13.row.add([item.code,item.jobNumber]).draw(false);
                         }
                     });
+                    var $tableRow = $("#table13 tr td:contains('" + selectedcode + "')").closest("tr");
+                    $tableRow.addClass("selected");
                     setValues(selectedcode);
                     fadepageloder();
                 },
@@ -156,7 +170,34 @@ $(function () {
                 "Authorization": jwt
             },
             success: function (data) {
+                var enteredUser = customerorderobj.enteredUser
+                var enteredUserEmail = enteredUser.email;
+                var enteredUserTpNo = enteredUser.contactNumbers.find(contactnoitem => contactnoitem.isdef == true).tpno
+                sendEmail(enteredUserEmail,"Accepted Customer Order (CO ID: "+customerorderobj.code+")","Hello "+ enteredUser.firstname +",\nCustomer Order ID of "+ customerorderobj.code +" which is entered by you, have been accepted by "+jwtPayload.firstname +" " +jwtPayload.lastname +".  The Job ID is "+ customerorderobj.jobID +".");
+                sendSMS(enteredUserTpNo,"Hello%20"+ enteredUser.firstname +",%20Customer%20Order%20ID%20of%20"+ customerorderobj.code +"%20which%20is%20entered%20by%20you,%20have%20been%20accepted%20by%20"+jwtPayload.firstname +"%20" +jwtPayload.lastname +".%20The%20Job%20ID%20is%20"+ customerorderobj.jobID +".");
                 refreshtable();
+            }
+        })
+    }
+    function sendEmail(recipent,subject,body){
+        $.ajax({
+            url: "http://localhost:8080/api/emailctrl/sendemail",
+            method: "POST",
+            data: JSON.stringify({"toEmail": recipent,"subject":subject,"body":body}),
+            contentType: 'application/json',
+            headers: {
+                "Authorization": jwt
+            }
+        })
+    }
+    function sendSMS(receiver,massage){
+        $.ajax({
+            url: "http://localhost:8080/api/smsctrl/sendsms",
+            method: "POST",
+            data: JSON.stringify({"receiver":receiver,"massage":massage}),
+            contentType: 'application/json',
+            headers: {
+                "Authorization": jwt
             }
         })
     }
@@ -218,10 +259,12 @@ $(function () {
 
         }
     }
-    function setNewValues(code, status) {
+    function setNewValues(code, status,acceptedDate) {
         if (customerorderobj) {
             if (code) customerorderobj.jobID = code;
             if (status) customerorderobj.status = status;
+            if (!customerorderobj.acceptedDate) customerorderobj.acceptedDate = acceptedDate;
+            if (!customerorderobj.acceptedUser) customerorderobj.acceptedUser = jwtPayload;
         } else {
             customerorderobj = customerorderClassesInstence.customerorder;
             setNewValues(code, status);
@@ -234,10 +277,26 @@ $(function () {
     }
     //end of functions
     //triggers
+    $('#table13 tbody').on('click', 'tr', function () {
+        $("#modal-colist").modal("hide");
+        if ($(this).hasClass('selected')) {
+            $(this).removeClass('selected');
+            selectedcode = undefined;
+            $("#customerorder_code").val(selectedcode)
+            refreshtable();
+        } else {
+            t13.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+            selectedcode = $(this).children("td:nth-child(1)").text();
+            $("#customerorder_code").val(selectedcode)
+            refreshtable();
+        }
+    });
     $(document).off("click", "#btnprm");
     $(document).on("click", "#btnprm", function () {
-        selectedcode = $("#customerorder_code").val();
-        refreshtable();
+        $("#modal-colist").modal("show");
+        // selectedcode = $("#customerorder_code").val();
+        // refreshtable();
     })
 
     //end of triggers

@@ -51,7 +51,12 @@ $(function () {
             null
         ]
     });
-
+    var t13 = $("#table13").DataTable({
+        "order": [[0, "desc"]],
+        pageLength: 5,
+        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body popup"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+        "autoWidth": false,
+    })
     var Toast = Swal.mixin({
         toast: true,
         position: 'top-end',
@@ -135,6 +140,7 @@ $(function () {
             material_col.clear();
             cli_col.clear();
             addmoddel = undefined;
+            t13.clear().draw(false);
             t18.clear().draw(false);
             $.ajax({
                 url: "http://localhost:8080/api/purchaserequisitionctrl/getpurchaserequisitions",
@@ -145,10 +151,13 @@ $(function () {
                 success: function (data) {
                     $.each(data.content, function (i, item) {
                         if (item.status == "SUBMIT" || item.status == "APPROVED" || item.status == "PRINTED") {
-                            purchaserequisition_col.addPurchaseRequisitiontoArray(item.id, item.prcode, item.pocode, item.supplierid, item.status, item.remark, item.totalAmount, item.purchaseRequisitionMaterials, item.printeddate, item.quotationno);
+                            purchaserequisition_col.addPurchaseRequisitiontoArray(item.id, item.prcode, item.pocode, item.supplierid, item.status, item.remark, item.totalAmount, item.purchaseRequisitionMaterials, item.printeddate, item.quotationno, item.enteredUser, item.printededUser, item.acceptedUser, item.poPrintededUser);
+                            if (item.status == "APPROVED" || item.status == "PRINTED") t13.row.add([item.pocode,item.prcode,item.quotationno]).draw("false")
+                        
                         }
+                        var $tableRow = $("#table13 tr td:contains('" + selectedcode + "')").closest("tr");
+                        $tableRow.addClass("selected");
                     });
-
                     setValues(selectedcode);
                     fadepageloder();
 
@@ -317,6 +326,7 @@ $(function () {
         if (purchaserequisitionobj) {
             if (status) purchaserequisitionobj.status = status;
             if (!purchaserequisitionobj.printeddate) purchaserequisitionobj.printeddate = printeddate;
+            if (!purchaserequisitionobj.poPrintededUser) purchaserequisitionobj.poPrintededUser = jwtPayload;
         } else {
             purchaserequisitionobj = purchaseorderClassesInstence.purchaserequisition;
             setNewValues(status);
@@ -324,15 +334,32 @@ $(function () {
     }
     //end of functions
     //triggers
+    $('#table13 tbody').on('click', 'tr', function () {
+        $("#modal-polist").modal("hide");
+        if ($(this).hasClass('selected')) {
+            $(this).removeClass('selected');
+            selectedcode = undefined;
+            $("#purchaserequisition_code").val(selectedcode)
+            refreshtable();
+        } else {
+            t13.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+            selectedcode = $(this).children("td:nth-child(1)").text();
+            $("#purchaserequisition_code").val(selectedcode)
+            refreshtable();
+        }
+    });
     $(document).off("click", "#btnprmpo");
     $(document).off("click", "#cancelPOPrint");
     $(document).on("click", "#btnprmpo", function () {
-        selectedcode = $("#purchaseorder_code").val();
-        refreshtable();
+        $("#modal-polist").modal("show");
+        // selectedcode = $("#purchaseorder_code").val();
+        // refreshtable();
     })
     $(document).on("click", "#cancelPOPrint", function () {
         selectedcode = "";
         setValues();
+
     })
 
     //end of triggers

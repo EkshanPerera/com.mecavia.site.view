@@ -121,7 +121,7 @@ $(function () {
                 },
                 success: function (data) {
                     $.each(data.content, function (i, item) {
-                        purchaserequisition_col.addPurchaseEequisitiontoArray(item.id, item.prcode, item.pocode, item.supplierid, item.status, item.remark, item.totalAmount, item.purchaseRequisitionMaterials, item.quotationno, item.printeddate);
+                        purchaserequisition_col.addPurchaseEequisitiontoArray(item.id, item.prcode, item.pocode, item.supplierid, item.status, item.remark, item.totalAmount, item.purchaseRequisitionMaterials, item.quotationno, item.printeddate, item.enteredUser, item.printededUser, item.acceptedUser, item.poPrintededUser);
                     });
                     setValues();
                     fadepageloder();

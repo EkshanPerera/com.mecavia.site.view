@@ -88,6 +88,9 @@
     $("#lnkaccessctrl").click(function () {
         $("#content").load("../pages/corporate/accessctrl.html");
     });
+    $("#lnkinvoce").click(function () {
+        $("#content").load("../pages/corporate/invoice.html");
+    });
     $("#lnkmron").click(function () {
         $("#content").load("../pages/corporate/materialoutnote.html");
     });

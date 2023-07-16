@@ -1,13 +1,15 @@
 //classescodematerial
 var billofmaterialClasses = (function () {
     class billofmaterial {
-        constructor(id, code, customerOrder, bomMaterials, totalcost, status) {
+        constructor(id, code, customerOrder, bomMaterials, totalcost, status, enteredDate, enteredUser ) {
             this.id = id;
             this.code = code;
             this.customerOrder = customerOrder;
             this.bomMaterials = bomMaterials;
             this.totalcost = totalcost;
             this.status = status;
+            this.enteredDate = enteredDate;
+            this.enteredUser = enteredUser;
         }
     }
     class bommaterial {
@@ -28,8 +30,8 @@ var billofmaterialClasses = (function () {
             this.billofmaterial;
             this.hash = 0;
         }
-        addBillOfMaterialtoArray(id, code, customerOrder, bomMaterials, totalcost, status) {
-            let billofmaterial_arritem = new billofmaterial(id, code, customerOrder, bomMaterials, totalcost, status);
+        addBillOfMaterialtoArray(id, code, customerOrder, bomMaterials, totalcost, status, enteredDate, enteredUser ) {
+            let billofmaterial_arritem = new billofmaterial(id, code, customerOrder, bomMaterials, totalcost, status, enteredDate, enteredUser );
             this.billofmaterials.push(billofmaterial_arritem);
         }
         addbommaterialtoArray(id, code, material, materialCost, quantity) {

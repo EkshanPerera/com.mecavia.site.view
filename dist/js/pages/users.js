@@ -448,10 +448,10 @@ $(function () {
                 },
                 success: function (data) {
                     $.each(data.content, function (i, item) {
-                        $.each(item.roleslist, function (i, item) {
-                            grp_col.addRoletoArry(item.id, item.description, item.code, item.status, item.accIconList);
-                        });
                         if (item.status == "ACTIVE") {
+                            $.each(item.roleslist, function (i, item) {
+                                grp_col.addRoletoArry(item.id, item.description, item.code, item.status, item.accIconList);
+                            });
                             grp_col.addUsrGrptoArray(item.id, item.code, item.description, item.status);
                             t7.row.add([item.code, item.description]).draw(false);
                         }

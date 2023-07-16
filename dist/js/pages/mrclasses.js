@@ -1,6 +1,6 @@
 var mrClasses = (function () {
     class materialrequisition {
-        constructor(id, code, enterddate, billOfMaterial, materialRequisitionMaterials, printeddate, status) {
+        constructor(id, code, enterddate, billOfMaterial, materialRequisitionMaterials, printeddate, status, enteredUser) {
             this.id = id;
             this.code = code;
             this.enterddate = enterddate;
@@ -8,6 +8,7 @@ var mrClasses = (function () {
             this.materialRequisitionMaterials = materialRequisitionMaterials;
             this.printeddate = printeddate;
             this.status = status;
+            this.enteredUser = enteredUser;
         }
     }
     class materialRequisitionMaterial {
@@ -29,8 +30,8 @@ var mrClasses = (function () {
             this.newGoodsReceivedNotMaterials = [];
 
         }
-        addMRtoArray(id, code, enterddate, billOfMaterial, materialRequisitionMaterials, printeddate, status) {
-            let materialrequisition_arritem = new materialrequisition(id, code, enterddate, billOfMaterial, materialRequisitionMaterials, printeddate, status);
+        addMRtoArray(id, code, enterddate, billOfMaterial, materialRequisitionMaterials, printeddate, status, enteredUser) {
+            let materialrequisition_arritem = new materialrequisition(id, code, enterddate, billOfMaterial, materialRequisitionMaterials, printeddate, status, enteredUser);
             this.materialrequisitions.push(materialrequisition_arritem);
         }
         addMRMaterialstoArray(id, code, ordercode, materialRequisition, bommaterial, requestedCount) {

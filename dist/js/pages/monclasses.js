@@ -1,7 +1,7 @@
 //classescode
 var materialOutNoteClasses = (function () {
     class MaterialOutNoteDto {
-        constructor(id, code, enterddate, materialRequisition, materialOutNoteMaterials, printeddate, remark, status) {
+        constructor(id, code, enterddate, materialRequisition, materialOutNoteMaterials, printeddate, remark, status, enteredUser) {
             this.id = id;
             this.code = code;
             this.enterddate = enterddate;
@@ -10,6 +10,7 @@ var materialOutNoteClasses = (function () {
             this.printeddate = printeddate;
             this.remark = remark;
             this.status = status;
+            this.enteredUser = enteredUser
         }
     }
     class MaterialOutNoteMaterialDto {
@@ -29,8 +30,8 @@ var materialOutNoteClasses = (function () {
             this.MaterialOutNoteDto;
             this.MaterialOutNoteMaterialDtos = [];
         }
-        addMONtoArray(id, code, enterddate, materialRequisition, materialOutNoteMaterials, printeddate, remark, status) {
-            let MaterialOutNoteDto_arritem = new MaterialOutNoteDto(id, code, enterddate, materialRequisition, materialOutNoteMaterials, printeddate, remark, status);
+        addMONtoArray(id, code, enterddate, materialRequisition, materialOutNoteMaterials, printeddate, remark, status, enteredUser) {
+            let MaterialOutNoteDto_arritem = new MaterialOutNoteDto(id, code, enterddate, materialRequisition, materialOutNoteMaterials, printeddate, remark, status, enteredUser);
             this.MaterialOutNoteDtos.push(MaterialOutNoteDto_arritem);
         }
         addMONMtoArray(id, code, materialOutNote, material, releasedCount) {

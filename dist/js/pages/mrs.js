@@ -47,7 +47,12 @@ $(function () {
         pageLength: 5,
         dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>'
     });
-
+    var t13 = $("#table13").DataTable({
+        "order": [[0, "desc"]],
+        pageLength: 5,
+        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body popup"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+        "autoWidth": false,
+    })
     var Toast = Swal.mixin({
         toast: true,
         position: 'top-end',
@@ -74,7 +79,7 @@ $(function () {
         unhighlight: function (element, errorClass, validClass) {
             $(element).removeClass('is-invalid');
         }, submitHandler: function () {
-            if (addmoddel) {
+            if (addmoddel && materialrequisition_col.allNewMRNMaterials().length != 0 ) {
                 Swal.fire({
                     title: 'Are you sure?',
                     text: "You won't be able to get another original copy!",
@@ -102,11 +107,19 @@ $(function () {
                     }
                 })
             } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Please enter the valid PR number!',
-                });
+                if(addmoddel != undefined){
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Please enter the valid PR number!',
+                    });
+                }else{
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Requesting Material List can not be empty!',
+                    });
+                }
             }
         }
     });
@@ -125,6 +138,7 @@ $(function () {
             addmoddel = undefined;
             t22.clear().draw(false);
             t23.clear().draw(false);
+            t13.clear().draw(false);
             $.ajax({
                 url: "http://localhost:8080/api/billofmaterialctrl/getbillofmaterials",
                 dataType: "JSON",
@@ -138,7 +152,9 @@ $(function () {
                                 billofmaterial_col.addbommaterialtoArray(item.id, item.code, item.material, item.materialCost, item.quantity);
                             })
                             billofmaterial_col.addBillOfMaterialtoArray(item.id, item.code, item.customerOrder, item.bomMaterials, item.totalcost, item.status);
-
+                            t13.row.add([item.customerOrder.code,item.customerOrder.jobID,item.customerOrder.jobNumber]).draw(false);
+                            var $tableRow = $("#table13 tr td:contains('" + selectedcode + "')").closest("tr");
+                            $tableRow.addClass("selected");
                         }
                     });
                     $.ajax({
@@ -152,7 +168,8 @@ $(function () {
                                 $.each(item.materialRequisitionMaterials, function (i, item) {
                                     materialrequisition_col.addMRMaterialstoArray(item.id, item.code, item.ordercode, item.materialRequisition, item.bommaterial, item.requestedCount);
                                 });
-                                materialrequisition_col.addMRtoArray(item.id, item.code, item.enterddate, item.billOfMaterial, item.materialRequisitionMaterials, item.printeddate, item.status);
+                                materialrequisition_col.addMRtoArray(item.id, item.code, item.enterddate, item.billOfMaterial, item.materialRequisitionMaterials, item.printeddate, item.status, item.enteredUser);
+
                             });
                             setValues(selectedcode);
                             fadepageloder();
@@ -219,7 +236,6 @@ $(function () {
                 $("#mr_orderno").val(selectedpomcode);
             }
             if (materialRequisitionMaterialsobjarr.length != 0) {
-                console.log(materialRequisitionMaterialsobjarr)
                 $.each(materialRequisitionMaterialsobjarr, function (i, item) {
                     if (item.id != undefined)
                         t23.row.add([item.materialRequisition.code, item.code, item.requestedCount, item.bommaterial.material.uomid.scode, item.materialRequisition.enterddate
@@ -234,12 +250,28 @@ $(function () {
             $("#mr_requestedcount").val(undefined)
         }
     }
+    function commaSeparateNumber(val) {
+        while (/(\d+)(\d{3})/.test(val.toString())) {
+            val = val.toString().replace(/(\d+)(\d{3})/, '$1' + ',' + '$2');
+        }
+        if (val != "") {
+            if (val.indexOf('.') == -1) {
+                val = val + ".00";
+            } else {
+                val = val;
+            }
+        } else {
+            val = val;
+        }
+        return val;
+
+    }
     function setOutstanding(ordercode) {
         if (ordercode) {
             var totrequested = materialrequisition_col.allMRsByOrderCode(ordercode).totrequested;
             bommobj = billofmaterial_col.getBOMMaterialbycode(ordercode, billofmaterialobj.code);
             outstangingcount = bommobj.quantity - totrequested;
-            $("#mr_outstanding").val(outstangingcount);
+            $("#mr_outstanding").val(commaSeparateNumber(String(outstangingcount)));
         } else {
             outstangingcount = 0;
             $("#mr_outstanding").val(undefined);
@@ -275,7 +307,17 @@ $(function () {
             billofmaterialobj = billofmaterial_col.getBillOfMaterialByCOcode(code);
             if (billofmaterialobj != undefined) {
                 bomMaterialsobjarr = billofmaterialobj.bomMaterials;
+                $("#billofmaterial_code").val(undefined);
+                $("#billofmaterial_customerid").val(undefined);
+                $("#mr_lastmr").val(undefined);
+                $("#mr_requestedcount").val(undefined);
+                $("#mr_code").val(undefined);
+                $("#mr_remark").val(undefined);
+                $("#mr_outstanding").val(undefined);
+                $("#mr_orderno").val(undefined);
                 $("#billofmaterial_code").val(billofmaterialobj.code);
+                materialrequisition_col.clearmrm();
+                t24.clear().draw(false);
                 $("#mr_lastmr").val(materialrequisition_col.getlastMRByCOCode(code));
                 if (billofmaterialobj.customerOrder.customerid) {
                     cli_obj = billofmaterialobj.customerOrder.customerid;
@@ -317,7 +359,8 @@ $(function () {
             $("#mr_requestedcount").val(undefined)
             $("#mr_code").val(undefined);
             $("#mr_remark").val(undefined);
-
+            $("#mr_outstanding").val(undefined);
+            $("#mr_orderno").val(undefined);
         }
     }
     function setNewValues(code, enterddate, billOfMaterial, materialRequisitionMaterials, printeddate, status) {
@@ -327,6 +370,8 @@ $(function () {
         if (billOfMaterial) materialrequisitionobj.billOfMaterial = billOfMaterial;
         if (status) materialrequisitionobj.status = status;
         if (materialRequisitionMaterials) materialrequisitionobj.materialRequisitionMaterials = materialRequisitionMaterials;
+        if (!materialrequisitionobj.enteredUser) materialrequisitionobj.enteredUser = jwtPayload;
+
     }
     //end of functions
     //triggers
@@ -345,14 +390,29 @@ $(function () {
         }
 
     });
-
+    $('#table13 tbody').on('click', 'tr', function () {
+        $("#modal-colist").modal("hide");
+        if ($(this).hasClass('selected')) {
+            $(this).removeClass('selected');
+            selectedcode = undefined;
+            $("#customerorder_code").val(selectedcode)
+            refreshtable();
+        } else {
+            t13.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+            selectedcode = $(this).children("td:nth-child(1)").text();
+            $("#customerorder_code").val(selectedcode)
+            refreshtable();
+        }
+    });
     $(document).off("click", "#btnprmpo");
     $(document).off("click", "#addMR");
     $(document).off("click", "#addPOM");
 
     $(document).on("click", "#btnprmpo", function () {
-        selectedcode = $("#customerorder_code").val();
-        refreshtable();
+        $("#modal-colist").modal("show");
+        // selectedcode = $("#customerorder_code").val();
+        // refreshtable();
     })
     $(document).on("click", "#addMR", function () {
         if (billofmaterialobj) {
@@ -368,7 +428,20 @@ $(function () {
     $(document).on("click", "#addPOM", function () {
         setMRMValues()
     })
-
+    $(document).on("focusout", "#addPOM", function () {
+        var val = $("#mr_requestedcount").val();
+        val = String(val);
+        if (val != "") {
+            if (val.indexOf('.') == -1) {
+                val = val + ".00";
+            } else {
+                val = val;
+            }
+        } else {
+            val = val;
+        }
+        $("#mr_requestedcount").val(val)
+    })
     //end of triggers
     $("#podiv").hide();
     jwtPayload = getJwtPayload();

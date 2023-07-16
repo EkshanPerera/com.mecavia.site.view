@@ -1,7 +1,7 @@
 //classescode
 var purchaserequisitionClasses = (function () {
     class purchaserequisition {
-        constructor(id, prcode, pocode, supplierid, status, remark, totalAmount, purchaseRequisitionMaterials, quotationno, printeddate) {
+        constructor(id, prcode, pocode, supplierid, status, remark, totalAmount, purchaseRequisitionMaterials, printeddate, quotationno,enteredUser, printededUser,acceptedUser,poPrintededUser  ) {
             this.id = id;
             this.prcode = prcode;
             this.pocode = pocode;
@@ -12,6 +12,11 @@ var purchaserequisitionClasses = (function () {
             this.purchaseRequisitionMaterials = purchaseRequisitionMaterials;
             this.quotationno = quotationno;
             this.printeddate = printeddate;
+            this.enteredUser = enteredUser;
+            this.printededUser = printededUser;
+            this.acceptedUser = acceptedUser;
+            this.poPrintededUser = poPrintededUser;
+            
         }
     }
     class purchaserequisition_service {
@@ -19,8 +24,8 @@ var purchaserequisitionClasses = (function () {
             this.purchaserequisitions = [];
 
         }
-        addPurchaseEequisitiontoArray(id, prcode, pocode, supplierid, status, remark, totalAmount, purchaseRequisitionMaterials, quotationno, printeddate) {
-            let purchaserequisitions_arritem = new purchaserequisition(id, prcode, pocode, supplierid, status, remark, totalAmount, purchaseRequisitionMaterials, quotationno, printeddate);
+        addPurchaseEequisitiontoArray(id, prcode, pocode, supplierid, status, remark, totalAmount, purchaseRequisitionMaterials, printeddate, quotationno,enteredUser, printededUser,acceptedUser,poPrintededUser  ) {
+            let purchaserequisitions_arritem = new purchaserequisition(id, prcode, pocode, supplierid, status, remark, totalAmount, purchaseRequisitionMaterials, printeddate, quotationno,enteredUser, printededUser,acceptedUser,poPrintededUser  );
             this.purchaserequisitions.push(purchaserequisitions_arritem);
         }
         allPurchaseEequisitions() {

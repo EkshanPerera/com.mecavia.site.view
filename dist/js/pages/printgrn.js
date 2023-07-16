@@ -39,6 +39,12 @@ $(function () {
         showConfirmButton: false,
         timer: 3000
     });
+    var t13 = $("#table13").DataTable({
+        "order": [[0, "desc"]],
+        pageLength: 5,
+        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body popup"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+        "autoWidth": false,
+    })
     //end of variables
     //functions
     //defalt functions
@@ -104,6 +110,7 @@ $(function () {
         if (jwtPayload.roleid.accIconList.find(accicon => accicon.status == "ACTIVE" && accicon.code == "AI00108") != undefined || jwtPayload.businessRole == "ADMIN") {
             goodsreceivednote_col.clear();
             t18.clear().draw(false);
+            t13.clear().draw(false);
             $.ajax({
                 url: "http://localhost:8080/api/goodsreceivednotectrl/getgoodsreceivednotes",
                 dataType: "JSON",
@@ -113,7 +120,11 @@ $(function () {
                 success: function (data) {
                     $.each(data.content, function (i, item) {
                         goodsreceivednote_col.addGRNtoArray(item.id, item.invoicenumber, item.invocedate, item.code, item.mradate, item.mrano, item.enterddate, item.remark, item.status, item.purchaseRequisition, item.goodsReceivedNoteMaterials, item.printeddate);
+                        t13.row.add([item.code,item.purchaseRequisition.prcode,item.purchaseRequisition.pocode]).draw("false")
+                    
                     });
+                    var $tableRow = $("#table13 tr td:contains('" + selectedcode + "')").closest("tr");
+                    $tableRow.addClass("selected");
                     setValues(selectedcode);
                     fadepageloder();
                 }
@@ -203,11 +214,27 @@ $(function () {
     }
     //end of functions
     //triggers
+    $('#table13 tbody').on('click', 'tr', function () {
+        $("#modal-grnlist").modal("hide");
+        if ($(this).hasClass('selected')) {
+            $(this).removeClass('selected');
+            selectedcode = undefined;
+            $("#purchaserequisition_code").val(selectedcode)
+            refreshtable();
+        } else {
+            t13.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+            selectedcode = $(this).children("td:nth-child(1)").text();
+            $("#purchaserequisition_code").val(selectedcode)
+            refreshtable();
+        }
+    });
     $(document).off("click", "#btngrnno");
     $(document).off("click", "#cancelGRNPrint");
     $(document).on("click", "#btngrnno", function () {
-        selectedcode = $("#goodsreceivednote_code").val();
-        refreshtable();
+        $("#modal-grnlist").modal("show");
+        // selectedcode = $("#goodsreceivednote_code").val();
+        // refreshtable();
     })
     $(document).on("click", "#cancelGRNPrint", function () {
         selectedcode = "";

@@ -1,7 +1,7 @@
 var customerorderClasses = (function () {
     //classescodematerial
     class customerorder {
-        constructor(id, code, JobID, JobNumber, customerid, totalAmount, grossAmount, remark, customerOrderProducts, printeddate, status) {
+        constructor(id, code, JobID, JobNumber, customerid, totalAmount, grossAmount, remark, customerOrderProducts, printeddate, status,enteredUser,enteredDate,acceptedUser,acceptedDate) {
             this.id = id;
             this.code = code;
             this.jobID = JobID;
@@ -13,16 +13,22 @@ var customerorderClasses = (function () {
             this.customerOrderProducts = customerOrderProducts;
             this.printeddate = printeddate;
             this.status = status;
+            this.enteredUser = enteredUser;
+            this.enteredDate = enteredDate;
+            this.acceptedUser = acceptedUser;
+            this.acceptedDate = acceptedDate;
         }
     }
     class customerOrderProducts {
-        constructor(id, code, product, unitrate, quantity, hash) {
+        constructor(id, code, product, unitrate, quantity, totFinishedCount, hash) {
             this.id = id;
             this.code = code;
             this.product = product;
             this.quantity = quantity;
             this.unitrate = unitrate;
+            this.totFinishedCount = totFinishedCount; 
             this.hash = hash;
+            
         }
     }
     class customerorder_service {
@@ -32,13 +38,13 @@ var customerorderClasses = (function () {
             this.customerorder;
             this.hash = 0;
         }
-        addCustomerOrdertoArray(id, code, JobID, JobNumber, customerid, totalAmount, grossAmount, remark, customerOrderProducts, printeddate, status) {
-            let customerorder_arritem = new customerorder(id, code, JobID, JobNumber, customerid, totalAmount, grossAmount, remark, customerOrderProducts, printeddate, status);
+        addCustomerOrdertoArray(id, code, JobID, JobNumber, customerid, totalAmount, grossAmount, remark, customerOrderProducts, printeddate, status,enteredUser,enteredDate,acceptedUser,acceptedDate) {
+            let customerorder_arritem = new customerorder(id, code, JobID, JobNumber, customerid, totalAmount, grossAmount, remark, customerOrderProducts, printeddate, status,enteredUser,enteredDate,acceptedUser,acceptedDate);
             this.customerorders.push(customerorder_arritem);
         }
-        addcustomerOrderProductstoArray(id, code, product, unitrate, quantity) {
+        addcustomerOrderProductstoArray(id, code, product, unitrate, quantity, totFinishedCount) {
             this.hash += 1;
-            let customerordermaterials_arritem = new customerOrderProducts(id, code, product, unitrate, quantity, this.hash);
+            let customerordermaterials_arritem = new customerOrderProducts(id, code, product, unitrate, quantity, totFinishedCount, this.hash);
             this.customerOrderProducts.push(customerordermaterials_arritem);
         }
         removeCustomerOrderProductfromArray(hash) {

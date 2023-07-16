@@ -131,7 +131,11 @@ $(function () {
                                     var customerid;
                                     if (cli_obj) customerid = cli_obj;
                                     else customerid = undefined;
-                                    setNewValues(code, remark, totalamount, status, customerid, customerOrderProducts, jobno);
+                                    var year = new Date().getFullYear();
+                                    var month = new Date().getMonth();
+                                    var day = new Date().getDate();
+                                    var date = day + "/" + (parseInt(month) + 1) + "/" + year;
+                                    setNewValues(code, remark, totalamount, status, customerid, customerOrderProducts, jobno, date);
                                     submit();
                                     break;
                                 case "mod":
@@ -142,7 +146,7 @@ $(function () {
                                     var status = "SUBMIT";
                                     var customerid = undefined;
                                     var customerOrderProducts = undefined;
-                                    setNewValues(code, remark, totalamount, status, customerid, customerOrderProducts, jobno);
+                                    setNewValues(code, remark, totalamount, status, customerid, customerOrderProducts, jobno,undefined);
                                     submit();
                                     break;
                                 case "del":
@@ -153,7 +157,7 @@ $(function () {
                                     var status = "EXPIRE";
                                     var customerid = undefined;
                                     var customerOrderProducts = undefined;
-                                    setNewValues(code, remark, totalamount, status, customerid, customerOrderProducts, jobno);
+                                    setNewValues(code, remark, totalamount, status, customerid, customerOrderProducts, jobno,undefined);
                                     submit();
                                     break;
                                 default:
@@ -223,7 +227,7 @@ $(function () {
             if (product_obj != undefined) {
                 if (product_obj.id != undefined && unitrate != undefined) {
                     var quantity = $("#customerorder_quntity").val();
-                    customerorder_col.addcustomerOrderProductstoArray(undefined, undefined, product_obj, unitrate, quantity);
+                    customerorder_col.addcustomerOrderProductstoArray(undefined, undefined, product_obj, unitrate, quantity, undefined);
                     refreshcoproducttable();
                     $("#modal-customerOrderProducts").modal("hide")
                 } else {
@@ -268,7 +272,7 @@ $(function () {
             },
             success: function (data) {
                 $.each(data.content, function (i, item) {
-                    customerorder_col.addCustomerOrdertoArray(item.id, item.code, item.jobID, item.jobNumber, item.customerid, item.totalAmount, item.grossAmount, item.remark, item.customerOrderProducts, item.printeddate, item.status);
+                    customerorder_col.addCustomerOrdertoArray(item.id, item.code, item.jobID, item.jobNumber, item.customerid, item.totalAmount, item.grossAmount, item.remark, item.customerOrderProducts, item.printeddate, item.status,item.enteredUser,item.enteredDate,item.acceptedUser,item.acceptedDate);
                     t32.row.add([item.code, item.jobID, item.customerid.code, item.customerid.firstname + " " + item.customerid.lastname, item.status]).draw(false);
                 });
                 setValues();
@@ -504,7 +508,7 @@ $(function () {
 
         }
     }
-    function setNewValues(code, remark, totalamount, status, customerid, customerOrderProducts, jobno) {
+    function setNewValues(code, remark, totalamount, status, customerid, customerOrderProducts, jobno, enteredDate) {
         if (customerorderobj) {
             if (code) customerorderobj.code = code;
             if (remark) customerorderobj.remark = remark;
@@ -513,9 +517,11 @@ $(function () {
             if (customerid) customerorderobj.customerid = customerid;
             if (jobno) customerorderobj.jobNumber = jobno;
             if (customerOrderProducts) customerorderobj.customerOrderProducts = customerOrderProducts;
+            if (!customerorderobj.enteredUser)customerorderobj.enteredUser = jwtPayload;
+            if (!customerorderobj.enteredDate)customerorderobj.enteredDate = enteredDate;
         } else {
             customerorderobj = customerorderClassesInstence.customerorder;
-            setNewValues(code, remark, totalamount, status, customerid, customerOrderProducts, jobno);
+            setNewValues(code, remark, totalamount, status, customerid, customerOrderProducts, jobno, enteredDate);
         }
     }
     function resetform(element) {

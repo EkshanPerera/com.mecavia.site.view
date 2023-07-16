@@ -58,6 +58,12 @@ $(function () {
         showConfirmButton: false,
         timer: 3000
     });
+    var t13 = $("#table13").DataTable({
+        "order": [[0, "desc"]],
+        pageLength: 5,
+        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body popup"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+        "autoWidth": false,
+    })
     //end of variables
     //functions
     //defalt functions
@@ -143,6 +149,7 @@ $(function () {
             cli_col.clear();
             addmoddel = undefined;
             t19.clear().draw(false);
+            t13.clear().draw(false);
             $.ajax({
                 url: "http://localhost:8080/api/purchaserequisitionctrl/getpurchaserequisitions",
                 dataType: "JSON",
@@ -152,9 +159,12 @@ $(function () {
                 success: function (data) {
                     $.each(data.content, function (i, item) {
                         if (item.status == "SUBMIT" || item.status == "APPROVED" || item.status == "PRINTED") {
-                            purchaserequisition_col.addPurchaseRequisitiontoArray(item.id, item.prcode, item.pocode, item.supplierid, item.status, item.remark, item.totalAmount, item.purchaseRequisitionMaterials, item.quotationno);
+                            purchaserequisition_col.addPurchaseRequisitiontoArray(item.id, item.prcode, item.pocode, item.supplierid, item.status, item.remark, item.totalAmount, item.purchaseRequisitionMaterials, item.quotationno,item.enteredUser, item.printededUser, item.acceptedUser, item.poPrintededUser);
+                            if(item.status == "SUBMIT") t13.row.add([item.prcode,item.quotationno]).draw("false");
                         }
                     });
+                    var $tableRow = $("#table13 tr td:contains('" + selectedcode + "')").closest("tr");
+                    $tableRow.addClass("selected");
                     setValues(selectedcode);
                     fadepageloder();
                 },
@@ -187,7 +197,34 @@ $(function () {
                 "Authorization": jwt
             },
             success: function (data) {
+                var enteredUser = purchaserequisitionobj.enteredUser
+                var enteredUserEmail = enteredUser.email;
+                var enteredUserTpNo = enteredUser.contactNumbers.find(contactnoitem => contactnoitem.isdef == true).tpno
+                sendEmail(enteredUserEmail,"Approval of Purchase Requisition (PR ID: "+purchaserequisitionobj.prcode+")","Hello "+ enteredUser.firstname +",\nPurchase Requisition ID of "+ purchaserequisitionobj.prcode +" which is entered by you, have been approved by "+jwtPayload.firstname +" " +jwtPayload.lastname +". Purchase Order code is "+ purchaserequisitionobj.pocode +".");
+                sendSMS(enteredUserTpNo,"Hello%20"+ enteredUser.firstname +",%20Purchase%20Requisition%20ID%20of%20"+ purchaserequisitionobj.prcode +"%20which%20is%20entered%20by%20you,%20have%20been%20approved%20by%20"+jwtPayload.firstname +"%20" +jwtPayload.lastname +".%20Purchase%20Order%20code%20is%20"+ purchaserequisitionobj.pocode +".");
                 refreshtable();
+            }
+        })
+    }
+    function sendEmail(recipent,subject,body){
+        $.ajax({
+            url: "http://localhost:8080/api/emailctrl/sendemail",
+            method: "POST",
+            data: JSON.stringify({"toEmail": recipent,"subject":subject,"body":body}),
+            contentType: 'application/json',
+            headers: {
+                "Authorization": jwt
+            }
+        })
+    }
+    function sendSMS(receiver,massage){
+        $.ajax({
+            url: "http://localhost:8080/api/smsctrl/sendsms",
+            method: "POST",
+            data: JSON.stringify({"receiver":receiver,"massage":massage}),
+            contentType: 'application/json',
+            headers: {
+                "Authorization": jwt
             }
         })
     }
@@ -255,6 +292,7 @@ $(function () {
         if (purchaserequisitionobj) {
             if (code) purchaserequisitionobj.pocode = code;
             if (status) purchaserequisitionobj.status = status;
+            if (!purchaserequisitionobj.acceptedUser) purchaserequisitionobj.acceptedUser = jwtPayload;
         } else {
             purchaserequisitionobj = purchaserequisitionClassesInstence.purchaserequisition;
             setNewValues(code, status);
@@ -283,12 +321,28 @@ $(function () {
     }
     //end of functions
     //triggers
+    $('#table13 tbody').on('click', 'tr', function () {
+        $("#modal-prlist").modal("hide");
+        if ($(this).hasClass('selected')) {
+            $(this).removeClass('selected');
+            selectedcode = undefined;
+            $("#purchaserequisition_code").val(selectedcode)
+            refreshtable();
+        } else {
+            t13.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+            selectedcode = $(this).children("td:nth-child(1)").text();
+            $("#purchaserequisition_code").val(selectedcode)
+            refreshtable();
+        }
+    });
     $(document).off("click", "#btnprm");
     $(document).off("click", "#cancelPRapprove");
 
     $(document).on("click", "#btnprm", function () {
-        selectedcode = $("#purchaserequisition_code").val();
-        refreshtable();
+        $("#modal-prlist").modal("show");
+        // selectedcode = $("#purchaserequisition_code").val();
+        // refreshtable();
     })
     $(document).on("click", "#cancelPRapprove", function () {
         selectedcode = "";

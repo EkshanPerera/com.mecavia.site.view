@@ -76,6 +76,12 @@ $(function () {
         showConfirmButton: false,
         timer: 3000
     });
+    var t13 = $("#table13").DataTable({
+        "order": [[0, "desc"]],
+        pageLength: 5,
+        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body popup"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+        "autoWidth": false,
+    })
     //end of variables
     //functions
     //defalt functions
@@ -121,7 +127,12 @@ $(function () {
                             })
                             var status = "ACTIVE";
                             var code = genaratecode();
-                            setNewValues(code, customerorderobj, bomMaterialobjArry, totalcost, status);
+                            var year = new Date().getFullYear();
+                            var month = new Date().getMonth();
+                            var day = new Date().getDate();
+                            var date = day + "/" + (parseInt(month) + 1) + "/" + year;
+                            var enteredDate = date;
+                            setNewValues(code, customerorderobj, bomMaterialobjArry, totalcost,enteredDate, status);
                             submit();
                             Swal.fire(
                                 'Submitted!',
@@ -216,6 +227,7 @@ $(function () {
         material_col.clear();
         addmoddel = undefined;
         t36.clear().draw(false);
+        t13.clear().draw(false);
         $.ajax({
             url: "http://localhost:8080/api/customerorderctrl/getcustomerorders",
             dataType: "JSON",
@@ -225,10 +237,13 @@ $(function () {
             success: function (data) {
                 $.each(data.content, function (i, item) {
                     if (item.status == "SUBMIT" || item.status == "ACCEPTED" || item.status == "PRINTED" || item.status == "INITIATED" || item.status == "PENDING") {
-                        customerorder_col.addCustomerOrdertoArray(item.id, item.code, item.jobID, item.jobNumber, item.customerid, item.totalAmount, item.grossAmount, item.remark, item.customerOrderProducts, item.printeddate, item.status);
+                        customerorder_col.addCustomerOrdertoArray(item.id, item.code, item.jobID, item.jobNumber, item.customerid, item.totalAmount, item.grossAmount, item.remark, item.customerOrderProducts, item.printeddate, item.status, item.enteredUser,item.enteredDate,item.acceptedUser,item.acceptedDate );
                         if (item.billOfMaterial) {
-                            billofmaterial_col.addBillOfMaterialtoArray(item.billOfMaterial.id, item.billOfMaterial.code, item.billOfMaterial.customerOrder, item.billOfMaterial.bomMaterials, item.billOfMaterial.totalcost, item.billOfMaterial.status);
+                            billofmaterial_col.addBillOfMaterialtoArray(item.billOfMaterial.id, item.billOfMaterial.code, item.billOfMaterial.customerOrder, item.billOfMaterial.bomMaterials, item.billOfMaterial.totalcost, item.billOfMaterial.status,item.enteredDate, item.enteredUser);
                         }
+                        if(item.status == "PENDING") t13.row.add([item.code,item.jobNumber]).draw(false);
+                        var $tableRow = $("#table13 tr td:contains('" + selectedcode + "')").closest("tr");
+                        $tableRow.addClass("selected");
                     }
                 });
                 setValues(selectedcode);
@@ -361,13 +376,15 @@ $(function () {
 
         }
     }
-    function setNewValues(code, customerOrder, bomMaterials, totalcost, status) {
+    function setNewValues(code, customerOrder, bomMaterials, totalcost, enteredDate, status) {
         billofmaterialobj = billofmaterialClassesInstence.billofmaterial;
         if (code) billofmaterialobj.code = code;
         if (customerOrder) billofmaterialobj.customerOrder = customerOrder;
         if (bomMaterials) billofmaterialobj.bomMaterials = bomMaterials;
         if (totalcost) billofmaterialobj.totalcost = totalcost;
         if (status) billofmaterialobj.status = status;
+        if (enteredDate) billofmaterialobj.enteredDate = enteredDate;
+        if (!billofmaterialobj.enteredUser) billofmaterialobj.enteredUser = jwtPayload;
     }
     function setMatarialalues(code) {
         $("#modal-matariallist").modal("hide");
@@ -411,6 +428,21 @@ $(function () {
             materialhash = $(this).children("td:nth-child(1)").text();
         }
     });
+    $('#table13 tbody').on('click', 'tr', function () {
+        $("#modal-colist").modal("hide");
+        if ($(this).hasClass('selected')) {
+            $(this).removeClass('selected');
+            selectedcode = undefined;
+            $("#customerorder_code").val(selectedcode)
+            refreshtable();
+        } else {
+            t13.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+            selectedcode = $(this).children("td:nth-child(1)").text();
+            $("#customerorder_code").val(selectedcode)
+            refreshtable();
+        }
+    });
     $(document).off("click", "#addMaterialbtn");
     $(document).off("click", "#removeMaterialbtn");
     $(document).off("click", "#btnprm");
@@ -429,8 +461,9 @@ $(function () {
         refreshprmatarialtable();
     })
     $(document).on("click", "#btnprm", function () {
-        selectedcode = $("#customerorder_code").val();
-        refreshtable();
+        $("#modal-colist").modal("show");
+        // selectedcode = $("#customerorder_code").val();
+        // refreshtable();
     })
     $(document).on('input', '#purchaserequisition_unitrate', function () {
         var value = $('#purchaserequisition_unitrate').val();

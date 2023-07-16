@@ -146,8 +146,6 @@ var grnClasses = (function () {
             this.goodsreceivednote = this.goodsreceivednotes.find(goodsreceivednote => goodsreceivednote.code == code);
             return this.goodsreceivednote;
         }
-
-
         clear() {
             this.goodsreceivednotes = [];
             this.goodsreceivednote = undefined;

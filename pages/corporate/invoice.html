@@ -1,0 +1,371 @@
+<head>
+
+    <style>
+        .usr-card-body {
+            min-height: 310px;
+        }
+
+        .usr-card-body.met {
+            min-height: 370px;
+        }
+    </style>
+</head>
+
+<body class="hold-transition sidebar-mini layout-fixed">
+    <div class="pageloader content-wrapper " >
+        <div class="load-bar">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+          </div>
+    </div>
+    <div class="wrapper">
+
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1>Accept Customer Order</h1>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="#">Home</a></li>
+                            <li class="breadcrumb-item ">Corporate Data</li>
+                            <li class="breadcrumb-item active">User Groups</li>
+                        </ol>
+                    </div>
+                </div>
+            </div><!-- /.container-fluid -->
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-12">
+                        <!-- /.card -->
+                        <div class="card card-info">
+                            <!-- form start -->
+                            <form class="form-horizontal" id="quickForm8">
+                                <div class="card-header">
+                                    <h3 class="card-title">Customer Order Details</h3>
+                                </div>
+                                <div class="card-body usr-card-body met">
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <div class="row">
+                                                <div class="col-sm-6">
+                                                    <div class="form-group">
+                                                        <label for="customerorder_code" class="col-form-label">Order
+                                                            ID</label>
+                                                        <div class="col-sm-10">
+                                                            <div class="input-group input-group-sm">
+                                                                <input type="text" name="customerorderid"
+                                                                    class="form-control" id="customerorder_code">
+                                                                <span class="input-group-append">
+                                                                    <button type="button" id="btnprm"
+                                                                        class="btn btn-info btn-flat ">Select</button>
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-sm-6">
+                                                    <div class="form-group">
+                                                        <label for="customerorder_jobcode" class="col-form-label">Job
+                                                            ID</label>
+                                                        <div class="col-sm-10">
+                                                            <input type="input" name="jobid"
+                                                                class="form-control formfillin"
+                                                                id="customerorder_jobcode" placeholder="">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <div class="form-group">
+                                                        <label for="customerorder_jobno" class="col-form-label">Job
+                                                            Number</label>
+                                                        <div class="col-sm-10">
+                                                            <input type="input" name="customerorderjobno"
+                                                                class="form-control formfillin" id="customerorder_jobno"
+                                                                placeholder="">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-lg-12">
+                                                    <div class="form-group">
+                                                        <label for="customerorder_customerid"
+                                                            class="col-form-label">Customer</label>
+                                                        <div class="col-sm-10">
+                                                            <input type="input" name="customerordercustomer"
+                                                                class="form-control formfillin"
+                                                                id="customerorder_customerid" placeholder="">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-lg-12">
+                                                    <div class="form-group">
+                                                        <label for="customerorder_remark"
+                                                            class="col-form-label">Remark</label>
+                                                        <div class="col-sm-10">
+                                                            <input type="input" name="customerorderremark"
+                                                                class="form-control formfillin"
+                                                                id="customerorder_remark" placeholder="">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-lg-6">
+                                                    <div class="form-group">
+                                                        <label for="customerorder_status"
+                                                            class="col-form-label">Status</label>
+                                                        <div class="col-sm-10">
+                                                            <input type="input" name="customerorderstatus"
+                                                                class="form-control formfillin"
+                                                                id="customerorder_status" placeholder="">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6 table-bordered ">
+                                            <div class="row">
+                                                <div class="card-body">
+                                                    <table id="table35" class="table table-bordered table-striped">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>#</th>
+                                                                <th>Product</th>
+                                                                <th>Quntity</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <!-- /.card-body -->
+                                <div class="card-footer">
+                                    <div class="float-right">
+                                        <button type="submit" class="btn btn-success formbtn" id="acceptCustomerOrders">
+                                            <i class="fas fa-check-circle"></i>
+                                            Accept</button>
+                                    </div>
+                                </div>
+                                <!-- /.card-footer -->
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.row -->
+                <div class="row">
+                    <!-- /.col -->
+                    <div class="col-6">
+
+                    </div>
+
+                </div>
+            </div>
+            <!-- /.container-fluid -->
+        </section>
+        <!-- /.content -->
+        <!-- Control Sidebar -->
+        <aside class="control-sidebar control-sidebar-dark">
+            <!-- Control sidebar content goes here -->
+        </aside>
+        <!-- /.control-sidebar -->
+        <div id="podiv">
+            <div class="wrapper">
+                <!-- Main content -->
+                <section class="invoice">
+                    <!-- title row -->
+                    <div class="row">
+                        <div class="col-12">
+                            <h2 class="page-header">
+                                <i class="fa fa-globe"></i> G R S Garment & Industries(PVT)Ltd.
+                                <small class="float-right"><span><b>Invoice</b></span></small>
+                            </h2>
+                        </div>
+                        <!-- /.col -->
+                    </div>
+                    <!-- info row -->
+                    <div class="row invoice-info">
+                        <div class="col-sm-4 invoice-col">
+                            Ship To
+                            <address>
+                                <!-- <strong>G R S Garment</strong><br> -->
+                                No 56,<br>
+                                Maragasmulla Rd,<br>
+                                Rajagiriya,<br>
+                                Phone: 0773750654<br>
+                                Email: rangagomes56@gmail.com
+                            </address>
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-sm-4 invoice-col">
+                            From
+                            <address>
+                                <strong><span id="suppliername"></span></strong><br>
+                                <span id="supplieraddline01"></span><br>
+                                <span id="supplieraddline02"></span><br>
+                                <span id="supplieraddline03"></span><br>
+                                <sapn id="supplercontact"></sapn><br>
+                                <span id="supplieremail"></span>
+                            </address>
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-sm-4 invoice-col">
+                            <br>
+                            <h4 id="coppyornot"></h4>
+                            <b>Invoice #:</b> <span id="invoiceno"></span><br>
+                            <b>Term :</b> <span id="qoano"></span><br>
+                            <b>Invoice Date :</b> <span id="printeddate"></span><br>
+                            <b>Reprint Date :</b> <span id="reprintdate"></span><br>
+                        </div>
+                        <!-- /.col -->
+                    </div>
+                    <!-- /.row -->
+
+                    <!-- Table row -->
+                    <div class="row">
+                        <div class="col-12 table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>No.</th>
+                                        <th>Product Description</th>
+                                        <th>
+                                            <div style="text-align: right;">Unit Rate(Rs.)</div>
+                                        </th>
+                                        <th>
+                                            <div style="text-align: right;">Quntity </div>
+                                        </th>
+                                        <th>
+                                            <div style="text-align: right;">Subtotal</div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="potablebody">
+
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- /.col -->
+                    </div>
+                    <!-- /.row -->
+
+                    <div class="row">
+                        <!-- accepted payments column -->
+                        <div class="col-6">
+
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-6">
+
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <tbody>
+                                        <tr>
+                                            <th style="width:50%">Subtotal:</th>
+                                            <td>
+                                                <div style="text-align: right;">Rs.<span id="nettotal"></div></span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>Tax (<span class="tax"></span>)</th>
+                                            <td>
+                                                <div style="text-align: right;"><span class="tax"></div></span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>Total:</th>
+                                            <td>
+                                                <div style="text-align: right;">Rs.<span id="grosstotal"></div></span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- /.col -->
+                    </div>
+                    <!-- /.row -->
+                    <footer class="main-footer">
+                        <br>
+                        <br>
+                        <br>
+                        <br>
+                        <table style="
+                            width: 100%;
+                            ">
+                            <tbody>
+                                <tr>
+                                    <td style="
+                                        width: 50%;
+                                    "> </td>
+                                    <td>................................................................</td>
+                                </tr>
+                                <tr>
+                                    <td style="
+                                        width: 50%;
+                                        "> </td>
+                                    <td>Sign above</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <br>
+                        <br>
+                    </footer>
+                </section>
+                <!-- /.content -->
+            </div>
+        </div>
+    </div>
+    <!-- ./wrapper -->
+    <div class="modal fade" id="modal-colist" style="display: none;" tabindex="-1" role="dialog"
+        aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">List of Accepted Customer Orders</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="card-body">
+                        <table id="table13" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>CO ID</th>
+                                    <th>Job Number</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <script src="../../dist/js/pages/clientclasses.js"></script>
+    <script src="../../dist/js/pages/productclasses.js"></script>
+    <script src="../../dist/js/pages/invoiceclasses.js"></script>
+    <script src="../../dist/js/pages/invoices.js"></script>
+</body>

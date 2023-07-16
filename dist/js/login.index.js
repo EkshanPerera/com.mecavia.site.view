@@ -1,4 +1,14 @@
 $(function () {
+    $(document).on("click","#pwvisibility",function(){
+        var input = $("#password");
+        if (input.attr("type") === "password") {
+          input.attr("type", "text");
+          $("#pwvisibility").html("<span class=\"fas fa-eye-slash\"></span>");
+        } else {
+          input.attr("type", "password");
+          $("#pwvisibility").html("<span class=\"fas fa-eye\"></span>");
+        }
+    })
     $("#login-form").submit(function (event) {
         event.preventDefault();
         var username = $("#username").val();
@@ -11,7 +21,7 @@ $(function () {
             $.ajax({
                 url: "http://localhost:8080/api/auth/authenticate",
                 method: "post",
-                data: JSON.stringify({ "email": username + "@grsgarment.com", "password": password }),
+                data: JSON.stringify({ "email": username + "@gmail.com", "password": password }),
                 contentType: 'application/json',
                 success: function (data) {
                     localStorage.setItem("jwt_token", data.token);

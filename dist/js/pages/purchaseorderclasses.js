@@ -1,7 +1,7 @@
 var purchaseorderClasses = (function () {
     //classescodematerial
     class purchaserequisition {
-        constructor(id, prcode, pocode, supplierid, status, remark, totalAmount, purchaseRequisitionMaterials, printeddate, quotationno) {
+        constructor(id, prcode, pocode, supplierid, status, remark, totalAmount, purchaseRequisitionMaterials, printeddate, quotationno,enteredUser, printededUser,acceptedUser,poPrintededUser  ) {
             this.id = id;
             this.prcode = prcode;
             this.pocode = pocode;
@@ -12,6 +12,10 @@ var purchaseorderClasses = (function () {
             this.purchaseRequisitionMaterials = purchaseRequisitionMaterials;
             this.printeddate = printeddate;
             this.quotationno = quotationno;
+            this.enteredUser = enteredUser;
+            this.printededUser = printededUser;
+            this.acceptedUser = acceptedUser;
+            this.poPrintededUser = poPrintededUser;
         }
     }
     class purchaseRequisitionMaterials {
@@ -30,8 +34,8 @@ var purchaseorderClasses = (function () {
             this.purchaserequisition;
 
         }
-        addPurchaseRequisitiontoArray(id, prcode, pocode, supplierid, status, remark, totalAmount, purchaseRequisitionMaterials, printeddate, quotationno) {
-            let purchaserequisition_arritem = new purchaserequisition(id, prcode, pocode, supplierid, status, remark, totalAmount, purchaseRequisitionMaterials, printeddate, quotationno);
+        addPurchaseRequisitiontoArray(id, prcode, pocode, supplierid, status, remark, totalAmount, purchaseRequisitionMaterials, printeddate, quotationno,enteredUser, printededUser,acceptedUser,poPrintededUser  ) {
+            let purchaserequisition_arritem = new purchaserequisition(id, prcode, pocode, supplierid, status, remark, totalAmount, purchaseRequisitionMaterials, printeddate, quotationno,enteredUser, printededUser,acceptedUser,poPrintededUser  );
             this.purchaserequisitions.push(purchaserequisition_arritem);
         }
         addpurchaseRequisitionMaterialstoArray(id, hash, material, unitrate, quntity) {
