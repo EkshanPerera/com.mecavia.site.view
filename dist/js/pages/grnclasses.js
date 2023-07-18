@@ -68,7 +68,7 @@ var grnClasses = (function () {
         }
         addNewGRNMaterialstoArray(id, code, ordercode, goodsReceivedNote, prmaterial, arrivedCount, outstandingcount) {
             this.hash += 1;
-            var arrivedCount = parseInt(arrivedCount)
+            var arrivedCount = parseFloat(arrivedCount)
             let newgoodsReceivedNoteMaterials = [];
             let goodsreceivednotematerials_arritem = new goodsReceivedNoteMaterial(id, code, ordercode, goodsReceivedNote, prmaterial, arrivedCount, this.hash);
             newgoodsReceivedNoteMaterials = this.newGoodsReceivedNotMaterials;
@@ -76,7 +76,7 @@ var grnClasses = (function () {
                 newgoodsReceivedNoteMaterials = newgoodsReceivedNoteMaterials.filter(newgoodsReceivedNoteMaterials => newgoodsReceivedNoteMaterials.ordercode == ordercode);
                 let totArrivedCount = 0;
                 for (let i = 0; i < newgoodsReceivedNoteMaterials.length; i++) {
-                    totArrivedCount += parseInt(newgoodsReceivedNoteMaterials[i].arrivedCount);
+                    totArrivedCount += parseFloat(newgoodsReceivedNoteMaterials[i].arrivedCount);
                 }
                 if (outstandingcount >= (totArrivedCount + arrivedCount)) {
                     this.newGoodsReceivedNotMaterials.push(goodsreceivednotematerials_arritem);

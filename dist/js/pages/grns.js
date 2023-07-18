@@ -46,7 +46,30 @@ $(function () {
     var t26 = $("#table26").DataTable({
         "order": [[0, "desc"]],
         pageLength: 5,
-        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>'
+        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+        "autoWidth": false,
+        columns: [
+            null,
+            null,
+            {
+                render: function (data, type, row, meta) {
+                    if (type === 'display') {
+                        var num = $.fn.dataTable.render.number(',', '.', 2).display(data);
+                        return '<div style="text-align: right;">' + num + '</div>';
+                    } else {
+                        return data;
+                    }
+
+                },
+
+            },
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        ]
     });
     var t27 = $("#table27").DataTable({
         "order": [[0, "desc"]],
@@ -136,12 +159,12 @@ $(function () {
             if (addmoddel && goodsreceivednote_col.allNewGRNNMaterials() != 0) {
                 Swal.fire({
                     title: 'Are you sure?',
-                    text: "You won't be able to get another original copy!",
+                    text: "You won't be able to revert this!",
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',
                     cancelButtonColor: '#d33',
-                    confirmButtonText: 'Yes, print it!'
+                    confirmButtonText: 'Yes, save it!'
                 }).then((result) => {
                     if (result.isConfirmed) {
                         var year = new Date().getFullYear();
@@ -170,7 +193,7 @@ $(function () {
                     Swal.fire({
                         icon: 'error',
                         title: 'Oops...',
-                        text: 'Please enter the valid PR number!',
+                        text: 'Please enter the valid PO number!',
                     });
                 }else{
                     Swal.fire({
@@ -184,6 +207,7 @@ $(function () {
         }
     });
     //definded functions
+    
     function getJwtPayload() {
         var parts = jwt.split('.');
         var encodedPayload = parts[1];
@@ -241,7 +265,11 @@ $(function () {
                     fadepageloder();
                 },
                 error: function (xhr, status, error) {
-                    fadepageloder();
+                    Swal.fire(
+                        'Error!',
+                        'Please contact the Administator',
+                        'error'
+                    )
                 }
             })
         } else {
@@ -322,6 +350,7 @@ $(function () {
             setOutstanding(ordercode);
             if (addmoddel == "add") {
                 $("#grn_orderno").val(selectedpomcode);
+                $("#grn_arrivedcount").val(undefined)
             }
             if (goodsReceivedNoteMaterialsobjarr.length != 0) {
                 $.each(goodsReceivedNoteMaterialsobjarr, function (i, item) {
@@ -358,7 +387,7 @@ $(function () {
         if (res) {
             Swal.fire(
                 'Added!',
-                'The new record has been added.',
+                'The record has been added to the list.',
                 'success'
             )
             $("#grn_arrivedcount").val(undefined);
@@ -372,6 +401,7 @@ $(function () {
         }
     }
     function setValues(code) {
+        resetform("#quickForm10");
         formctrl();
         addmoddel = undefined;
         if (code) {
@@ -410,6 +440,7 @@ $(function () {
                 setValues();
             }
         } else {
+            $("#table13 tr").removeClass("selected")
             t25.clear().draw(false);
             t27.clear().draw(false);
             prmobj = null;
@@ -451,6 +482,11 @@ $(function () {
         if (status) goodsreceivednoteobj.status = status;
         if (purchaseRequisition) goodsreceivednoteobj.purchaseRequisition = purchaseRequisition;
         if (goodsReceivedNoteMaterials) goodsreceivednoteobj.goodsReceivedNoteMaterials = goodsReceivedNoteMaterials;
+    }
+    function resetform(element) {
+        $(element).find(".invalid-feedback").remove();
+        $(element).find(".is-invalid").removeClass("is-invalid");
+        $(element).find(".is-valid").removeClass("is-valid");
     }
     //end of functions
     //triggers
@@ -499,6 +535,8 @@ $(function () {
     $(document).off("click", "#btnprmpo");
     $(document).off("click", "#addGRN");
     $(document).off("click", "#addPOM");
+    $(document).off("click", "#cancelGRN");
+
     $(document).on("click", "#btnprmpo", function () {
         $("#modal-polist").modal("show");
         // selectedcode = $("#purchaseorder_code").val();
@@ -523,7 +561,8 @@ $(function () {
     })
     $(document).on("focusout", "#addPOM", function () {
         var val = $("#grn_arrivedcount").val();
-        if (String(val) != "") {
+        val = String(val);
+        if (val != "") {
             if (val.indexOf('.') == -1) {
                 val = val + ".00";
             } else {
@@ -540,7 +579,11 @@ $(function () {
             refreshgrnmtable();
         }
     })
-
+    $(document).on("click", "#cancelGRN", function () {
+        selectedcode = "";
+        setValues();
+    });
+    
     //end of triggers
     $("#podiv").hide();
     jwtPayload = getJwtPayload();

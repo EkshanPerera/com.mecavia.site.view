@@ -73,7 +73,7 @@ $(function () {
                         showCancelButton: true,
                         confirmButtonColor: '#3085d6',
                         cancelButtonColor: '#d33',
-                        confirmButtonText: 'Yes, accept it!'
+                        confirmButtonText: 'Yes, save it!'
                     }).then((result) => {
                         if (result.isConfirmed) {
                             if (customerorderobj.status == "ACCEPTED") {
@@ -96,7 +96,7 @@ $(function () {
                 Swal.fire({
                     icon: 'error',
                     title: 'Oops...',
-                    text: 'Please enter the valid PR number!',
+                    text: 'Please enter the valid Cusromer Order Number!',
                 });
             }
         }
@@ -126,7 +126,7 @@ $(function () {
                 success: function (data) {
                     $.each(data.content, function (i, item) {
                         if (item.status == "ACCEPTED" || item.status == "INVOICED") {
-                            customerorder_col.addCustomerOrdertoArray(item.id, item.code, item.jobID, item.jobNumber, item.customerid, item.totalAmount, item.grossAmount, item.remark, item.customerOrderProducts, item.printeddate, item.status, item.enteredUser, item.enteredDate, item.acceptedUser, item.acceptedDate, item.invoices);
+                            customerorder_col.addCustomerOrdertoArray(item.id, item.code, item.jobID, item.jobNumber, item.customerid, item.totalAmount, item.grossAmount, item.remark, item.customerOrderProducts, item.printeddate, item.status, item.enteredUser, item.enteredDate, item.acceptedUser, item.acceptedDate, item.invoices,item.inventoryItems);
                             t13.row.add([item.code, item.jobNumber]).draw(false);
                         }
                     });
@@ -136,7 +136,11 @@ $(function () {
                     fadepageloder();
                 },
                 error: function (xhr, status, error) {
-                    fadepageloder();
+                    Swal.fire(
+                        'Error!',
+                        'Please contact the Administator',
+                        'error'
+                    )
                 }
             })
         } else {
@@ -171,6 +175,12 @@ $(function () {
                 // sendSMS(enteredUserTpNo,"Hello%20"+ enteredUser.firstname +",%20Customer%20Order%20ID%20of%20"+ customerorderobj.code +"%20which%20is%20entered%20by%20you,%20have%20been%20accepted%20by%20"+jwtPayload.firstname +"%20" +jwtPayload.lastname +".%20The%20Job%20ID%20is%20"+ customerorderobj.jobID +".");
                 refreshtable();
                 selectedcode = undefined;
+            }, error: function (xhr, error, status) {
+                Swal.fire(
+                    'Error!',
+                    'Please contact the Administator',
+                    'error'
+                )
             }
         })
     }
@@ -216,6 +226,7 @@ $(function () {
 
     }
     function setValues(code) {
+        
         formctrl();
         addmoddel = undefined;
         if (code) {
@@ -310,6 +321,7 @@ $(function () {
             customerOrderProductsobjarr = [];
             total = undefined;
             invoiceobj = undefined;
+            $("#table13 tr").removeClass("selected")
             $("#customerorder_code").val(undefined);
             $("#customerorder_jobcode").val(undefined);
             $("#customerorder_unitrate").val(undefined);
@@ -357,12 +369,16 @@ $(function () {
         }
     });
     $(document).off("click", "#btnprm");
+    $(document).off("click", "#cancelInvoice");
     $(document).on("click", "#btnprm", function () {
         $("#modal-colist").modal("show");
         // selectedcode = $("#customerorder_code").val();
         // refreshtable();
     })
-
+    $(document).on("click", "#cancelInvoice", function () {
+        selectedcode = "";
+        setValues();
+    });
     //end of triggers
     $("#podiv").hide();
     jwtPayload = getJwtPayload();

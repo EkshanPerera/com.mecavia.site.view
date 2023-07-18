@@ -27,8 +27,8 @@ var mrClasses = (function () {
             this.materialRequisitionMaterials = [];
             this.materialrequisition;
             this.materialRequisitionMaterial;
-            this.newGoodsReceivedNotMaterials = [];
-
+            this.newMaterialRequisitionMaterials = [];
+           
         }
         addMRtoArray(id, code, enterddate, billOfMaterial, materialRequisitionMaterials, printeddate, status, enteredUser) {
             let materialrequisition_arritem = new materialrequisition(id, code, enterddate, billOfMaterial, materialRequisitionMaterials, printeddate, status, enteredUser);
@@ -39,19 +39,19 @@ var mrClasses = (function () {
             this.materialRequisitionMaterials.push(materialrequisitionmaterials_arritem);
         }
         addNewMRMaterialstoArray(id, code, ordercode, materialRequisition, bommaterial, requestedCount, outstandingcount) {
-            var requestedCount = parseInt(requestedCount)
+            var requestedCount = parseFloat(requestedCount)
             let materialRequisitionMaterials = [];
             let materialrequisitionmaterials_arritem = new materialRequisitionMaterial(id, code, ordercode, materialRequisition, bommaterial, requestedCount);
-            materialRequisitionMaterials = this.newGoodsReceivedNotMaterials;
+            materialRequisitionMaterials = this.newMaterialRequisitionMaterials;
             if (materialRequisitionMaterials.length != 0) {
                 materialRequisitionMaterials = materialRequisitionMaterials.filter(materialRequisitionMaterial => materialRequisitionMaterial.ordercode == ordercode);
                 let totRequestedCount = 0;
                 for (let i = 0; i < materialRequisitionMaterials.length; i++) {
-                    totRequestedCount += parseInt(materialRequisitionMaterials[i].requestedCount);
+                    totRequestedCount += parseFloat(materialRequisitionMaterials[i].requestedCount);
                 }
                 if (outstandingcount >= (totRequestedCount + requestedCount)) {
 
-                    this.newGoodsReceivedNotMaterials.push(materialrequisitionmaterials_arritem);
+                    this.newMaterialRequisitionMaterials.push(materialrequisitionmaterials_arritem);
 
                     return true;
                 }
@@ -60,13 +60,16 @@ var mrClasses = (function () {
                 }
             } else {
                 if (outstandingcount >= requestedCount) {
-                    this.newGoodsReceivedNotMaterials.push(materialrequisitionmaterials_arritem);
+                    this.newMaterialRequisitionMaterials.push(materialrequisitionmaterials_arritem);
                     return true;
                 } else {
                     return false;
                 }
             }
 
+        }
+        removeNewMRMaterialstoArray(code) {
+            this.newMaterialRequisitionMaterials = this.newMaterialRequisitionMaterials.filter(newMaterialRequisitionMaterial => newMaterialRequisitionMaterial.code != code);
         }
         allMR() {
             return this.materialrequisitions;
@@ -80,10 +83,10 @@ var mrClasses = (function () {
             return this.materialRequisitionMaterials;
         }
         allNewMRNMaterials() {
-            return this.newGoodsReceivedNotMaterials;
+            return this.newMaterialRequisitionMaterials;
         }
         getNewMRNMaterialsByOrderCode(ordercode) {
-            return this.newGoodsReceivedNotMaterials.filter(materialRequisitionMaterial => materialRequisitionMaterial.ordercode == ordercode)
+            return this.newMaterialRequisitionMaterials.filter(materialRequisitionMaterial => materialRequisitionMaterial.ordercode == ordercode)
         }
         allMRsByOrderCode(ordercode) {
             let materialRequisitionMaterials = this.materialRequisitionMaterials.filter(materialRequisitionMaterial => materialRequisitionMaterial.ordercode == ordercode
@@ -124,7 +127,7 @@ var mrClasses = (function () {
             this.materialRequisitionMaterials = []
         }
         clearmrm() {
-            this.newGoodsReceivedNotMaterials = [];
+            this.newMaterialRequisitionMaterials = [];
         }
     }
     class MaterialRequisitionSerial {
@@ -136,18 +139,18 @@ var mrClasses = (function () {
             this.GroupCode;
         }
         genarateMRCode(index, parent_code) {
-            this.parent_code = parseInt(parent_code.match(/\d+(?=$)/g));
+            this.parent_code = parseFloat(parent_code.match(/\d+(?=$)/g));
             this.code = "MR";
-            this.index = parseInt(String(this.parent_code).concat("0", index + 1));
-            this.length = 9;
+            this.index = parseFloat(String(this.parent_code).concat("0", index + 1));
+            this.length = 13;
             this.GroupCode = this.code + String(this.index).padStart(this.length - 3, '0');
             return this.GroupCode;
         }
         genarateMRMCode(index, parent_code) {
-            this.parent_code = parseInt(parent_code.match(/\d+(?=$)/g));
+            this.parent_code = parseFloat(parent_code.match(/\d+(?=$)/g));
             this.code = "MRM";
-            this.index = parseInt(String(this.parent_code).concat("0", index + 1));
-            this.length = 11;
+            this.index = parseFloat(String(this.parent_code).concat("0", index + 1));
+            this.length = 15;
             this.GroupCode = this.code + String(this.index).padStart(this.length - 4, '0');
             return this.GroupCode;
         }

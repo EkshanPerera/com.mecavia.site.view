@@ -10,15 +10,39 @@ $(function () {
     var clientClassesInstence = clientClasses.clientClassesInstence();
     let cli_col = clientClassesInstence.cli_service;
     let cli_obj = clientClassesInstence.client;
+    let bomarry = [];
+    let bomobj = undefined;
+
 
     var addmoddel = undefined;
     var selectedcode = undefined;
     var jwtPayload = undefined;
 
     var t35 = $("#table35").DataTable({
-        "order": [[0, "desc"]],
         pageLength: 5,
         dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>'
+    });
+    var t36 = $("#table36").DataTable({
+        pageLength: 5,
+        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+        "autoWidth": false,
+        columns: [
+            null,
+            null,
+            {
+                render: function (data, type, row, meta) {
+                    if (type === 'display') {
+                        var num = $.fn.dataTable.render.number(',', '.', 2).display(data);
+                        return '<div style="text-align: right;">' + num + '</div>';
+                    } else {
+                        return data;
+                    }
+
+                },
+
+            },
+            null
+        ]
     });
 
     var Toast = Swal.mixin({
@@ -84,11 +108,6 @@ $(function () {
                             var date = day + "/" + (parseInt(month) + 1) + "/" + year;
                             setNewValues(code, status, date);
                             submit();
-                            Swal.fire(
-                                'Submitted!',
-                                'The PR has been accepted.',
-                                'success'
-                            )
                         }
                     })
                 } else if (customerorderobj.status == "ACCEPTED" || customerorderobj.status == "PRINTED") {
@@ -132,7 +151,8 @@ $(function () {
                 success: function (data) {
                     $.each(data.content, function (i, item) {
                         if (item.status == "SUBMIT" || item.status == "ACCEPTED" || item.status == "PRINTED") {
-                            customerorder_col.addCustomerOrdertoArray(item.id, item.code, item.jobID, item.jobNumber, item.customerid, item.totalAmount, item.grossAmount, item.remark, item.customerOrderProducts, item.printeddate, item.status,item.enteredUser,item.enteredDate,item.acceptedUser,item.acceptedDate);
+                            customerorder_col.addCustomerOrdertoArray(item.id, item.code, item.jobID, item.jobNumber, item.customerid, item.totalAmount, item.grossAmount, item.remark, item.customerOrderProducts, item.printeddate, item.status,item.enteredUser,item.enteredDate,item.acceptedUser,item.acceptedDate,item.invoices,item.inventoryItems);
+                            bomarry.push(item.billOfMaterial);
                             if(item.status == "SUBMIT") t13.row.add([item.code,item.jobNumber]).draw(false);
                         }
                     });
@@ -142,7 +162,11 @@ $(function () {
                     fadepageloder();
                 },
                 error: function (xhr, status, error) {
-                    fadepageloder();
+                    Swal.fire(
+                        'Error!',
+                        'Please contact the Administator',
+                        'error'
+                    )
                 }
             })
         } else {
@@ -175,7 +199,13 @@ $(function () {
                 var enteredUserTpNo = enteredUser.contactNumbers.find(contactnoitem => contactnoitem.isdef == true).tpno
                 sendEmail(enteredUserEmail,"Accepted Customer Order (CO ID: "+customerorderobj.code+")","Hello "+ enteredUser.firstname +",\nCustomer Order ID of "+ customerorderobj.code +" which is entered by you, have been accepted by "+jwtPayload.firstname +" " +jwtPayload.lastname +".  The Job ID is "+ customerorderobj.jobID +".");
                 sendSMS(enteredUserTpNo,"Hello%20"+ enteredUser.firstname +",%20Customer%20Order%20ID%20of%20"+ customerorderobj.code +"%20which%20is%20entered%20by%20you,%20have%20been%20accepted%20by%20"+jwtPayload.firstname +"%20" +jwtPayload.lastname +".%20The%20Job%20ID%20is%20"+ customerorderobj.jobID +".");
+                Swal.fire(
+                    'Accepted!',
+                    'The Customer Order has been accepted.',
+                    'success'
+                )
                 refreshtable();
+                setValues();
             }
         })
     }
@@ -219,6 +249,8 @@ $(function () {
                 $("#customerorder_jobno").val(customerorderobj.jobNumber);
                 $("#customerorder_totalamount").val(customerorderobj.totalAmount);
                 $("#customerorder_status").val(customerorderobj.status);
+                $("#estorderprice").val(commaSeparateNumber(String(customerorderobj.totalAmount)));
+
                 if (customerorderobj.customerid) {
                     cli_obj = customerorderobj.customerid;
                     $("#customerorder_customerid").val(customerorderobj.customerid.code + " - " + customerorderobj.customerid.firstname + " " + customerorderobj.customerid.lastname);
@@ -233,6 +265,16 @@ $(function () {
                         t35.row.add([i + 1, item.product.name, item.quantity]).draw(false);
                     })
                 }
+                bomobj = bomarry.find(bomobj => bomobj.customerOrder.code == customerorderobj.code);
+                if (bomobj.bomMaterials) {
+                    t36.clear().draw(false);
+                    $.each(bomobj.bomMaterials, function (i, item) {
+                        t36.row.add([i + 1, item.material.code +" - "+item.material.description , item.quantity,item.material.uomid.scode]).draw(false);
+                    })
+                    $("#totmatcost").val(commaSeparateNumber(String(bomobj.totalcost)));
+
+                }
+                
             } else {
                 Swal.fire({
                     icon: 'error',
@@ -246,6 +288,7 @@ $(function () {
             customerorder_col.clearcop();
             customerOrderProductsobjarr = [];
             total = undefined;
+            $("#table13 tr").removeClass("selected")
             $("#customerorder_code").val(undefined);
             $("#customerorder_jobcode").val(undefined);
             $("#customerorder_unitrate").val(undefined);
@@ -256,8 +299,28 @@ $(function () {
             $("#customerorder_status").val(undefined);
             $("#customerorder_customerid").val(undefined);
             $("#customerorder_productid").val(undefined);
+            $("#estorderprice").val(undefined);
+            $("#totmatcost").val(undefined);
+
+
 
         }
+    }
+    function commaSeparateNumber(val) {
+        while (/(\d+)(\d{3})/.test(val.toString())) {
+            val = val.toString().replace(/(\d+)(\d{3})/, '$1' + ',' + '$2');
+        }
+        if (val != "") {
+            if (val.indexOf('.') == -1) {
+                val = val + ".00";
+            } else {
+                val = val;
+            }
+        } else {
+            val = val;
+        }
+        return val;
+
     }
     function setNewValues(code, status,acceptedDate) {
         if (customerorderobj) {
@@ -293,16 +356,19 @@ $(function () {
         }
     });
     $(document).off("click", "#btnprm");
+    $(document).off("click", "#cancelCAACCEPT");
     $(document).on("click", "#btnprm", function () {
         $("#modal-colist").modal("show");
         // selectedcode = $("#customerorder_code").val();
         // refreshtable();
     })
-
+    $(document).on("click", "#cancelCAACCEPT", function () {
+        selectedcode = "";
+        setValues();
+    });
     //end of triggers
     jwtPayload = getJwtPayload();
     formctrl();
     refreshtable();
-
 });
 

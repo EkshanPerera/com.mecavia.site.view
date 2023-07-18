@@ -152,7 +152,7 @@ $(function () {
                     $.each(data.content, function (i, item) {
                         if (item.status == "SUBMIT" || item.status == "APPROVED" || item.status == "PRINTED") {
                             purchaserequisition_col.addPurchaseRequisitiontoArray(item.id, item.prcode, item.pocode, item.supplierid, item.status, item.remark, item.totalAmount, item.purchaseRequisitionMaterials, item.printeddate, item.quotationno, item.enteredUser, item.printededUser, item.acceptedUser, item.poPrintededUser);
-                            if (item.status == "APPROVED" || item.status == "PRINTED") t13.row.add([item.pocode,item.prcode,item.quotationno]).draw("false")
+                            if (item.status == "APPROVED" || item.status == "PRINTED") t13.row.add([item.pocode,item.prcode,item.quotationno,item.status]).draw("false")
                         
                         }
                         var $tableRow = $("#table13 tr td:contains('" + selectedcode + "')").closest("tr");

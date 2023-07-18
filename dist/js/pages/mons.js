@@ -43,7 +43,7 @@ $(function () {
         ]
     });
     var t24 = $("#table24").DataTable({
-        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body popup lg"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
         "autoWidth": false,
         columns: [
             null,
@@ -116,12 +116,12 @@ $(function () {
             if (addmoddel) {
                 Swal.fire({
                     title: 'Are you sure?',
-                    text: "You won't be able to get another original copy!",
+                    text: "You won't be able to revert this!",
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',
                     cancelButtonColor: '#d33',
-                    confirmButtonText: 'Yes, print it!'
+                    confirmButtonText: 'Yes, save it!'
                 }).then((result) => {
                     if (result.isConfirmed) {
                         var year = new Date().getFullYear();
@@ -138,11 +138,6 @@ $(function () {
                         var materialRequisition = materialrequisitionobj;
                         setNewValues(code, enterddate, materialRequisition, materialOutNoteMaterials, undefined, remark, status);
                         submit();
-                        Swal.fire(
-                            'Submitted!',
-                            'The PR has been approved.',
-                            'success'
-                        )
                     }
                 })
             } else {
@@ -165,6 +160,8 @@ $(function () {
     function refreshtable() {
         if (jwtPayload.roleid.accIconList.find(accicon => accicon.status == "ACTIVE" && accicon.code == "AI00202") != undefined || jwtPayload.businessRole == "ADMIN") {
             materialrequisition_col.clear();
+            GeneralStoreDtos_col.clear();
+            materialOutNote_col.clear();
             addmoddel = undefined;
             materialavild = undefined;
             t22.clear().draw(false);
@@ -189,7 +186,11 @@ $(function () {
                     refreshmaterialoutnotes();
                 },
                 error: function (xhr, status, error) {
-                    fadepageloder();
+                    Swal.fire(
+                        'Error!',
+                        'Please contact the Administator',
+                        'error'
+                    )
                 }
             })
         } else {
@@ -256,6 +257,11 @@ $(function () {
                 sendEmail(enteredUserEmail,"Material Out Note (MR IR: "+materialrequisitionobj.code+")","Hello "+ enteredUser.firstname +",\nMaterial Requisition ID of "+ materialrequisitionobj.code + " which is requested by you, have been released by "+jwtPayload.firstname +" " +jwtPayload.lastname +". The Material Out Note ID is "+ monObject.code +".");
                 sendSMS(enteredUserTpNo,"Hello%20"+ enteredUser.firstname +",%20Material%20Requisition%20ID%20of%20"+ materialrequisitionobj.code +"%20which%20is%20entered%20by%20you,%20have%20been%20released%20by%20"+jwtPayload.firstname +"%20" +jwtPayload.lastname +".%20The%20Material%20Out%20Note%20ID%20is%20"+ monObject.code +".");
                 refreshtable();
+                Swal.fire(
+                    'Added!',
+                    'The record has been added.',
+                    'success'
+                )
             }
         })
     }
@@ -281,6 +287,11 @@ $(function () {
             }
         })
     }
+    function resetform(element) {
+        $(element).find(".invalid-feedback").remove();
+        $(element).find(".is-invalid").removeClass("is-invalid");
+        $(element).find(".is-valid").removeClass("is-valid");
+    }
     function formctrl() {
         $(".formfillin").prop("disabled", true);
     }
@@ -288,6 +299,7 @@ $(function () {
         $(fillinid).prop("disabled", false)
     }
     function setValues(ordercode) {
+        resetform("#quickForm10");
         formctrl();
         addmoddel = undefined;
         t23.clear().draw(false);
@@ -323,7 +335,9 @@ $(function () {
     }
     function getgsdata(materilaid) {
         var gsdto = GeneralStoreDtos_col.getGeneralStoreDtoByMaterialCode(materilaid);
-        if (((gsdto.itemcount - gsdto.releasedItemcount) - (gsdto.requestedItemcount - gsdto.releasedItemcount)) > 0) {
+        var curruntitemcount = gsdto.itemcount - gsdto.releasedItemcount;
+        var outstandingcount = gsdto.requestedItemcount - gsdto.releasedItemcount;
+        if ( curruntitemcount - outstandingcount> 0) {
             return true;
         } else {
             return false;
@@ -383,13 +397,14 @@ $(function () {
         var res = checkavilability();
         if (res.falsematerials.length == 0 && res.truematerials.length != 0) {
             addmoddel = "add";
+            materialOutNote_col.clearmonm();
             let index = materialOutNote_col.allMON().length;
             let mrcode = monClassesInstence.MONSerial.genarateMONCode(index);
             $("#materialoutnote_id").val(mrcode);
             enablefillin("#materialoutnote_remark");
             $.each(res.truematerials, function (i, item) {
                 materialOutNote_col.addMONMtoArray(undefined, undefined, undefined, item, item.releaseCount)
-            })
+            });
         } else {
             addmoddel = undefined;
             var fmtstr = "";
@@ -402,6 +417,7 @@ $(function () {
                 title: 'Warning!',
                 text: 'Material Shortage on ' + fmtstr + '. Therefor, material Out note can not process at the moment.',
             });
+            refreshtable()
         }
 
 
@@ -409,7 +425,10 @@ $(function () {
     $(document).on("click", "#addPOM", function () {
         setMRMValues()
     })
-
+    $(document).on("click", "#cancelMON", function () {
+        selectedcode = "";
+        setValues();
+    });
     //end of triggers
     $("#podiv").hide();
     jwtPayload = getJwtPayload();

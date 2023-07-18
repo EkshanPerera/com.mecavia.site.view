@@ -110,6 +110,9 @@ $(function () {
         var payload = JSON.parse(decodedPayload);
         return payload;
     }
+    function formctrl() {
+        $(".formfillin").prop("disabled", true);
+    }
     function refreshtable() {
         if (jwtPayload.roleid.accIconList.find(accicon => accicon.status == "ACTIVE" && accicon.code == "AI00602") != undefined || jwtPayload.businessRole == "ADMIN") {
             t18.clear().draw(false);
@@ -155,14 +158,15 @@ $(function () {
     function setValues() {
         total = 0;
         GeneralStoreDtosarr = GeneralStoreDtos_col.allGeneralStoreDtos();
+        formctrl();
         t18.clear().draw(false);
         var dataset = "";
         $.each(GeneralStoreDtosarr, function (i, item) {
             if (item.materialid.status == "ACTIVE") {
-                t18.row.add([item.materialid.code, item.materialid.description, item.itemcount, item.materialid.uomid.scode, item.materialid.price, item.itemcount * item.materialid.price]).draw(false);
-                dataset += "<tr><td>" + (i + 1) + "</td><td>" + item.materialid.code + "</td><td>" + item.materialid.description + "</td><td> <div style=\"text-align: right;\"> " + commaSeparateNumber(String(item.itemcount)) + "</div></td><td>" + item.materialid.uomid.scode + "</td><td><div style=\"text-align: right;\">Rs. " + commaSeparateNumber(String(item.materialid.price)) + "</div></td><td><div style=\"text-align: right;\">Rs. " + commaSeparateNumber(String(item.itemcount * item.materialid.price)) + "</div></td></tr>";
+                t18.row.add([item.materialid.code, item.materialid.description, (item.itemcount - item.releasedItemcount) , item.materialid.uomid.scode, item.materialid.price, (item.itemcount - item.releasedItemcount)  * item.materialid.price]).draw(false);
+                dataset += "<tr><td>" + (i + 1) + "</td><td>" + item.materialid.code + "</td><td>" + item.materialid.description + "</td><td> <div style=\"text-align: right;\"> " + commaSeparateNumber(String((item.itemcount - item.releasedItemcount) )) + "</div></td><td>" + item.materialid.uomid.scode + "</td><td><div style=\"text-align: right;\">Rs. " + commaSeparateNumber(String(item.materialid.price)) + "</div></td><td><div style=\"text-align: right;\">Rs. " + commaSeparateNumber(String((item.itemcount - item.releasedItemcount)  * item.materialid.price)) + "</div></td></tr>";
             }
-            total += (item.itemcount * item.materialid.price);
+            total += ((item.itemcount - item.releasedItemcount)  * item.materialid.price);
         })
         var year = new Date().getFullYear();
         var month = new Date().getMonth();

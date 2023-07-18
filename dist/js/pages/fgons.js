@@ -12,6 +12,7 @@ $(function () {
     var addmoddel = undefined;
     var selectedcode = undefined;
     var jwtPayload = undefined;
+    var lablgenareted = false;
 
     var t22 = $("#table22").DataTable({
         pageLength: 5,
@@ -40,7 +41,7 @@ $(function () {
                 },
 
             },
-            
+
         ]
     });
     var t24 = $("#table24").DataTable({
@@ -117,7 +118,7 @@ $(function () {
             if (addmoddel) {
                 Swal.fire({
                     title: 'Are you sure?',
-                    text: "You won't be able to get another original copy!",
+                    text: "You won't be able to revert this!",
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',
@@ -139,18 +140,14 @@ $(function () {
                         var customerOrder = customerorderobj;
                         setNewValues(code, enterddate, customerOrder, finishedGoodsOutNoteProducts, undefined, remark, status);
                         submit();
-                        Swal.fire(
-                            'Submitted!',
-                            'The PR has been approved.',
-                            'success'
-                        )
+                        
                     }
                 })
             } else {
                 Swal.fire({
                     icon: 'error',
                     title: 'Oops...',
-                    text: 'Please enter the valid MR ID!',
+                    text: 'Please enter the valid Customer Order ID!',
                 });
             }
         }
@@ -166,8 +163,10 @@ $(function () {
     function refreshtable() {
         if (jwtPayload.roleid.accIconList.find(accicon => accicon.status == "ACTIVE" && accicon.code == "AI00202") != undefined || jwtPayload.businessRole == "ADMIN") {
             customerorder_col.clear();
+            finishedGoodsOutNote_col.clear();
             addmoddel = undefined;
             materialavild = undefined;
+            selectedcode = undefined;
             t22.clear().draw(false);
             t23.clear().draw(false);
             $.ajax({
@@ -181,16 +180,20 @@ $(function () {
                         $.each(item.customerOrderProducts, function (i, item) {
                             customerorder_col.addcustomerOrderProductstoArray(item.id, item.code, item.ordercode, item.customerOrder, item.bommaterial, item.requestedCount);
                         });
-                        customerorder_col.addCustomerOrdertoArray(item.id, item.code, item.jobID, item.jobNumber, item.customerid, item.totalAmount, item.grossAmount, item.remark, item.customerOrderProducts, item.printeddate, item.status,item.enteredUser,item.enteredDate,item.acceptedUser,item.acceptedDate,item.invoices);
+                        customerorder_col.addCustomerOrdertoArray(item.id, item.code, item.jobID, item.jobNumber, item.customerid, item.totalAmount, item.grossAmount, item.remark, item.customerOrderProducts, item.printeddate, item.status, item.enteredUser, item.enteredDate, item.acceptedUser, item.acceptedDate, item.invoices,item.inventoryItems);
                         if (item.status == "INVOICED")
-                            t22.row.add([item.code, item.jobID, item.jobNumber, item.enteredDate]).draw(false);
+                            t22.row.add([item.code, item.jobID, item.jobNumber, item.invoices[0].enteredDate]).draw(false);
                     });
                     setValues();
-                    fadepageloder();
                     refreshfinishedgoodsoutnotes();
+                    fadepageloder();
                 },
                 error: function (xhr, status, error) {
-                    fadepageloder();
+                    Swal.fire(
+                        'Error!',
+                        'Please contact the Administator',
+                        'error'
+                    )
                 }
             })
         } else {
@@ -231,7 +234,19 @@ $(function () {
                 "Authorization": jwt
             },
             success: function (data) {
+                Swal.fire(
+                    'Saved!',
+                    'The record has been saved.',
+                    'success'
+                )
                 refreshtable();
+                setValues();
+            }, error: function (xhr, error, status) {
+                Swal.fire(
+                    'Error!',
+                    'Please contact the Administator',
+                    'error'
+                )
             }
         })
     }
@@ -241,7 +256,13 @@ $(function () {
     function enablefillin(fillinid) {
         $(fillinid).prop("disabled", false)
     }
+    function resetform(element) {
+        $(element).find(".invalid-feedback").remove();
+        $(element).find(".is-invalid").removeClass("is-invalid");
+        $(element).find(".is-valid").removeClass("is-valid");
+    }
     function setValues(ordercode) {
+        resetform("#quickForm10");
         formctrl();
         addmoddel = undefined;
         t23.clear().draw(false);
@@ -249,8 +270,10 @@ $(function () {
             customerorderobj = customerorder_col.getCustomerOrder(ordercode);
             customerOrderProductsobjarr = customerorderobj.customerOrderProducts;
             $.each(customerorderobj.customerOrderProducts, function (i, item) {
-                t23.row.add([item.code, item.product.code,item.product.name, item.product.desc, item.quantity]).draw(false);
+                t23.row.add([item.code, item.product.code, item.product.name, item.product.desc, item.quantity]).draw(false);
             });
+            $("#finishedgoodsoutnote_id").val(undefined);
+            $("#finishedgoodsoutnote_remark").val(undefined);
             $("#finishedgoodsoutnote_customerid").val(customerorderobj.customerid.code + " - " + customerorderobj.customerid.firstname + " " + customerorderobj.customerid.lastname);
         } else {
             customerorderobj = null;
@@ -261,7 +284,7 @@ $(function () {
             $("#finishedgoodsoutnote_customerid").val(undefined);
             $("#finishedgoodsoutnote_id").val(undefined);
             $("#finishedgoodsoutnote_remark").val(undefined);
-            
+
         }
     }
     function setNewValues(code, enterddate, customerOrder, finishedGoodsOutNoteProducts, printeddate, remark, status) {
@@ -317,40 +340,78 @@ $(function () {
     $(document).off("click", "#btnprmpo");
     $(document).off("click", "#addFGON");
     $(document).off("click", "#addPOM");
+    $(document).off("click", "#genLable");
+    $(document).off("click", "#cancelFGON");
 
     $(document).on("click", "#btnprmpo", function () {
         selectedcode = $("#customerorder_code").val();
         refreshtable();
     })
+    
+    $(document).on("click", "#genLable", function () {
+        if(customerorderobj){
+        var codestr = "";
+        // if(lablgenareted == false){
+        //     lablgenareted = true;
+            $.each(customerorderobj.inventoryItems, function (i, item) {
+                codestr += "<svg class=\"barcode\" jsbarcode-format=\"CODE128\" jsbarcode-value=\""+ item.fgiBulck.coproduct.product.code+"|"+item.code+"\" jsbarcode-textmargin=\"0\" jsbarcode-fontoptions=\"bold\"></svg>";
+            })
+            $("#podiv").html(codestr);
+            JsBarcode(".barcode").init();
+            $("#podiv").show();
+            $("#podiv").print();
+            $("#podiv").hide();
+        // }else{
+        //     Swal.fire({
+        //         icon: 'warning',
+        //         title: 'Warning!',
+        //         text: 'You have already genarated the barcodes',
+        //     });
+        // }
+        }
+    })
     $(document).on("click", "#addFGON", function () {
-        var res = checkavilability();
-        if (res.falseproducts.length == 0 && res.trueproducts.length != 0) {
-            addmoddel = "add";
-            let index = finishedGoodsOutNote_col.allFGON().length;
-            let customerordercode = finishedGoodsOutNoteClassesInstence.FGONSerial.genarateFGONCode(index);
-            $("#finishedgoodsoutnote_id").val(customerordercode);
-            enablefillin("#finishedgoodsoutnote_remark");
-            $.each(res.trueproducts, function (i, item) {
-                finishedGoodsOutNote_col.addFGONPtoArray(undefined, undefined, undefined, item, item.releaseCount)
-            })
-        } else {
-            addmoddel = undefined;
-            var fmtstr = "";
-            console.log(res.falseproducts)
-            $.each(res.falseproducts, function (i, item) {
-                fmtstr += item.code + ", ";
-            })
-            fmtstr = fmtstr.replace(/,\s*$/, "")
+        if (customerorderobj) {
+            var res = checkavilability();
+            if (res.falseproducts.length == 0 && res.trueproducts.length != 0) {
+                addmoddel = "add";
+                finishedGoodsOutNote_col.clearfgonp();
+                let index = finishedGoodsOutNote_col.allFGON().length;
+                let customerordercode = finishedGoodsOutNoteClassesInstence.FGONSerial.genarateFGONCode(index);
+                $("#finishedgoodsoutnote_id").val(customerordercode);
+                enablefillin("#finishedgoodsoutnote_remark");
+                $.each(res.trueproducts, function (i, item) {
+                    finishedGoodsOutNote_col.addFGONPtoArray(undefined, undefined, undefined, item, item.totFinishedCount)
+                })
+            } else {
+                addmoddel = undefined;
+                var fmtstr = "";
+                $.each(res.falseproducts, function (i, item) {
+                    fmtstr += item.code + ", ";
+                })
+                fmtstr = fmtstr.replace(/,\s*$/, "")
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Warning!',
+                    text: 'Order number ' + fmtstr + ' has not fully compleated yet. Therefor, Finished Goods Out note can not process at the moment.',
+                });
+                refreshtable();
+            }
+        }else{
             Swal.fire({
-                icon: 'warning',
-                title: 'Warning!',
-                text: 'Material Shortage on ' + fmtstr + '. Therefor, material Out note can not process at the moment.',
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Please select the valid Customer Order ID!',
             });
         }
     })
     $(document).on("click", "#addPOM", function () {
         setMRMValues()
     })
+    $(document).on("click", "#cancelFGON", function () {
+        selectedcode = "";
+        setValues();
+    });
     $("#podiv").hide();
     jwtPayload = getJwtPayload();
     formctrl();

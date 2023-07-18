@@ -12,12 +12,12 @@
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed">
-    <div class="pageloader content-wrapper " >
+    <div class="pageloader content-wrapper ">
         <div class="load-bar">
             <div class="bar"></div>
             <div class="bar"></div>
             <div class="bar"></div>
-          </div>
+        </div>
     </div>
     <div class="wrapper">
 
@@ -136,7 +136,46 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        <div class="col-lg-6  ">
+                                            <div class="row">
+                                                <div class="col-lg-6">
+                                                    <div class="form-group">
+                                                        <label for="totmatcost"
+                                                            class="col-form-label">Estimated Total material cost on entered date</label>
+                                                        <div class="col-sm-10">
+                                                            <div class="input-group mb-3">
+                                                                <div class="input-group-append">
+                                                                    <div class="input-group-text">
+                                                                        <span>Rs. </span>
+                                                                    </div>
+                                                                </div>
+                                                                <input type="input" name="totmatcost" class="form-control formfillin" id="totmatcost" placeholder="" disabled="">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-6">
+                                                    <div class="form-group">
+                                                        <label for="estorderprice"
+                                                            class="col-form-label">Estimated Order Price on entered date</label>
+                                                        <div class="col-sm-10">
+                                                            <div class="input-group mb-3">
+                                                                <div class="input-group-append">
+                                                                    <div class="input-group-text">
+                                                                        <span>Rs. </span>
+                                                                    </div>
+                                                                </div>
+                                                                <input type="input" name="estorderprice" class="form-control formfillin" id="estorderprice" placeholder="" disabled="">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
                                         <div class="col-lg-6 table-bordered ">
+                                            <label for="" class="col-form-label">Product Details</label>
                                             <div class="row">
                                                 <div class="card-body">
                                                     <table id="table35" class="table table-bordered table-striped">
@@ -145,6 +184,25 @@
                                                                 <th>#</th>
                                                                 <th>Product</th>
                                                                 <th>Quntity</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6 table-bordered ">
+                                            <label for="" class="col-form-label">Product Details</label>
+                                            <div class="row">
+                                                <div class="card-body">
+                                                    <table id="table36" class="table table-bordered table-striped">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>#</th>
+                                                                <th>Material</th>
+                                                                <th>Quntity</th>
+                                                                <th>UoM</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
@@ -162,6 +220,9 @@
                                         <button type="submit" class="btn btn-success formbtn" id="acceptCustomerOrders">
                                             <i class="fas fa-check-circle"></i>
                                             Accept</button>
+                                        <button type="button" class="btn btn-default formbtn" data-dismiss="modal"
+                                            id="cancelCAACCEPT">
+                                            <i class="fa fa-times" aria-hidden="true"></i> Cancel</button>
                                     </div>
                                 </div>
                                 <!-- /.card-footer -->

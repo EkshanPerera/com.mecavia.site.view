@@ -37,7 +37,6 @@
                 </div>
             </div><!-- /.container-fluid -->
         </section>
-
         <!-- Main content -->
         <section class="content">
             <div class="container-fluid">
@@ -48,7 +47,7 @@
                             <!-- form start -->
                             <form class="form-horizontal" id="quickForm10">
                                 <div class="card-header">
-                                    <h3 class="card-title">Customer Order Details</h3>
+                                    <h3 class="card-title">Finished Goods In Note Settings</h3>
                                 </div>
                                 <div class="card-body usr-card-body met">
                                     <div class="row">
@@ -94,6 +93,7 @@
                                                 </div>
                                             </div>
                                             <div class="col-lg-12 table-bordered ">
+                                                <label for="" class="col-form-label">Ordered Product Details</label>
                                                 <div class="row">
                                                     <div class="card-body">
                                                         <table id="table28" class="table table-bordered table-striped">
@@ -155,6 +155,7 @@
                                             </div>
                                         </div>
                                         <div class="col-lg-6 table-bordered ">
+                                            <label for="" class="col-form-label">Finished Product Details</label>
                                             <div class="row">
                                                 <div class="col-sm-3">
                                                     <div class="form-group">
@@ -210,10 +211,9 @@
                                                                 class="table table-bordered table-striped">
                                                                 <thead>
                                                                     <tr>
-                                                                        <th>FGINM Code</th>
+                                                                        <th>#</th>
                                                                         <th>Order No</th>
                                                                         <th>Finished Count</th>
-
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
@@ -281,7 +281,6 @@
                                 <div class="card-footer">
                                     <div class="row">
                                         <div class="col-6">
-
                                         </div>
                                         <div class="col-6">
                                             <button type="button" class="btn btn-primary formbtn" id="addFGIN"><i
@@ -289,6 +288,8 @@
                                             <div class="float-right">
                                                 <button type="submit" class="btn btn-success formbtn" id="submitFGINs">
                                                     <i class="far fa-save"></i> Save</button>
+                                                <button type="button" class="btn btn-default formbtn" data-dismiss="modal" id="cancelFGIN">
+                                                    <i class="fa fa-times" aria-hidden="true"></i> Cancel</button>
                                             </div>
                                         </div>
                                     </div>
@@ -316,7 +317,7 @@
             <div class="modal-dialog modal-xl">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h4 class="modal-title">Users of selected group</h4>
+                        <h4 class="modal-title">Added Finishd Goods In Note list for selected order code</h4>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">×</span>
                         </button>
@@ -329,7 +330,6 @@
                                         <th>FGIN ID</th>
                                         <th>FGINM Code</th>
                                         <th>Finished Count</th>
-                                        <th>UoM</th>
                                         <th>FGIN Date</th>
                                         <th>PA No</th>
                                         <th>PA Date</th>

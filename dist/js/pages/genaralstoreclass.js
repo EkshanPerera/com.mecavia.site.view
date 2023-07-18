@@ -26,6 +26,10 @@ var genaralStoreClasses = (function () {
             this.GeneralStoreDto = this.GeneralStoreDtos.find(GeneralStoreDto => GeneralStoreDto.materialid.code == materialcode);
             return this.GeneralStoreDto;
         }
+        clear(){
+            this.GeneralStoreDtos = [];
+            this.GeneralStoreDto;
+        }
     }
 
     function genaralStoreClassesInstence() {

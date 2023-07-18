@@ -52,7 +52,11 @@ var materialOutNoteClasses = (function () {
             this.MaterialOutNoteDto = this.MaterialOutNoteDtos.find(MaterialOutNoteDto => MaterialOutNoteDto.id == id);
             return this.MaterialOutNoteDto;
         }
+        clearmonm(){
+            this.MaterialOutNoteMaterialDtos = [];
+        }
         clear() {
+            this.MaterialOutNoteMaterialDtos = [];
             this.MaterialOutNoteDtos = [];
             this.MaterialOutNoteDto = undefined;
 

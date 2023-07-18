@@ -87,8 +87,6 @@ $(function () {
                         var month = new Date().getMonth();
                         var day = new Date().getDate();
                         var date = day + "/" + (parseInt(month) + 1) + "/" + year;
-                        // setNewValues(date);
-                        // submit();
                         $("#podiv").show();
                         $("#podiv").print();
                         $("#podiv").hide();
@@ -99,7 +97,7 @@ $(function () {
                 Swal.fire({
                     icon: 'error',
                     title: 'Oops...',
-                    text: 'Please enter the valid PR number!',
+                    text: 'Please enter the valid GRN number!',
                 });
             }
         }
@@ -127,7 +125,15 @@ $(function () {
                     $tableRow.addClass("selected");
                     setValues(selectedcode);
                     fadepageloder();
+                },
+                error: function (xhr, status, error) {
+                    Swal.fire(
+                        'Error!',
+                        'Please contact the Administator',
+                        'error'
+                    )
                 }
+
             })
         } else {
             Swal.fire({
@@ -194,7 +200,7 @@ $(function () {
                 Swal.fire({
                     icon: 'error',
                     title: 'Oops...',
-                    text: 'Please enter the valid PR number!',
+                    text: 'Please enter the valid GRN number!',
                 });
                 setValues();
             }
@@ -204,6 +210,7 @@ $(function () {
             t18.clear().draw(false);
             goodsreceivednote_col.clear();
             goodsreceivednoteobjarr = [];
+            $("#table13 tr").removeClass("selected")
             $("#goodsreceivednote_invoiceno").val(undefined);
             $("#goodsreceivednote_invoicedate").val(undefined);
             $("#goodsreceivednote_remark").val(undefined);

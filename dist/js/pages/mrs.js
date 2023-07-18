@@ -14,6 +14,7 @@ $(function () {
     var selectedcode = undefined;
     var jwtPayload = undefined;
     var selectedpomcode = undefined;
+    var temphash = undefined;
 
     var t22 = $("#table22").DataTable({
         pageLength: 5,
@@ -40,12 +41,48 @@ $(function () {
     var t23 = $("#table23").DataTable({
         "order": [[0, "desc"]],
         pageLength: 5,
-        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>'
+        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+        "autoWidth": false,
+        columns: [
+            null,
+            null,
+            {
+                render: function (data, type, row, meta) {
+                    if (type === 'display') {
+                        var num = $.fn.dataTable.render.number(',', '.', 2).display(data);
+                        return '<div style="text-align: right;">' + num + '</div>';
+                    } else {
+                        return data;
+                    }
+
+                },
+
+            },
+            null,
+            null
+        ]
     });
     var t24 = $("#table24").DataTable({
         "order": [[0, "desc"]],
-        pageLength: 5,
-        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>'
+        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body met"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+        "autoWidth": false,
+        columns: [
+            null,
+            null,
+            {
+                render: function (data, type, row, meta) {
+                    if (type === 'display') {
+                        var num = $.fn.dataTable.render.number(',', '.', 2).display(data);
+                        return '<div style="text-align: right;">' + num + '</div>';
+                    } else {
+                        return data;
+                    }
+
+                },
+
+            },
+            null
+        ]
     });
     var t13 = $("#table13").DataTable({
         "order": [[0, "desc"]],
@@ -82,12 +119,12 @@ $(function () {
             if (addmoddel && materialrequisition_col.allNewMRNMaterials().length != 0 ) {
                 Swal.fire({
                     title: 'Are you sure?',
-                    text: "You won't be able to get another original copy!",
+                    text: "You won't be able to revert this!",
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',
                     cancelButtonColor: '#d33',
-                    confirmButtonText: 'Yes, print it!'
+                    confirmButtonText: 'Yes, save it!'
                 }).then((result) => {
                     if (result.isConfirmed) {
                         var year = new Date().getFullYear();
@@ -107,11 +144,11 @@ $(function () {
                     }
                 })
             } else {
-                if(addmoddel != undefined){
+                if(addmoddel == undefined){
                     Swal.fire({
                         icon: 'error',
                         title: 'Oops...',
-                        text: 'Please enter the valid PR number!',
+                        text: 'Please enter the valid Customer Order Number!',
                     });
                 }else{
                     Swal.fire({
@@ -175,13 +212,21 @@ $(function () {
                             fadepageloder();
                         },
                         error: function (xhr, status, error) {
-                            fadepageloder();
+                            Swal.fire(
+                                'Error!',
+                                'Please contact the Administator',
+                                'error'
+                            )
                         }
                     })
                     fadepageloder();
                 },
                 error: function (xhr, status, error) {
-                    fadepageloder();
+                    Swal.fire(
+                        'Error!',
+                        'Please contact the Administator',
+                        'error'
+                    )
                 }
             })
         } else {
@@ -198,6 +243,7 @@ $(function () {
         $.each(mrmlist, function (i, item) {
             t24.row.add([item.code, item.ordercode, item.requestedCount, item.bommaterial.material.uomid.scode]).draw(false);
         })
+        $("#mr_requestedcount").val("");
     }
     //definded functions
     function submit() {
@@ -215,8 +261,13 @@ $(function () {
                 "Authorization": jwt
             },
             success: function (data) {
+                Swal.fire(
+                    'Added!',
+                    'New record has been added.',
+                    'success'
+                )
                 refreshtable();
-
+                setValues();
             }
         })
     }
@@ -234,6 +285,7 @@ $(function () {
             setOutstanding(ordercode);
             if (addmoddel == "add") {
                 $("#mr_orderno").val(selectedpomcode);
+                $("#mr_requestedcount").val(undefined)
             }
             if (materialRequisitionMaterialsobjarr.length != 0) {
                 $.each(materialRequisitionMaterialsobjarr, function (i, item) {
@@ -283,7 +335,7 @@ $(function () {
         var mrmcode = mrClassesInstence.MaterialRequisitionSerial.genarateMRMCode(index, selectedpomcode);
         var requestedCount = $("#mr_requestedcount").val();
         var res = materialrequisition_col.addNewMRMaterialstoArray(undefined, mrmcode, selectedpomcode, materialrequisitionobj, bommobj, requestedCount, outstangingcount);
-
+        console.log(requestedCount)
         if (res) {
             Swal.fire(
                 'Added!',
@@ -334,7 +386,7 @@ $(function () {
                 Swal.fire({
                     icon: 'error',
                     title: 'Oops...',
-                    text: 'Please select a valid Customer Order',
+                    text: 'Please select a valid Customer Order Number',
                 });
                 setValues();
             }
@@ -342,6 +394,7 @@ $(function () {
         } else {
             t22.clear().draw(false);
             t24.clear().draw(false);
+            t23.clear().draw(false);
             bommobj = null;
             materialrequisitionobj = null;
             materialRequisitionMaterialsobjarr = [];
@@ -353,6 +406,7 @@ $(function () {
             billofmaterial_col.clear();
             materialrequisition_col.clear();
             bomMaterialsobjarr = [];
+            $("#table13 tr").removeClass("selected")
             $("#billofmaterial_code").val(undefined);
             $("#billofmaterial_customerid").val(undefined);
             $("#mr_lastmr").val(undefined);
@@ -390,6 +444,18 @@ $(function () {
         }
 
     });
+    $('#table24 tbody').on('click', 'tr', function () {
+        if (bomMaterialsobjarr.length != 0 && addmoddel == "add") {
+            if ($(this).hasClass('selected')) {
+                $(this).removeClass('selected');
+                temphash = undefined;
+            } else {
+                t24.$('tr.selected').removeClass('selected');
+                $(this).addClass('selected');
+                temphash = $(this).children("td:nth-child(1)").text();
+            }
+        }
+    });
     $('#table13 tbody').on('click', 'tr', function () {
         $("#modal-colist").modal("hide");
         if ($(this).hasClass('selected')) {
@@ -408,6 +474,8 @@ $(function () {
     $(document).off("click", "#btnprmpo");
     $(document).off("click", "#addMR");
     $(document).off("click", "#addPOM");
+    $(document).off("click", "#removePOM");
+    $(document).off("click", "#cancelMR");
 
     $(document).on("click", "#btnprmpo", function () {
         $("#modal-colist").modal("show");
@@ -442,6 +510,16 @@ $(function () {
         }
         $("#mr_requestedcount").val(val)
     })
+    $(document).on("click", "#removePOM", function () {
+        if (temphash != undefined) {
+            materialrequisition_col.removeNewMRMaterialstoArray(temphash);
+            refreshmrmtable();
+        }
+    })
+    $(document).on("click", "#cancelMR", function () {
+        selectedcode = "";
+        setValues();
+    });
     //end of triggers
     $("#podiv").hide();
     jwtPayload = getJwtPayload();

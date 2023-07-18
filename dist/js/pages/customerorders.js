@@ -188,7 +188,7 @@ $(function () {
                     Swal.fire({
                         icon: 'error',
                         title: 'Oops...',
-                        text: 'In order to save, please add the product.',
+                        text: 'In order to save, please add products.',
                     });
                 }
             }
@@ -272,8 +272,8 @@ $(function () {
             },
             success: function (data) {
                 $.each(data.content, function (i, item) {
-                    customerorder_col.addCustomerOrdertoArray(item.id, item.code, item.jobID, item.jobNumber, item.customerid, item.totalAmount, item.grossAmount, item.remark, item.customerOrderProducts, item.printeddate, item.status,item.enteredUser,item.enteredDate,item.acceptedUser,item.acceptedDate,item.invoices);
-                    t32.row.add([item.code, item.jobID, item.customerid.code, item.customerid.firstname + " " + item.customerid.lastname, item.status]).draw(false);
+                    customerorder_col.addCustomerOrdertoArray(item.id, item.code, item.jobID, item.jobNumber, item.customerid, item.totalAmount, item.grossAmount, item.remark, item.customerOrderProducts, item.printeddate, item.status,item.enteredUser,item.enteredDate,item.acceptedUser,item.acceptedDate,item.invoices,item.inventoryItems);
+                    t32.row.add([item.code, item.jobID, item.jobNumber, item.customerid.code, item.customerid.firstname + " " + item.customerid.lastname, item.status]).draw(false);
                 });
                 setValues();
                 var $tableRow = $("#table32 tr td:contains('" + selectedcode + "')").closest("tr");
@@ -283,7 +283,11 @@ $(function () {
 
             },
             error: function (xhr, status, error) {
-                fadepageloder();
+                Swal.fire(
+                    'Error!',
+                    'Please contact the Administator',
+                    'error'
+                )
             }
         })
     }
@@ -430,6 +434,7 @@ $(function () {
         $(fillinid).prop("disabled", false)
     }
     function setValues(code) {
+        resetform("#quickForm8");
         formctrl();
         addmoddel = undefined;
         if (code) {
@@ -537,7 +542,6 @@ $(function () {
     //end of functions
     //triggers
     $('#table32 tbody').on('click', 'tr', function () {
-        resetform("#quickForm8");
         if ($(this).hasClass('selected')) {
             $(this).removeClass('selected');
             setValues();
@@ -586,6 +590,7 @@ $(function () {
     $(document).off("click", "#customerorder_unitrate");
     $(document).off("click", "#customerorder_quntity");
     $(document).off("click", "#removeProductbtn");
+    $(document).off("click", "#cancelCO");
 
 
     $(document).on("click", "#addProductbtn", function () {
@@ -640,36 +645,37 @@ $(function () {
                             Swal.fire({
                                 icon: 'warning',
                                 title: 'Warning!',
-                                text: 'The PR you are attempting to submit is currently expired!',
+                                text: 'The Customer Order you are attempting to submit is currently expired!',
                             });
                             break;
                         case "ACCEPTED":
                             Swal.fire({
                                 icon: 'warning',
                                 title: 'Warning!',
-                                text: 'The PR you are attempting to submit is currently accepted!',
+                                text: 'The Customer Order you are attempting to submit is currently accepted!',
                             });
                             break;
                         case "REJECTED":
                             Swal.fire({
                                 icon: 'warning',
                                 title: 'Warning!',
-                                text: 'The PR you are attempting to submit is rejected!',
+                                text: 'The Customer Order you are attempting to submit is rejected!',
                             });
                             break;
                         case "SUBMIT":
                             Swal.fire({
                                 icon: 'warning',
                                 title: 'Warning!',
-                                text: 'The PR you are attempting to submit is already submitted!',
+                                text: 'The Customer Order you are attempting to submit is already submitted!',
                             });
                             break;
                         case "PRINTED":
                             Swal.fire({
                                 icon: 'warning',
                                 title: 'Warning!',
-                                text: 'PO is genarated under this PR!',
+                                text: 'Order Form is genarated under this Customer Order!',
                             });
+                            break;
                         case "PENDING":
                             Swal.fire({
                                 icon: 'warning',
@@ -684,7 +690,7 @@ $(function () {
                 Swal.fire({
                     icon: 'error',
                     title: 'Oops...',
-                    text: 'Please select a PR!',
+                    text: 'Please select a Customer Order!',
                 })
             }
         } else {
@@ -712,42 +718,42 @@ $(function () {
                             Swal.fire({
                                 icon: 'warning',
                                 title: 'Warning!',
-                                text: 'The PR you are attempting to expire is already expired!',
+                                text: 'The Customer Order you are attempting to expire is already expired!',
                             });
                             break;
                         case "ACCEPTED":
                             Swal.fire({
                                 icon: 'warning',
                                 title: 'Warning!',
-                                text: 'The PR you are attempting to expire is currently accepted!',
+                                text: 'The Customer Order you are attempting to expire is currently accepted!',
                             });
                             break;
                         case "REJECTED":
                             Swal.fire({
                                 icon: 'warning',
                                 title: 'Warning!',
-                                text: 'The PR you are attempting to expire is rejected!',
+                                text: 'The Customer Order you are attempting to expire is rejected!',
                             });
                             break;
                         case "INITIATED":
                             Swal.fire({
                                 icon: 'warning',
                                 title: 'Warning!',
-                                text: 'The PR you are attempting to expire is currently initiated!',
+                                text: 'The Customer Order you are attempting to expire is currently initiated!',
                             });
                             break;
                         case "SUBMIT":
                             Swal.fire({
                                 icon: 'warning',
                                 title: 'Warning!',
-                                text: 'The PR you are attempting to expire is currently submitted!',
+                                text: 'The Customer Order you are attempting to expire is currently submitted!',
                             });
                             break;
                         case "PRINTED":
                             Swal.fire({
                                 icon: 'warning',
                                 title: 'Warning!',
-                                text: 'PO is genarated under this PR!',
+                                text: 'PO is genarated under this Customer Order!',
                             });
                             break;
                     }
@@ -758,7 +764,7 @@ $(function () {
                 Swal.fire({
                     icon: 'error',
                     title: 'Oops...',
-                    text: 'Please select a PR!',
+                    text: 'Please select a Customer Order!',
                 })
             }
         } else {
@@ -792,6 +798,10 @@ $(function () {
             value = parts.join('.');
         }
         $('#customerorder_quntity').val(value);
+    });
+    $(document).on("click", "#cancelCO", function () {
+        selectedcode = "";
+        setValues();
     });
     //end of triggers
     jwtPayload = getJwtPayload();

@@ -52,8 +52,12 @@ var finishedGoodsOutNoteClasses = (function () {
             this.FinishedGoodsOutNoteDto = this.FinishedGoodsOutNoteDtos.find(FinishedGoodsOutNoteDto => FinishedGoodsOutNoteDto.id == id);
             return this.FinishedGoodsOutNoteDto;
         }
+        clearfgonp(){
+            this.FinishedGoodsOutNoteProductDtos = [];
+        }
         clear() {
             this.FinishedGoodsOutNoteDtos = [];
+            this.FinishedGoodsOutNoteProductDtos = [];
             this.FinishedGoodsOutNoteDto = undefined;
 
         }

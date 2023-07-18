@@ -7,6 +7,9 @@
         .usr-card-body.met {
             min-height: 370px;
         }
+        .usr-card-body.popup.lg {
+            min-height: 530px;
+        }
     </style>
 </head>
 
@@ -24,7 +27,7 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1>Material Requisition</h1>
+                        <h1>Material Out Note</h1>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
@@ -47,13 +50,14 @@
                             <!-- form start -->
                             <form class="form-horizontal" id="quickForm10">
                                 <div class="card-header">
-                                    <h3 class="card-title">Add Material Requisition</h3>
+                                    <h3 class="card-title">Material Out Note Settings</h3>
                                 </div>
                                 <div class="card-body usr-card-body met">
                                     <div class="row">
                                         <div class="col-lg-6">
                                             <div class="row">
                                                 <div class="col-lg-12 table-bordered ">
+                                                    <label for="materialoutnote_id" class="col-form-label">Pending Material Requisitions</label>
                                                     <div class="row">
                                                         <div class="card-body">
                                                             <table id="table22"
@@ -87,6 +91,7 @@
                                         </div>
                                         <div class="col-lg-6">
                                             <div class="col-lg-12 table-bordered">
+                                                <label for="materialoutnote_id" class="col-form-label">Material Out Note Materials</label>
                                                 <div class="row">
                                                     <div class="card-body">
                                                         <table id="table23" class="table table-bordered table-striped">
@@ -161,6 +166,7 @@
                                             <div class="float-right">
                                                 <button type="submit" class="btn btn-success formbtn" id="submitMRs">
                                                     <i class="far fa-save"></i> Save</button>
+                                                <button type="button" class="btn btn-default formbtn" data-dismiss="modal" id="cancelMON"> <i class="fa fa-times" aria-hidden="true"></i> Cancel</button>
                                             </div>
                                         </div>
                                     </div>

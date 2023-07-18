@@ -1,7 +1,7 @@
 var customerorderClasses = (function () {
     //classescodematerial
     class customerorder {
-        constructor(id, code, JobID, JobNumber, customerid, totalAmount, grossAmount, remark, customerOrderProducts, printeddate, status,enteredUser,enteredDate,acceptedUser,acceptedDate,invoices) {
+        constructor(id, code, JobID, JobNumber, customerid, totalAmount, grossAmount, remark, customerOrderProducts, printeddate, status,enteredUser,enteredDate,acceptedUser,acceptedDate,invoices,inventoryItems) {
             this.id = id;
             this.code = code;
             this.jobID = JobID;
@@ -18,6 +18,7 @@ var customerorderClasses = (function () {
             this.acceptedUser = acceptedUser;
             this.acceptedDate = acceptedDate;
             this.invoices = invoices;
+            this.inventoryItems = inventoryItems;
         }
     }
     class customerOrderProducts {
@@ -39,8 +40,8 @@ var customerorderClasses = (function () {
             this.customerorder;
             this.hash = 0;
         }
-        addCustomerOrdertoArray(id, code, JobID, JobNumber, customerid, totalAmount, grossAmount, remark, customerOrderProducts, printeddate, status,enteredUser,enteredDate,acceptedUser,acceptedDate,invoices) {
-            let customerorder_arritem = new customerorder(id, code, JobID, JobNumber, customerid, totalAmount, grossAmount, remark, customerOrderProducts, printeddate, status,enteredUser,enteredDate,acceptedUser,acceptedDate,invoices);
+        addCustomerOrdertoArray(id, code, JobID, JobNumber, customerid, totalAmount, grossAmount, remark, customerOrderProducts, printeddate, status,enteredUser,enteredDate,acceptedUser,acceptedDate,invoices,inventoryItems) {
+            let customerorder_arritem = new customerorder(id, code, JobID, JobNumber, customerid, totalAmount, grossAmount, remark, customerOrderProducts, printeddate, status,enteredUser,enteredDate,acceptedUser,acceptedDate,invoices,inventoryItems);
             this.customerorders.push(customerorder_arritem);
         }
         addcustomerOrderProductstoArray(id, code, product, unitrate, quantity, totFinishedCount) {

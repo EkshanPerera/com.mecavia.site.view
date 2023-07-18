@@ -1,7 +1,7 @@
 //classescodeproduct
 var fginClasses = (function(){
     class customerorder {
-        constructor(id, code, JobID, JobNumber, customerid, totalAmount, grossAmount, remark, customerOrderProducts, printeddate, status,enteredUser,enteredDate,acceptedUser,acceptedDate,invoices) {
+        constructor(id, code, JobID, JobNumber, customerid, totalAmount, grossAmount, remark, customerOrderProducts, printeddate, status,enteredUser,enteredDate,acceptedUser,acceptedDate,invoices,inventoryItems) {
             this.id = id;
             this.code = code;
             this.jobID = JobID;
@@ -18,6 +18,8 @@ var fginClasses = (function(){
             this.acceptedUser = acceptedUser;
             this.acceptedDate = acceptedDate;
             this.invoices = invoices;
+            this.inventoryItems = inventoryItems;
+            
         }
     }
 class customerOrderProduct {
@@ -31,7 +33,7 @@ class customerOrderProduct {
     }
 }
 class finishedgoodsinnote {
-    constructor(id, code,panumber,padate, enterddate, remark, status, customerOrder, finishedGoodsInNoteProducts, printeddate) {
+    constructor(id, code,panumber,padate, enterddate, remark, status, customerOrder, finishedGoodsInNoteProducts, printeddate,enteredUser) {
         this.id = id;
         this.code = code;
         this.panumber = panumber;
@@ -42,16 +44,18 @@ class finishedgoodsinnote {
         this.customerOrder = customerOrder;
         this.finishedGoodsInNoteProducts = finishedGoodsInNoteProducts;
         this.printeddate = printeddate;
+        this.enteredUser = enteredUser;
     }
 }
 class finishedGoodsInNoteProduct {
-    constructor(id, code, cordercode, finishedGoodsInNoteDto, coproduct, finishedCount) {
+    constructor(id, code, cordercode, finishedGoodsInNote, coproduct, finishedCount,hash) {
         this.id = id;
         this.code = code;
         this.cordercode = cordercode;
-        this.finishedGoodsInNoteDto = finishedGoodsInNoteDto;
+        this.finishedGoodsInNote = finishedGoodsInNote;
         this.coproduct = coproduct;
         this.finishedCount = finishedCount;
+        this.hash = hash
     }
 }
 class finishedGoodsInNote_service {
@@ -61,26 +65,28 @@ class finishedGoodsInNote_service {
         this.finishedgoodsinnote;
         this.finishedGoodsInNoteProduct;
         this.newFinishedGoodsInNotProducts = [];
+        this.hash  = 0;
 
     }
-    addFGINtoArray(id, code,panumber,padate, enterddate, remark, status, customerOrder, finishedGoodsInNoteProducts, printeddate) {
-        let finishedgoodsinnote_arritem = new finishedgoodsinnote(id, code,panumber,padate, enterddate, remark, status, customerOrder, finishedGoodsInNoteProducts, printeddate);
+    addFGINtoArray(id, code,panumber,padate, enterddate, remark, status, customerOrder, finishedGoodsInNoteProducts, printeddate,enteredUser) {
+        let finishedgoodsinnote_arritem = new finishedgoodsinnote(id, code,panumber,padate, enterddate, remark, status, customerOrder, finishedGoodsInNoteProducts, printeddate,enteredUser);
         this.finishedgoodsinnotes.push(finishedgoodsinnote_arritem);
     }
-    addFGINProductstoArray(id, code, cordercode, finishedGoodsInNoteDto, coproduct, finishedCount) {
-        let finishedgoodsinnoteproducts_arritem = new finishedGoodsInNoteProduct(id, code, cordercode, finishedGoodsInNoteDto, coproduct, finishedCount);
+    addFGINProductstoArray(id, code, cordercode, finishedGoodsInNote, coproduct, finishedCount) {
+        let finishedgoodsinnoteproducts_arritem = new finishedGoodsInNoteProduct(id, code, cordercode, finishedGoodsInNote, coproduct, finishedCount);
         this.finishedGoodsInNoteProducts.push(finishedgoodsinnoteproducts_arritem);
     }
-    addNewFGINProductstoArray(id, code, cordercode, finishedGoodsInNoteDto, coproduct, finishedCount, outstandingcount) {
-        var finishedCount = parseInt(finishedCount)
+    addNewFGINProductstoArray(id, code, cordercode, finishedGoodsInNote, coproduct, finishedCount, outstandingcount) {
+        this.hash += 1;
+        var finishedCount = parseFloat(finishedCount)
         let finishedGoodsInNoteProducts = [];
-        let finishedgoodsinnoteproducts_arritem = new finishedGoodsInNoteProduct(id, code, cordercode, finishedGoodsInNoteDto, coproduct, finishedCount);
+        let finishedgoodsinnoteproducts_arritem = new finishedGoodsInNoteProduct(id, code, cordercode, finishedGoodsInNote, coproduct, finishedCount,this.hash);
         finishedGoodsInNoteProducts = this.newFinishedGoodsInNotProducts;
         if (finishedGoodsInNoteProducts.length != 0) {
             finishedGoodsInNoteProducts = finishedGoodsInNoteProducts.filter(finishedGoodsInNoteProduct => finishedGoodsInNoteProduct.cordercode == cordercode);
             let totFinishedCount = 0;
             for (let i = 0; i < finishedGoodsInNoteProducts.length; i++) {
-                totFinishedCount += parseInt(finishedGoodsInNoteProducts[i].finishedCount);
+                totFinishedCount += parseFloat(finishedGoodsInNoteProducts[i].finishedCount);
             }
             if (outstandingcount >= (totFinishedCount + finishedCount)) {
 
@@ -100,6 +106,9 @@ class finishedGoodsInNote_service {
             }
         }
 
+    }
+    removeFGINProductstoArray(hash) {
+        this.newFinishedGoodsInNotProducts = this.newFinishedGoodsInNotProducts.filter(newFinishedGoodsInNotProduct => newFinishedGoodsInNotProduct.hash != hash);
     }
     allFGIN() {
         return this.finishedgoodsinnotes;
@@ -169,8 +178,8 @@ class customerorder_service {
         this.customerOrderProduct;
 
     }
-    addCustomerOrdertoArray(id, code, JobID, JobNumber, customerid, totalAmount, grossAmount, remark, customerOrderProducts, printeddate, status,enteredUser,enteredDate,acceptedUser,acceptedDate,invoices) {
-        let customerorder_arritem = new customerorder(id, code, JobID, JobNumber, customerid, totalAmount, grossAmount, remark, customerOrderProducts, printeddate, status,enteredUser,enteredDate,acceptedUser,acceptedDate,invoices);
+    addCustomerOrdertoArray(id, code, JobID, JobNumber, customerid, totalAmount, grossAmount, remark, customerOrderProducts, printeddate, status,enteredUser,enteredDate,acceptedUser,acceptedDate,invoices,inventoryItems) {
+        let customerorder_arritem = new customerorder(id, code, JobID, JobNumber, customerid, totalAmount, grossAmount, remark, customerOrderProducts, printeddate, status,enteredUser,enteredDate,acceptedUser,acceptedDate,invoices,inventoryItems);
         this.customerorders.push(customerorder_arritem);
     }
     addcustomerOrderProductstoArray(id, code, product, unitrate, quantity,totFinishedCount) {

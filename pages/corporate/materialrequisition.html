@@ -5,7 +5,7 @@
         }
 
         .usr-card-body.met {
-            min-height: 370px;
+            min-height: 530px;
         }
     </style>
 </head>
@@ -29,8 +29,8 @@
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
                             <li class="breadcrumb-item"><a href="#">Home</a></li>
-                            <li class="breadcrumb-item ">Corporate Data</li>
-                            <li class="breadcrumb-item active">User Groups</li>
+                            <li class="breadcrumb-item ">General Store</li>
+                            <li class="breadcrumb-item active">Material Requisition</li>
                         </ol>
                     </div>
                 </div>
@@ -47,7 +47,7 @@
                             <!-- form start -->
                             <form class="form-horizontal" id="quickForm10">
                                 <div class="card-header">
-                                    <h3 class="card-title">Add Material Requisition</h3>
+                                    <h3 class="card-title">Material Requisition Settings</h3>
                                 </div>
                                 <div class="card-body usr-card-body met">
                                     <div class="row">
@@ -95,6 +95,8 @@
                                                 </div>
                                             </div>
                                             <div class="col-lg-12 table-bordered ">
+                                                <label for=""
+                                                            class="col-form-label">Bill of Materials</label>
                                                 <div class="row">
                                                     <div class="card-body">
                                                         <table id="table22" class="table table-bordered table-striped">
@@ -156,6 +158,8 @@
                                             </div>
                                         </div>
                                         <div class="col-lg-6 table-bordered ">
+                                            <label for=""
+                                            class="col-form-label">Requesting Material Details</label>
                                             <div class="row">
                                                 <div class="col-sm-3">
                                                     <div class="form-group">
@@ -205,6 +209,7 @@
                                             </div>
                                             <div class="row">
                                                 <div class="col-lg-12">
+                                                   
                                                     <div class="row">
                                                         <div class="card-body">
                                                             <table id="table24"
@@ -253,6 +258,8 @@
                                             <div class="float-right">
                                                 <button type="submit" class="btn btn-success formbtn" id="submitMRs">
                                                     <i class="far fa-save"></i> Save</button>
+                                                <button type="button" class="btn btn-default formbtn" data-dismiss="modal" id="cancelMR">
+                                                    <i class="fa fa-times" aria-hidden="true"></i> Cancel</button>
                                             </div>
                                         </div>
                                     </div>
@@ -280,7 +287,7 @@
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Users of selected group</h4>
+                    <h4 class="modal-title">Added MR list for selected order code</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
@@ -315,7 +322,7 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">List of Cusomer Orders</h4>
+                    <h4 class="modal-title">List of Accepted Cusomer Orders</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
