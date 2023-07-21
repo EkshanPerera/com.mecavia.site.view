@@ -5,54 +5,11 @@ $(function () {
     let purchaserequisitioarr = [];
     var jwtPayload = undefined;
     var total = 0;
+    var lofilter = false;
     var t18 = $("#table18").DataTable({
         "order": [[0, "desc"]],
         dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
         "autoWidth": false,
-        columns: [
-            null,
-            null,
-
-            {
-                render: function (data, type, row, meta) {
-                    if (type === 'display') {
-                        var num = $.fn.dataTable.render.number(',', '.', 2).display(data);
-                        return '<div style="text-align: right;">' + num + '</div>';
-                    } else {
-                        return data;
-                    }
-
-                },
-
-            },
-            null,
-            {
-                render: function (data, type, row, meta) {
-                    if (type === 'display') {
-                        var symbol = "Rs. ";
-                        var num = $.fn.dataTable.render.number(',', '.', 2, symbol).display(data);
-                        return '<div style="text-align: right;">' + num + '</div>';
-                    } else {
-                        return data;
-                    }
-
-                },
-
-            },
-            {
-                render: function (data, type, row, meta) {
-                    if (type === 'display') {
-                        var symbol = "Rs. ";
-                        var num = $.fn.dataTable.render.number(',', '.', 2, symbol).display(data);
-                        return '<div style="text-align: right;">' + num + '</div>';
-                    } else {
-                        return data;
-                    }
-
-                },
-
-            }
-        ]
     });
 
     var Toast = Swal.mixin({
@@ -61,6 +18,7 @@ $(function () {
         showConfirmButton: false,
         timer: 3000
     });
+    $('#fromdt,#todt').datepicker({ dateFormat: 'yy-mm-dd' });
     //end of variables
     //functions
     //defalt functions
@@ -121,8 +79,9 @@ $(function () {
                 },
                 success: function (data) {
                     $.each(data.content, function (i, item) {
-                        purchaserequisition_col.addPurchaseEequisitiontoArray(item.id, item.prcode, item.pocode, item.supplierid, item.status, item.remark, item.totalAmount, item.purchaseRequisitionMaterials, item.quotationno, item.printeddate, item.enteredUser, item.printededUser, item.acceptedUser, item.poPrintededUser);
+                        purchaserequisition_col.addPurchaseRequisitiontoArray(item.id, item.prcode, item.pocode, item.supplierid, item.status, item.remark, item.totalAmount, item.purchaseRequisitionMaterials,  item.prprinteddate, item.quotationno,item.enteredUser, item.printededUser, item.acceptedUser, item.poPrintededUser);
                     });
+                    filter(false);
                     setValues();
                     fadepageloder();
                 }
@@ -153,14 +112,31 @@ $(function () {
         return val;
 
     }
+    function filter(iffilter, sulierid, prno, quatno, fromdate, todate, status) {
+        lofilter = false;
+        purchaserequisitioarr = purchaserequisition_col.allPurchaseEequisitions();
+        if (iffilter) {
+            lofilter = true;
+            var fromDateObj = new Date(fromdate);
+            var toDateObj = new Date(todate);
+            purchaserequisitioarr = purchaserequisitioarr.filter(function (purchaserequisition) {
+                var enterdDateObj = new Date(purchaserequisition.prprinteddate);
+                return (
+                    (purchaserequisition.supplierid.code == sulierid || sulierid == "") &&
+                    (purchaserequisition.prcode == prno || prno == "") &&
+                    (purchaserequisition.quotationno == quatno || quatno == "") &&
+                    ((fromdate == "" && todate == "") || (enterdDateObj >= fromDateObj && enterdDateObj <= toDateObj)) &&
+                    (status == "" || purchaserequisition.status == status)
+                );
+            });
+        }
+    }
     function setValues() {
         total = 0;
-        purchaserequisitioarr = purchaserequisition_col.allPurchaseEequisitions();
         t18.clear().draw(false);
         var dataset = "";
         $.each(purchaserequisitioarr, function (i, item) {
             // if(item.materialid.status == "ACTIVE"){
-            // t18.row.add([item.materialid.code, item.materialid.description, item.itemcount, item.materialid.uomid.scode, item.materialid.price, item.itemcount*item.materialid.price]).draw(false);
             var prmdataset = "";
             var totarrivedcoutset = "";
             var quantityset = "";
@@ -172,14 +148,31 @@ $(function () {
                 quantityset += commaSeparateNumber(String(itemprm.quantity)) + itemprm.material.uomid.scode + brset;
                 totarrivedcoutset += commaSeparateNumber(String(itemprm.totArrivedCount)) + itemprm.material.uomid.scode + brset;
             })
-            dataset += "<tr><td>" + (i + 1) + "</td><td>" + item.prcode + "</td><td>" + item.pocode + "</td><td>" + item.supplierid.firstname + " " + item.supplierid.lastname + "</td><td>" + prmdataset + "</td><td><div style=\"text-align: right;\"> " + quantityset + "</div></td><td><div style=\"text-align: right;\">" + totarrivedcoutset + "</div></td><td>" + item.printeddate + "</td></td><td>" + item.status + "</td></tr>";
+            t18.row.add([item.prcode,  item.pocode, item.supplierid.firstname + " " + item.supplierid.lastname,  prmdataset , quantityset , totarrivedcoutset,item.prprinteddate,item.status]).draw(false);
+            dataset += "<tr><td>" + (i + 1) + "</td><td>" + item.prcode + "</td><td>" + item.pocode + "</td><td>" + item.supplierid.firstname + " " + item.supplierid.lastname + "</td><td>" + prmdataset + "</td><td><div style=\"text-align: right;\"> " + quantityset + "</div></td><td><div style=\"text-align: right;\">" + totarrivedcoutset + "</div></td><td>" + item.prprinteddate + "</td></td><td>" + item.status + "</td></tr>";
         })
         var year = new Date().getFullYear();
         var month = new Date().getMonth();
         var day = new Date().getDate();
-        var date = day + "/" + (parseInt(month) + 1) + "/" + year;
+        var date = year + "-" + (parseInt(month) + 1) + "-" + day ;
+        var sulierid = $("#sulierid").val();
+        var prno = $("#prno").val();
+        var quatno = $("#quatno").val();
+        var status = $("#status").val();
+        var fromdate = $("#fromdt").val();
+        var todt = $("#todt").val();
         $("#totamt").text(commaSeparateNumber(String(total)));
-        $("#todate").text(date)
+        $("#todate").text(function(){
+            if(todt == "" && fromdate == ""){
+                return date;
+            }else{
+                return "From : " + fromdate + "  To: " + todt;
+            }
+        })
+        $("#rptsulierid").text(sulierid);
+        $("#rptprno").text(prno);
+        $("#rptstatus").text(status);
+        $("#rptquatno").text(quatno);
         $("#potablebody").html(dataset);
         total = 0
     }
@@ -187,15 +180,31 @@ $(function () {
     //triggers
     $(document).off("click", "#btnprmpo");
     $(document).off("click", "#cancelPRPrint");
+    $(document).off("click", "#filter");
     $(document).on("click", "#btnprmpo", function () {
         selectedcode = $("#purchaserequisition_code").val();
         refreshtable();
     })
     $(document).on("click", "#cancelPRPrint", function () {
         selectedcode = "";
+        filter(false)
         setValues();
     })
-
+    $(document).on("click", "#filter", function () {
+        var sulierid = $("#sulierid").val();
+        var prno = $("#prno").val();
+        var status = $("#status").val();
+        var quatno = $("#quatno").val();
+        var fromdate = $("#fromdt").val();
+        var todt = $("#todt").val();
+        filter(true, sulierid, prno,quatno, fromdate, todt, status)
+        setValues();
+        Swal.fire(
+            'Added!',
+            'Data Filter has been added',
+            'success'
+        )
+    })
     //end of triggers
     $("#podiv").hide();
     jwtPayload = getJwtPayload();

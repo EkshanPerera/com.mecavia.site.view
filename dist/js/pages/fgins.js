@@ -62,7 +62,7 @@ $(function () {
         showConfirmButton: false,
         timer: 3000
     });
-    $('#fgin_padate').datepicker({ dateFormat: 'dd/mm/yy' });
+    $('#fgin_padate').datepicker({ dateFormat: 'yy-mm-dd' });
     //end of variables
     //functions
     //defalt functions
@@ -119,7 +119,7 @@ $(function () {
                         var year = new Date().getFullYear();
                         var month = new Date().getMonth();
                         var day = new Date().getDate();
-                        var date = day + "/" + (parseInt(month) + 1) + "/" + year;
+                        var date = year + "-" + (parseInt(month) + 1) + "-" + day ;
                         let index = finishedgoodsinnote_col.getFGINsByJobId(selectedcode).length
                         let code = customerorderobj.code;
                         let fgincode = fginClassesInstence.FinishedGoodsInSerial.genarateFGINCode(index, code);

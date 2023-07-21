@@ -1,0 +1,55 @@
+<div class="loginwrapper" style="   
+                                    align-items: center;
+                                    background-color: #e9ecef;
+                                    display: flex;
+                                    height: 90vh;
+                                    justify-content: center;
+                                    flex-direction: column;
+                                "
+>
+<div class="login-box">
+    <!-- /.login-logo -->
+    <div class="card card-outline card-primary">
+      <div class="card-header text-center">
+        
+          <h2>Change Password</h2>
+      </div>
+      <div class="card-body">
+        <p class="login-box-msg"></p>
+        <form method="post" id = "chengepswd-form">
+          <div class="input-group mb-3">
+            <input type="password" class="form-control"  placeholder="Current Password" id="password" name="password">
+            <div class="input-group-append">
+              <div class="input-group-text pwvisibility">
+                <span class="fas fa-eye"></span>
+              </div>
+            </div>
+          </div>
+          <div class="input-group mb-3">
+            <input type="password" class="form-control" placeholder="New Password" id="newpassword" name="newpassword">
+            <div class="input-group-append">
+              <div class="input-group-text pwvisibility">
+                <span class="fas fa-eye"></span>
+              </div>
+            </div>
+          </div>
+          <div class="input-group mb-3">
+            <input type="password" class="form-control" placeholder="Confirm Password" id="confirmpassword" name="confirmpassword">
+            <div class="input-group-append">
+              <div class="input-group-text pwvisibility">
+                <span class="fas fa-eye"></span>
+              </div>
+            </div>
+          </div>
+            <!-- /.col -->
+            <div class="col-4">
+              <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+            </div>
+            <!-- /.col -->
+          </div>
+        </form>
+      </div>
+      <!-- /.card-body -->
+  </div>
+</div>
+<script src="../../dist/js/pages/chengepswd.js"></script>

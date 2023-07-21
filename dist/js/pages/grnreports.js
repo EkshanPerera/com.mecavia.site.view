@@ -5,54 +5,11 @@ $(function () {
     let goodsreceivednoteobjarr = [];
     var total = 0;
     var jwtPayload = undefined;
+    var lofilter = false;
     var t18 = $("#table18").DataTable({
         "order": [[0, "desc"]],
         dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
-        "autoWidth": false,
-        columns: [
-            null,
-            null,
-
-            {
-                render: function (data, type, row, meta) {
-                    if (type === 'display') {
-                        var num = $.fn.dataTable.render.number(',', '.', 2).display(data);
-                        return '<div style="text-align: right;">' + num + '</div>';
-                    } else {
-                        return data;
-                    }
-
-                },
-
-            },
-            null,
-            {
-                render: function (data, type, row, meta) {
-                    if (type === 'display') {
-                        var symbol = "Rs. ";
-                        var num = $.fn.dataTable.render.number(',', '.', 2, symbol).display(data);
-                        return '<div style="text-align: right;">' + num + '</div>';
-                    } else {
-                        return data;
-                    }
-
-                },
-
-            },
-            {
-                render: function (data, type, row, meta) {
-                    if (type === 'display') {
-                        var symbol = "Rs. ";
-                        var num = $.fn.dataTable.render.number(',', '.', 2, symbol).display(data);
-                        return '<div style="text-align: right;">' + num + '</div>';
-                    } else {
-                        return data;
-                    }
-
-                },
-
-            }
-        ]
+        "autoWidth": false
     });
 
     var Toast = Swal.mixin({
@@ -123,6 +80,7 @@ $(function () {
                     $.each(data.content, function (i, item) {
                         goodsreceivednote_col.addGRNtoArray(item.id, item.invoicenumber, item.invocedate, item.code, item.mradate, item.mrano, item.enterddate, item.remark, item.status, item.purchaseRequisition, item.goodsReceivedNoteMaterials, item.printeddate);
                     });
+                    filter(false);
                     setValues();
                     fadepageloder();
                 }
@@ -153,11 +111,29 @@ $(function () {
         return val;
 
     }
+
+    function filter(iffilter, sulierid, prno, grnno, fromdate, todate, status) {
+        lofilter = false;
+        goodsreceivednoteobjarr = goodsreceivednote_col.allGRN();
+        if (iffilter) {
+            lofilter = true;
+            var fromDateObj = new Date(fromdate);
+            var toDateObj = new Date(todate);
+            goodsreceivednoteobjarr = goodsreceivednoteobjarr.filter(function (goodsreceivednote) {
+                var enterdDateObj = new Date(goodsreceivednote.enterddate);
+                return (
+                    (goodsreceivednote.purchaseRequisition.supplierid.code == sulierid || sulierid == "") &&
+                    (goodsreceivednote.purchaseRequisition.prcode == prno || prno == "") &&
+                    (goodsreceivednote.code == grnno || grnno == "") &&
+                    ((fromdate == "" && todate == "") || (enterdDateObj >= fromDateObj && enterdDateObj <= toDateObj)) &&
+                    (status == "" || goodsreceivednote.status == status)
+                );
+            });
+        }
+    }
+    $('#fromdt,#todt').datepicker({ dateFormat: 'yy-mm-dd' });
     function setValues() {
         total = 0;
-        var pocode = "PO23A0000202";
-        goodsreceivednoteobjarr = goodsreceivednote_col.getGRNsByPOCode(pocode);
-        $("#rptpocode").text(pocode);
         t18.clear().draw(false);
         var dataset = "";
         $.each(goodsreceivednoteobjarr, function (i, item) {
@@ -176,14 +152,31 @@ $(function () {
                 arrivedcount += commaSeparateNumber(String(itemgrnm.arrivedCount)) + itemgrnm.prmaterial.material.uomid.scode + brset;
                 // totfinishedcoutset += commaSeparateNumber(String(itemprm.totArrivedCount)) + itemprm.material.uomid.scode + brset;
             })
+            t18.row.add([item.code, item.invoicenumber, item.mrano, grnmdataset, bulckcodeset, arrivedcount,item.enterddate,item.status]).draw(false);
             dataset += "<tr><td>" + (i + 1) + "</td><td>" + item.code + "</td><td>" + item.invoicenumber + "</td><td>" + item.mrano + "</td><td>" + grnmdataset + "</td><td>" + bulckcodeset + "</td><td><div style=\"text-align: right;\"> " + arrivedcount + "</div></td><td>" + item.enterddate + "</td></td><td>" + item.status + "</td></tr>";
         })
         var year = new Date().getFullYear();
         var month = new Date().getMonth();
         var day = new Date().getDate();
-        var date = day + "/" + (parseInt(month) + 1) + "/" + year;
+        var sulierid = $("#sulierid").val();
+        var prno = $("#prno").val();
+        var grnno = $("#grnno").val();
+        var status = $("#status").val();
+        var fromdate = $("#fromdt").val();
+        var todt = $("#todt").val();
+        var date = year + "-" + (parseInt(month) + 1) + "-" + day ;
         $("#totamt").text(commaSeparateNumber(String(total)));
-        $("#todate").text(date)
+        $("#todate").text(function(){
+            if(todt == "" && fromdate == ""){
+                return date;
+            }else{
+                return "From : " + fromdate + "  To: " + todt;
+            }
+        })
+        $("#rptsulierid").text(sulierid);
+        $("#rptprno").text(prno);
+        $("#rptstatus").text(status);
+        $("#rptgrnno").text(grnno);
         $("#potablebody").html(dataset);
         total = 0
     }
@@ -191,15 +184,31 @@ $(function () {
     //triggers
     $(document).off("click", "#btnprmpo");
     $(document).off("click", "#cancelPRPrint");
+    $(document).off("click", "#filter");
     $(document).on("click", "#btnprmpo", function () {
-        selectedcode = $("#purchaserequisition_code").val();
+        selectedcode = $("#goodsreceivednote_code").val();
         refreshtable();
     })
     $(document).on("click", "#cancelPRPrint", function () {
         selectedcode = "";
+        filter(false);
         setValues();
     })
-
+    $(document).on("click", "#filter", function () {
+        var sulierid = $("#sulierid").val();
+        var prno = $("#prno").val();
+        var status = $("#status").val();
+        var grnno = $("#grnno").val();
+        var fromdate = $("#fromdt").val();
+        var todt = $("#todt").val();
+        filter(true, sulierid, prno,grnno, fromdate, todt, status)
+        setValues();
+        Swal.fire(
+            'Added!',
+            'Data Filter has been added',
+            'success'
+        )
+    })
     //end of triggers
     $("#podiv").hide();
     jwtPayload = getJwtPayload();

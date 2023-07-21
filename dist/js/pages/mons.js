@@ -127,7 +127,7 @@ $(function () {
                         var year = new Date().getFullYear();
                         var month = new Date().getMonth();
                         var day = new Date().getDate();
-                        var date = day + "/" + (parseInt(month) + 1) + "/" + year;
+                        var date = year + "-" + (parseInt(month) + 1) + "-" + day ;
                         let index = materialOutNote_col.allMON().length;
                         let mrcode = monClassesInstence.MONSerial.genarateMONCode(index);
                         var code = mrcode;
@@ -310,6 +310,7 @@ $(function () {
                 t23.row.add([item.ordercode, item.bommaterial.material.code, item.bommaterial.material.description, item.requestedCount, item.bommaterial.material.uomid.scode]).draw(false);
             });
             $("#materialoutnote_customerid").val(materialrequisitionobj.billOfMaterial.customerOrder.customerid.code + " - " + materialrequisitionobj.billOfMaterial.customerOrder.customerid.firstname + " " + materialrequisitionobj.billOfMaterial.customerOrder.customerid.lastname);
+            $("#materialoutnote_id").val(undefined);
         } else {
             materialrequisitionobj = null;
             materialRequisitionMaterialsobjarr = [];

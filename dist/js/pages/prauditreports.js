@@ -1,11 +1,11 @@
 $(function () {
     //variables
-    var customerorderClassesInstence = customerorderClasses.customerorderClassesInstence()
-    let customerorder_col = customerorderClassesInstence.customerorder_service;
-    let customerorderobjarr = [];
+    var purchaserequisitionClassesInstence = purchaserequisitionClasses.purchaserequisitionClassesInstence();
+    let purchaserequisition_col = purchaserequisitionClassesInstence.purchaserequisition_service;
+    let purchaserequisitioarr = [];
     var jwtPayload = undefined;
-    var lofilter = false;
     var total = 0;
+    var lofilter = false;
     var t18 = $("#table18").DataTable({
         "order": [[0, "desc"]],
         dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"row usr-card-body"<"col-sm-12 col-md-12"t>><"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
@@ -18,6 +18,7 @@ $(function () {
         showConfirmButton: false,
         timer: 3000
     });
+    $('#fromdt,#todt').datepicker({ dateFormat: 'yy-mm-dd' });
     //end of variables
     //functions
     //defalt functions
@@ -59,8 +60,6 @@ $(function () {
             })
         }
     });
-    $('#fromdt,#todt').datepicker({ dateFormat: 'yy-mm-dd' });
-
     //definded functions
     function getJwtPayload() {
         var parts = jwt.split('.');
@@ -73,16 +72,16 @@ $(function () {
         if (jwtPayload.roleid.accIconList.find(accicon => accicon.status == "ACTIVE" && accicon.code == "AI00602") != undefined || jwtPayload.businessRole == "ADMIN") {
             t18.clear().draw(false);
             $.ajax({
-                url: "http://localhost:8080/api/customerorderctrl/getcustomerorders",
+                url: "http://localhost:8080/api/purchaserequisitionctrl/getpurchaserequisitions",
                 dataType: "JSON",
                 headers: {
                     "Authorization": jwt
                 },
                 success: function (data) {
                     $.each(data.content, function (i, item) {
-                        customerorder_col.addCustomerOrdertoArray(item.id, item.code, item.jobID, item.jobNumber, item.customerid, item.totalAmount, item.grossAmount, item.remark, item.customerOrderProducts, item.printeddate, item.status,item.enteredUser,item.enteredDate,item.acceptedUser,item.acceptedDate,item.invoices,item.inventoryItems);
+                        purchaserequisition_col.addPurchaseRequisitiontoArray(item.id, item.prcode, item.pocode, item.supplierid, item.status, item.remark, item.totalAmount, item.purchaseRequisitionMaterials,  item.prprinteddate, item.quotationno,item.enteredUser, item.printededUser, item.acceptedUser, item.poPrintededUser,item.printeddate);
                     });
-                    filter(false)
+                    filter(false);
                     setValues();
                     fadepageloder();
                 }
@@ -113,50 +112,62 @@ $(function () {
         return val;
 
     }
-    function filter(iffilter, customerOrderid, jobnumber, fromdate, todate, status) {
+    function filter(iffilter, sulierid, prno, quatno, fromdate, todate, status) {
         lofilter = false;
-        customerorderobjarr = customerorder_col.allCustomerOrder();
+        purchaserequisitioarr = purchaserequisition_col.allPurchaseEequisitions();
         if (iffilter) {
             lofilter = true;
             var fromDateObj = new Date(fromdate);
             var toDateObj = new Date(todate);
-            customerorderobjarr = customerorderobjarr.filter(function (customerorder) {
-                var enterdDateObj = new Date(customerorder.enteredDate);
+            purchaserequisitioarr = purchaserequisitioarr.filter(function (purchaserequisition) {
+                var enterdDateObj = new Date(purchaserequisition.prprinteddate);
                 return (
-                    (customerorder.code == customerOrderid || customerOrderid == "") &&
-                    (customerorder.jobNumber == jobnumber || jobnumber == "") &&
+                    (purchaserequisition.supplierid.code == sulierid || sulierid == "") &&
+                    (purchaserequisition.prcode == prno || prno == "") &&
+                    (purchaserequisition.quotationno == quatno || quatno == "") &&
                     ((fromdate == "" && todate == "") || (enterdDateObj >= fromDateObj && enterdDateObj <= toDateObj)) &&
-                    (status == "" || customerorder.status == status)
+                    (status == "" || purchaserequisition.status == status)
                 );
             });
         }
     }
     function setValues() {
         total = 0;
-       
         t18.clear().draw(false);
         var dataset = "";
-        $.each(customerorderobjarr, function (i, item) {
-            var copdataset = "";
-            var quantityset = "";
-            var totfinishedcoutset= "";
-            var brset;
-            $.each(item.customerOrderProducts, function (i, itemcop) {
-                if ((i + 1) < item.customerOrderProducts.length) brset = "<br>";
-                else brset = "";
-                copdataset += itemcop.product.code + brset;
-                quantityset += commaSeparateNumber(String(itemcop.quantity)) + brset;
-                totfinishedcoutset += commaSeparateNumber(String(itemcop.totFinishedCount)) + brset;
-            })
-            t18.row.add([item.code, item.jobID , item.jobNumber, item.customerid.firstname + " " + item.customerid.lastname , copdataset, quantityset,totfinishedcoutset,"Rs." + commaSeparateNumber(String(item.totalAmount)), item.enteredDate,item.status]).draw(false);
-            dataset += "<tr><td>" + (i + 1) + "</td><td>" + item.code + "</td><td>" + item.jobID + "</td><td>" + item.jobNumber + "</td><td>" + item.customerid.firstname + " " + item.customerid.lastname + "</td><td>" + copdataset + "</td><td><div style=\"text-align: right;\"> " + quantityset + "</div></td><td><div style=\"text-align: right;\"> " + totfinishedcoutset + "</div></td><td><div style=\"text-align: right;\"> Rs." + commaSeparateNumber(String(item.totalAmount)) + "</div></td><td>" + item.enteredDate + "</td></td><td>" + item.status + "</td></tr>";
+        $.each(purchaserequisitioarr, function (i, item) {
+            // if(item.materialid.status == "ACTIVE"){
+            var accepteduser = "-";
+            var pouser = "-";
+            var pruser = "-";
+           
+            if(item.acceptedUser != null){
+                accepteduser = item.acceptedUser.email.split('@')[0];
+            }
+            if(item.printededUser != null){
+                pruser = item.printededUser.email.split('@')[0];
+            }
+            if(item.poPrintededUser != null){
+                pouser = item.poPrintededUser.email.split('@')[0];
+            }
+            t18.row.add([item.prcode, item.quotationno, item.supplierid.firstname + " " + item.supplierid.lastname ,    item.enteredUser.email.split('@')[0],
+             pruser,
+             accepteduser,
+             pouser,
+             item.prprinteddate,
+             item.printeddate,
+            item.status]).draw(false);
+
+
+            dataset += "<tr><td>" + (i + 1) + "</td><td>" + item.prcode + "</td><td>" + item.quotationno + "</td><td>" + item.supplierid.firstname + " " + item.supplierid.lastname + "</td><td>" + item.enteredUser.email.split('@')[0] + "</td><td>" + pruser + "</td><td>" + accepteduser+ "</td><td>" + pouser + "</td><td>" + item.prprinteddate + "</td><td>" + item.printeddate + "</td><td>" + item.status+ "</td></tr>";
         })
         var year = new Date().getFullYear();
         var month = new Date().getMonth();
         var day = new Date().getDate();
         var date = year + "-" + (parseInt(month) + 1) + "-" + day ;
-        var customerordid = $("#customerordid").val();
-        var jobno = $("#jobno").val();
+        var sulierid = $("#sulierid").val();
+        var prno = $("#prno").val();
+        var quatno = $("#quatno").val();
         var status = $("#status").val();
         var fromdate = $("#fromdt").val();
         var todt = $("#todt").val();
@@ -165,12 +176,13 @@ $(function () {
             if(todt == "" && fromdate == ""){
                 return date;
             }else{
-                return "From : " + fromdate + " To: " + todt;
+                return "From : " + fromdate + "  To: " + todt;
             }
         })
-        $("#rptcoid").text(customerordid);
-        $("#rptjobno").text(jobno);
+        $("#rptsulierid").text(sulierid);
+        $("#rptprno").text(prno);
         $("#rptstatus").text(status);
+        $("#rptquatno").text(quatno);
         $("#potablebody").html(dataset);
         total = 0
     }
@@ -179,28 +191,23 @@ $(function () {
     $(document).off("click", "#btnprmpo");
     $(document).off("click", "#cancelPRPrint");
     $(document).off("click", "#filter");
-    
     $(document).on("click", "#btnprmpo", function () {
         selectedcode = $("#purchaserequisition_code").val();
         refreshtable();
     })
     $(document).on("click", "#cancelPRPrint", function () {
         selectedcode = "";
-        $("#customerordid").val("");
-        $("#jobno").val("");
-        $("#status").val("");
-        $("#fromdate").val("");
-        $("#todt").val("");
         filter(false)
         setValues();
     })
     $(document).on("click", "#filter", function () {
-        var customerordid = $("#customerordid").val();
-        var jobno = $("#jobno").val();
+        var sulierid = $("#sulierid").val();
+        var prno = $("#prno").val();
         var status = $("#status").val();
+        var quatno = $("#quatno").val();
         var fromdate = $("#fromdt").val();
         var todt = $("#todt").val();
-        filter(true, customerordid, jobno, fromdate, todt, status)
+        filter(true, sulierid, prno,quatno, fromdate, todt, status)
         setValues();
         Swal.fire(
             'Added!',
@@ -208,10 +215,9 @@ $(function () {
             'success'
         )
     })
-
     //end of triggers
-    jwtPayload = getJwtPayload();
     $("#podiv").hide();
+    jwtPayload = getJwtPayload();
     refreshtable();
 
 });

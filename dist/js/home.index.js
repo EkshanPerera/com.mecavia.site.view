@@ -18,12 +18,27 @@ var indexjs = $(function () {
             }
         })
     }
+    $(function() {
+        var homeparts = jwt.split('.');
+        var homeencodedPayload = homeparts[1];
+        var homedecodedPayload = atob(homeencodedPayload.replace(/-/g, '+').replace(/_/g, '/'));
+        var homepayload = JSON.parse(homedecodedPayload);
+        $("#homerole").text(homepayload.roleid.description)
+        $("#homebusinessrole").text("@"+homepayload.businessRole.toLowerCase())
+        $("#homeusername").text(homepayload.firstname + " " + homepayload.lastname + " ")
+    })
+
+    $("#lnklogout").click(function () {
+        localStorage.removeItem("jwt_token");
+        jwt = "";
+        window.history.pushState({}, '', '../');
+        window.location.href = "../";
+    });
     $("#lnkusergroup").click(function () {
         jwt = "Bearer " + localStorage.getItem("jwt_token");
         $('.leaf-node a').removeClass('active');
         $(this).children().addClass('active');
     });
-
     $("#lnkuser").click(function () {
         jwt = "Bearer " + localStorage.getItem("jwt_token");
         $('.leaf-node a').removeClass('active');
@@ -122,11 +137,21 @@ var indexjs = $(function () {
         $('.leaf-node a').removeClass('active');
         $(this).children().addClass('active');
     });
+    $("#lnkprauditreports").click(function () {
+        jwt = "Bearer " + localStorage.getItem("jwt_token");
+        $('.leaf-node a').removeClass('active');
+        $(this).children().addClass('active');
+    });
     $("#lnkcoreports").click(function () {
         jwt = "Bearer " + localStorage.getItem("jwt_token");
         $('.leaf-node a').removeClass('active');
         $(this).children().addClass('active');
     });  
+    $("#lnkcoauditreports").click(function () {
+        jwt = "Bearer " + localStorage.getItem("jwt_token");
+        $('.leaf-node a').removeClass('active');
+        $(this).children().addClass('active');
+    });
     $("#lnkgrnreports").click(function () {
         jwt = "Bearer " + localStorage.getItem("jwt_token");
         $('.leaf-node a').removeClass('active');
@@ -158,6 +183,24 @@ var indexjs = $(function () {
         $(this).children().addClass('active');
     });
     $("#lnkfgon").click(function () {
+        jwt = "Bearer " + localStorage.getItem("jwt_token");
+        $('.leaf-node a').removeClass('active');
+        $(this).children().addClass('active');
+    });
+    $("#lnkchngpwd").click(function () {
+        $('.leaf-node a').removeClass('active');
+    });
+    $("#lnkgsinventoryreports").click(function () {
+        jwt = "Bearer " + localStorage.getItem("jwt_token");
+        $('.leaf-node a').removeClass('active');
+        $(this).children().addClass('active');
+    });
+    $("#lnkmrreports").click(function () {
+        jwt = "Bearer " + localStorage.getItem("jwt_token");
+        $('.leaf-node a').removeClass('active');
+        $(this).children().addClass('active');
+    });
+    $("#lnkrevenuereports").click(function () {
         jwt = "Bearer " + localStorage.getItem("jwt_token");
         $('.leaf-node a').removeClass('active');
         $(this).children().addClass('active');

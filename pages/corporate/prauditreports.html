@@ -1,6 +1,6 @@
 <head>
     <style>
-       .usr-card-body {
+        .usr-card-body {
             min-height: 530px;
         }
 
@@ -24,7 +24,7 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1>Sales Reports</h1>
+                        <h1>Audit Reports</h1>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
@@ -47,73 +47,79 @@
                             <!-- form start -->
                             <form class="form-horizontal" id="quickForm8">
                                 <div class="card-header">
-                                    <h3 class="card-title">Customer Order Report</h3>
+                                    <h3 class="card-title">Purchase Requsition Audit Report</h3>
                                 </div>
                                 <div class="card-body usr-card-body met">
                                     <div class="row">
-                                        <div class="col-lg-12 " >
+                                        <div class="col-lg-12 ">
                                             <div class="row ">
                                                 <div class="col-lg-2">
                                                     <div class="form-group">
-                                                        <label for="customerordid"
-                                                            class="col-form-label">Customer Order Id</label>
+                                                        <label for="sulierid" class="col-form-label">Supplier Id</label>
                                                         <div class="col-sm-10">
-                                                            <input type="input" name="customerordid"
-                                                                class="form-control formfillin"
-                                                                id="customerordid" placeholder="">
+                                                            <input type="input" name="sulierid"
+                                                                class="form-control formfillin" id="sulierid"
+                                                                placeholder="">
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="col-lg-2">
                                                     <div class="form-group">
-                                                        <label for="jobno"
-                                                            class="col-form-label">Job Number</label>
+                                                        <label for="prno" class="col-form-label">PR Number</label>
                                                         <div class="col-sm-10">
-                                                            <input type="input" name="jobno"
-                                                                class="form-control formfillin"
-                                                                id="jobno" placeholder="">
+                                                            <input type="input" name="prno"
+                                                                class="form-control formfillin" id="prno"
+                                                                placeholder="">
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="col-lg-2">
                                                     <div class="form-group">
-                                                        <label for="status"
-                                                            class="col-form-label">Status</label>
+                                                        <label for="quatno" class="col-form-label">Quatation
+                                                            Number</label>
+                                                        <div class="col-sm-10">
+                                                            <input type="input" name="quatno"
+                                                                class="form-control formfillin" id="quatno"
+                                                                placeholder="">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-2">
+                                                    <div class="form-group">
+                                                        <label for="status" class="col-form-label">Status</label>
                                                         <div class="col-sm-10">
                                                             <input type="input" name="status"
-                                                                class="form-control formfillin"
-                                                                id="status" placeholder="">
+                                                                class="form-control formfillin" id="status"
+                                                                placeholder="">
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="col-lg-2">
                                                     <div class="form-group">
-                                                        <label for="fromdt"
-                                                            class="col-form-label">From:</label>
+                                                        <label for="fromdt" class="col-form-label">From:</label>
                                                         <div class="col-sm-10">
                                                             <input type="input" name="fromdt"
-                                                                class="form-control formfillin"
-                                                                id="fromdt" placeholder="">
+                                                                class="form-control formfillin" id="fromdt"
+                                                                placeholder="">
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="col-lg-2">
                                                     <div class="form-group">
-                                                        <label for="todt"
-                                                            class="col-form-label">To:</label>
+                                                        <label for="todt" class="col-form-label">To:</label>
                                                         <div class="col-sm-10">
                                                             <input type="input" name="todt"
-                                                                class="form-control formfillin"
-                                                                id="todt" placeholder="">
+                                                                class="form-control formfillin" id="todt"
+                                                                placeholder="">
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="col-lg-2">
                                                     <div class="form-group">
-                                                        <label for="svreportdate"
-                                                            class="col-form-label">.</label>
+                                                        <label for="svreportdate" class="col-form-label"></label>
                                                         <div class="col-sm-10">
-                                                            <button type="button" class="btn btn-outline-primary formbtn" id="filter">
+                                                            <button type="button"
+                                                                class="btn btn-outline-primary formbtn" id="filter">
                                                                 <i class="fas fa-filter"></i>
                                                                 Filter</button>
                                                         </div>
@@ -127,15 +133,15 @@
                                                     <table id="table18" class="table table-bordered table-striped">
                                                         <thead>
                                                             <tr>
-                                                                <th>CO ID</th>
-                                                                <th>Job Id</th>
-                                                                <th>Job Number</th>
-                                                                <th>Customer</th>
-                                                                <th>Pro. Code</th>
-                                                                <th>Ord. Cou.</th>
-                                                                <th>Fini. Cou.</th>
-                                                                <th>Ord. Amt.</div></th>
-                                                                <th>Date</th>
+                                                                <th>PR Id</th>
+                                                                <th>Quatation No</th>
+                                                                <th>Supplier</th>
+                                                                <th>Ent. Usr.</th>
+                                                                <th>PR prt. Usr.</th>
+                                                                <th>App. Usr.</th>
+                                                                <th>PO prt. Usr.</th>
+                                                                <th>PR. Dt.</th>
+                                                                <th>PO. Dt.</th>
                                                                 <th>Status</th>
                                                             </tr>
                                                         </thead>
@@ -146,6 +152,7 @@
                                             </div>
                                         </div>
                                     </div>
+
                                 </div>
                                 <!-- /.card-body -->
                                 <div class="card-footer">
@@ -154,7 +161,8 @@
                                             id="acceptPurchaseRequisitions">
                                             <i class="fas fa-check-circle"></i>
                                             Print</button>
-                                            <button type="button" class="btn btn-default formbtn" data-dismiss="modal" id="cancelPRPrint">
+                                        <button type="button" class="btn btn-default formbtn" data-dismiss="modal"
+                                            id="cancelPRPrint">
                                             <i class="fa fa-times" aria-hidden="true"></i> Cancel</button>
                                     </div>
                                 </div>
@@ -189,7 +197,7 @@
                         <div class="col-12">
                             <h2 class="page-header">
                                 <i class="fa fa-globe"></i> G R S Garment & Industries(PVT)Ltd.
-                                <small class="float-right"><span>Customer Order Report</span></small>
+                                <small class="float-right"><span>Purchase Requsition Audit Report</span></small>
                             </h2>
                         </div>
                         <!-- /.col -->
@@ -210,11 +218,11 @@
                         <!-- /.col -->
                         <div class="col-sm-4 invoice-col">
                             <br>
-                            <br>
                             <b>Data Filter,</b> <br>
                             <b>Report Date :</b> <span id="todate"></span><br>
-                            <b>Customer id :</b> <span id="rptcoid"></span> <br>
-                            <b>Job Number id :</b> <span id="rptjobno"></span> <br>
+                            <b>Supplier id :</b> <span id="rptsulierid"></span> <br>
+                            <b>PR Code :</b> <span id="rptprno"></span> <br>
+                            <b>Quatation no :</b> <span id="rptquatno"></span> <br>
                             <b>Status :</b> <span id="rptstatus"></span> <br>
                         </div>
                         <!-- /.col -->
@@ -228,15 +236,15 @@
                                 <thead>
                                     <tr>
                                         <th>No.</th>
-                                        <th>CO Id</th>
-                                        <th>Job Id</th>
-                                        <th>Job Number</th>
-                                        <th>Customer</th>
-                                        <th>Pro. Code</th>
-                                        <th>Ord. Cou.</th>
-                                        <th>Fini. Cou.</th>
-                                        <th><div style="text-align: right;">Ord. Amt.</div></th>
-                                        <th>Date</th>
+                                        <th>PR Id</th>
+                                        <th>Quatation No</th>
+                                        <th>Supplier</th>
+                                        <th>Ent. Usr.</th>
+                                        <th>PR prt. Usr.</th>
+                                        <th>App. Usr.</th>
+                                        <th>PO prt. Usr.</th>
+                                        <th>PR. Dt.</th>
+                                        <th>PO. Dt.</th>
                                         <th>Status</th>
                                     </tr>
                                 </thead>
@@ -256,7 +264,18 @@
                                 <table class="table">
                                     <tbody>
                                         <tr>
-                                            <th>Pro. Code - Product Code <br> Ord. Cou. - Ordered Count<br> Fini. Cou. - Finished Count<br> Ord. Amt. - Order Amount<br>CO - Customer Order</th>
+                                            <th>
+                                                <b>
+                                                    <br> Ent. Usr. - Entered User
+                                                    <br> PR prt. Usr. - PR Printed User
+                                                    <br> App. Usr. - Approved User
+                                                    <br> PO prt. Usr. - PO Printed User
+                                                    <br> PR. Dt. - PR date
+                                                    <br> PO. Dt. - PO Date
+                                                    <br> PR - Purchase Requisition
+                                                    <br> PO - Purchase Order
+                                                </b>
+                                            </th>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -270,7 +289,7 @@
         </div>
     </div>
     <!-- ./wrapper -->
-    <script src="../../dist/js/pages/customerorderclasses.js"></script>
-    <script src="../../dist/js/pages/coreports.js"></script>
+    <script src="../../dist/js/pages/prreportcalsses.js"></script>
+    <script src="../../dist/js/pages/prauditreports.js"></script>
 
 </body>

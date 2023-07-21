@@ -40,9 +40,7 @@ $(function () {
     //defalt functions
     $(function () {
         $.validator.addMethod("checkEmailExistence", function (value, element) {
-            // User object list
             var userList = usr_col.allUsers();
-            // Check if email exists in the user object list
             return userList.every(function (user) {
                 return user.email !== value;
             });

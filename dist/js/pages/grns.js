@@ -53,7 +53,7 @@ $(function () {
             null,
             {
                 render: function (data, type, row, meta) {
-                    if (type === 'display') {
+                     if (type === 'display') {
                         var num = $.fn.dataTable.render.number(',', '.', 2).display(data);
                         return '<div style="text-align: right;">' + num + '</div>';
                     } else {
@@ -94,7 +94,7 @@ $(function () {
             null
         ]
     });
-    $('#grn_invoicedate,#grn_mradate').datepicker({ dateFormat: 'dd/mm/yy' });
+    $('#grn_invoicedate,#grn_mradate').datepicker({ dateFormat: 'yy-mm-dd' });
 
     var Toast = Swal.mixin({
         toast: true,
@@ -170,7 +170,7 @@ $(function () {
                         var year = new Date().getFullYear();
                         var month = new Date().getMonth();
                         var day = new Date().getDate();
-                        var date = day + "/" + (parseInt(month) + 1) + "/" + year;
+                        var date = year + "-" + (parseInt(month) + 1) + "-" + day ;
                         let index = goodsreceivednote_col.getGRNsByPOCode(selectedcode).length
                         let prcode = purchaserequisitionobj.prcode;
                         let grncode = grnClassesInstence.GoodsRecevedNoteSerial.genarateGRNCode(index, prcode);

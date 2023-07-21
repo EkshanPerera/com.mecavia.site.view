@@ -9,13 +9,38 @@ $(function () {
           $("#pwvisibility").html("<span class=\"fas fa-eye\"></span>");
         }
     })
-    $("#login-form").submit(function (event) {
-        event.preventDefault();
-        var username = $("#username").val();
-        var password = $("#password").val();
-        if(username==="" || password ===""){
-           alert("username or password can't be null")
-        }else{
+
+$('#login-form').validate({
+        rules: {
+            username: {
+                required: true
+            },
+            password: {
+                required: true
+            }
+        },
+        messages: {
+            username: {
+                required: "Please fillout username!"
+            },
+            password: {
+                required: "Please fillout new password!"
+            }
+        },
+        errorElement: 'span',
+        errorPlacement: function (error, element) {
+            error.addClass('invalid-feedback');
+            element.closest('.input-group').append(error);
+        },
+        highlight: function (element, errorClass, validClass) {
+            $(element).addClass('is-invalid');
+        },
+        unhighlight: function (element, errorClass, validClass) {
+            $(element).removeClass('is-invalid');
+        },
+        submitHandler: function () {
+            var username = $("#username").val();
+            var password = $("#password").val();
             $(".login-box-msg").text("Sign in to start your session")
             $(".login-box-msg").css("color","currentColor")
             $.ajax({
@@ -25,6 +50,9 @@ $(function () {
                 contentType: 'application/json',
                 success: function (data) {
                     localStorage.setItem("jwt_token", data.token);
+                    $("#username").val(undefined);
+                    $("#password").val(undefined);
+                    window.history.pushState({}, '', '/');
                     window.location.href = "home/";
                 },
                 error: function (xhr, status, error) {

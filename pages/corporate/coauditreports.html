@@ -24,7 +24,7 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1>Sales Reports</h1>
+                        <h1>Audit Reports</h1>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
@@ -47,7 +47,7 @@
                             <!-- form start -->
                             <form class="form-horizontal" id="quickForm8">
                                 <div class="card-header">
-                                    <h3 class="card-title">Customer Order Report</h3>
+                                    <h3 class="card-title">Customer Order Audit Report</h3>
                                 </div>
                                 <div class="card-body usr-card-body met">
                                     <div class="row">
@@ -128,14 +128,14 @@
                                                         <thead>
                                                             <tr>
                                                                 <th>CO ID</th>
-                                                                <th>Job Id</th>
                                                                 <th>Job Number</th>
                                                                 <th>Customer</th>
-                                                                <th>Pro. Code</th>
-                                                                <th>Ord. Cou.</th>
-                                                                <th>Fini. Cou.</th>
-                                                                <th>Ord. Amt.</div></th>
-                                                                <th>Date</th>
+                                                                <th>Ent. Usr.</th>
+                                                                <th>Ent. Dt.</th>
+                                                                <th>Int. Usr.</th>
+                                                                <th>Int. Dt.</th>
+                                                                <th>Acc. Usr.</th>
+                                                                <th>Acc. Dt.</th>
                                                                 <th>Status</th>
                                                             </tr>
                                                         </thead>
@@ -189,7 +189,7 @@
                         <div class="col-12">
                             <h2 class="page-header">
                                 <i class="fa fa-globe"></i> G R S Garment & Industries(PVT)Ltd.
-                                <small class="float-right"><span>Customer Order Report</span></small>
+                                <small class="float-right"><span>Customer Order Audit Report</span></small>
                             </h2>
                         </div>
                         <!-- /.col -->
@@ -229,14 +229,14 @@
                                     <tr>
                                         <th>No.</th>
                                         <th>CO Id</th>
-                                        <th>Job Id</th>
                                         <th>Job Number</th>
                                         <th>Customer</th>
-                                        <th>Pro. Code</th>
-                                        <th>Ord. Cou.</th>
-                                        <th>Fini. Cou.</th>
-                                        <th><div style="text-align: right;">Ord. Amt.</div></th>
-                                        <th>Date</th>
+                                        <th>Ent. Usr.</th>
+                                        <th>Ent. Dt.</th>
+                                        <th>Int. Usr.</th>
+                                        <th>Int. Dt.</th>
+                                        <th>Acc. Usr.</th>
+                                        <th>Acc. Dt.</th>
                                         <th>Status</th>
                                     </tr>
                                 </thead>
@@ -255,8 +255,15 @@
                             <div class="table-responsive">
                                 <table class="table">
                                     <tbody>
-                                        <tr>
-                                            <th>Pro. Code - Product Code <br> Ord. Cou. - Ordered Count<br> Fini. Cou. - Finished Count<br> Ord. Amt. - Order Amount<br>CO - Customer Order</th>
+                                        <tr></th>
+                                            <b>
+                                            <br> Ent. Usr. - Entered User
+                                            <br> Ent. Dt - Entered Date
+                                            <br> Int. Usr. - Initiated User
+                                            <br> Int. Dt. - Initiated Date
+                                            <br> Acc. Usr. - Accepted User
+                                            <br> Acc. Dt. - Accepted Date
+                                            <br>CO - Customer Order</th></b>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -270,7 +277,7 @@
         </div>
     </div>
     <!-- ./wrapper -->
-    <script src="../../dist/js/pages/customerorderclasses.js"></script>
-    <script src="../../dist/js/pages/coreports.js"></script>
+    <script src="../../dist/js/pages/customerorderarclasses.js"></script>
+    <script src="../../dist/js/pages/coauditreports.js"></script>
 
 </body>

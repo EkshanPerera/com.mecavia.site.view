@@ -73,8 +73,14 @@
     $("#lnkprreports").click(function () {
         $("#content").load("../pages/corporate/prreports.html");
     });
+    $("#lnkprauditreports").click(function () {
+        $("#content").load("../pages/corporate/prauditreports.html");
+    });
     $("#lnkcoreports").click(function () {
         $("#content").load("../pages/corporate/coreports.html");
+    });
+    $("#lnkcoauditreports").click(function () {
+        $("#content").load("../pages/corporate/coauditreports.html");
     });
     $("#lnkgrnreports").click(function () {
         $("#content").load("../pages/corporate/grnreports.html");
@@ -97,7 +103,18 @@
     $("#lnkfgon").click(function () {
         $("#content").load("../pages/corporate/fgon.html");
     });
-    
+    $("#lnkchngpwd").click(function () {
+        $("#content").load("../pages/corporate/changpwd.html");
+    });
+    $("#lnkgsinventoryreports").click(function () {
+        $("#content").load("../pages/corporate/gsinventoryreports.html");
+    });
+    $("#lnkmrreports").click(function () {
+        $("#content").load("../pages/corporate/mrreports.html");
+    });
+    $("#lnkrevenuereports").click(function () {
+        $("#content").load("../pages/corporate/revenuereports.html");
+    });
     // GRN click event handler
     $("#grn").click(function () {
         $(".content").load("grn.html");

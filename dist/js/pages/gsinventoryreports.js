@@ -29,8 +29,7 @@ $(function () {
             {
                 render: function (data, type, row, meta) {
                     if (type === 'display') {
-                        var symbol = "Rs. ";
-                        var num = $.fn.dataTable.render.number(',', '.', 2, symbol).display(data);
+                        var num = $.fn.dataTable.render.number(',', '.', 2).display(data);
                         return '<div style="text-align: right;">' + num + '</div>';
                     } else {
                         return data;
@@ -39,19 +38,7 @@ $(function () {
                 },
 
             },
-            {
-                render: function (data, type, row, meta) {
-                    if (type === 'display') {
-                        var symbol = "Rs. ";
-                        var num = $.fn.dataTable.render.number(',', '.', 2, symbol).display(data);
-                        return '<div style="text-align: right;">' + num + '</div>';
-                    } else {
-                        return data;
-                    }
-
-                },
-
-            }
+            null
         ]
     });
 
@@ -163,20 +150,17 @@ $(function () {
         var dataset = "";
         $.each(GeneralStoreDtosarr, function (i, item) {
             if (item.materialid.status == "ACTIVE") {
-                t18.row.add([item.materialid.code, item.materialid.description, (item.itemcount - item.releasedItemcount) , item.materialid.uomid.scode, item.materialid.price, (item.itemcount - item.releasedItemcount)  * item.materialid.price]).draw(false);
-                dataset += "<tr><td>" + (i + 1) + "</td><td>" + item.materialid.code + "</td><td>" + item.materialid.description + "</td><td> <div style=\"text-align: right;\"> " + commaSeparateNumber(String((item.itemcount - item.releasedItemcount) )) + "</div></td><td>" + item.materialid.uomid.scode + "</td><td><div style=\"text-align: right;\">Rs. " + commaSeparateNumber(String(item.materialid.price)) + "</div></td><td><div style=\"text-align: right;\">Rs. " + commaSeparateNumber(String((item.itemcount - item.releasedItemcount)  * item.materialid.price)) + "</div></td></tr>";
+                t18.row.add([item.materialid.code, item.materialid.description, (item.itemcount - item.releasedItemcount) , item.materialid.uomid.scode, (item.requestedItemcount - item.releasedItemcount) , item.materialid.uomid.scode]).draw(false);
+                dataset += "<tr><td>" + (i + 1) + "</td><td>" + item.materialid.code + "</td><td>" + item.materialid.description + "</td><td> <div style=\"text-align: right;\"> " + commaSeparateNumber(String((item.itemcount - item.releasedItemcount) )) + "</div></td><td>" + item.materialid.uomid.scode + "</td><td><div style=\"text-align: right;\">" + commaSeparateNumber(String(item.requestedItemcount - item.releasedItemcount)) + "</div></td><td><div style=\"text-align: right;\">" + item.materialid.uomid.scode + "</div></td></tr>";
             }
-            total += ((item.itemcount - item.releasedItemcount)  * item.materialid.price);
         })
         var year = new Date().getFullYear();
         var month = new Date().getMonth();
         var day = new Date().getDate();
         var date = year + "-" + (parseInt(month) + 1) + "-" + day ;
-        $("#totamt").text(commaSeparateNumber(String(total)));
         $("#svreportdate").val(date);
         $("#reportdate").text(date)
         $("#potablebody").html(dataset);
-        $("#str_totalamount").val(commaSeparateNumber(String(total)));
         total = 0
     }
     //end of functions

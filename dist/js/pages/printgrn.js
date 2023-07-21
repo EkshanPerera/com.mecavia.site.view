@@ -86,7 +86,7 @@ $(function () {
                         var year = new Date().getFullYear();
                         var month = new Date().getMonth();
                         var day = new Date().getDate();
-                        var date = day + "/" + (parseInt(month) + 1) + "/" + year;
+                        var date = year + "-" + (parseInt(month) + 1) + "-" + day ;
                         $("#podiv").show();
                         $("#podiv").print();
                         $("#podiv").hide();

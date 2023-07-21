@@ -80,7 +80,7 @@ $(function () {
                 },
                 success: function (data) {
                     $.each(data.content, function (i, item) {
-                        customerorder_col.addCustomerOrdertoArray(item.id, item.code, item.jobID, item.jobNumber, item.customerid, item.totalAmount, item.grossAmount, item.remark, item.customerOrderProducts, item.printeddate, item.status,item.enteredUser,item.enteredDate,item.acceptedUser,item.acceptedDate,item.invoices,item.inventoryItems);
+                        customerorder_col.addCustomerOrdertoArray(item.id, item.code, item.jobID, item.jobNumber, item.customerid, item.totalAmount, item.grossAmount, item.remark, item.customerOrderProducts, item.printeddate, item.status,item.enteredUser,item.enteredDate,item.acceptedUser,item.acceptedDate,item.invoices,item.inventoryItems,item.billOfMaterial);
                     });
                     filter(false)
                     setValues();
@@ -148,8 +148,31 @@ $(function () {
                 quantityset += commaSeparateNumber(String(itemcop.quantity)) + brset;
                 totfinishedcoutset += commaSeparateNumber(String(itemcop.totFinishedCount)) + brset;
             })
-            t18.row.add([item.code, item.jobID , item.jobNumber, item.customerid.firstname + " " + item.customerid.lastname , copdataset, quantityset,totfinishedcoutset,"Rs." + commaSeparateNumber(String(item.totalAmount)), item.enteredDate,item.status]).draw(false);
-            dataset += "<tr><td>" + (i + 1) + "</td><td>" + item.code + "</td><td>" + item.jobID + "</td><td>" + item.jobNumber + "</td><td>" + item.customerid.firstname + " " + item.customerid.lastname + "</td><td>" + copdataset + "</td><td><div style=\"text-align: right;\"> " + quantityset + "</div></td><td><div style=\"text-align: right;\"> " + totfinishedcoutset + "</div></td><td><div style=\"text-align: right;\"> Rs." + commaSeparateNumber(String(item.totalAmount)) + "</div></td><td>" + item.enteredDate + "</td></td><td>" + item.status + "</td></tr>";
+
+           
+            var itituser = "-";
+            var ititdate = "-";
+            var accepteduser = "-";
+            var accepteddate = "-";
+            if(item.billOfMaterial != null){
+                itituser = item.billOfMaterial.enteredUser.email.split('@')[0];
+                ititdate = item.billOfMaterial.enteredDate;
+            }
+            if(item.acceptedUser != null){
+                accepteduser = item.acceptedUser.email.split('@')[0];
+                accepteddate = item.acceptedDate;
+            }
+            t18.row.add([item.code, item.jobNumber, item.customerid.firstname + " " + item.customerid.lastname ,    item.enteredUser.email.split('@')[0],
+             item.enteredDate,
+             itituser,
+             ititdate,
+             accepteduser,
+             accepteddate,
+            item.status]).draw(false);
+
+
+            dataset += "<tr><td>" + (i + 1) + "</td><td>" + item.code + "</td><td>" + item.jobNumber + "</td><td>" + item.customerid.firstname + " " + item.customerid.lastname + "</td><td>" + item.enteredUser.email.split('@')[0] + "</td><td>" + item.enteredDate + "</td><td>" + itituser+ "</td><td>" + ititdate + "</td><td>" + accepteduser + "</td><td>" + accepteddate + "</td><td>" + item.status+ "</td></tr>";
+
         })
         var year = new Date().getFullYear();
         var month = new Date().getMonth();

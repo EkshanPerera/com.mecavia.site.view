@@ -82,7 +82,7 @@ $(function () {
                                 var year = new Date().getFullYear();
                                 var month = new Date().getMonth();
                                 var day = new Date().getDate();
-                                var date = day + "/" + (parseInt(month) + 1) + "/" + year;
+                                var date = year + "-" + (parseInt(month) + 1) + "-" + day ;
                                 setNewValues(code, status, date);
                                 submit();
                             }
@@ -244,7 +244,7 @@ $(function () {
                 var year = new Date().getFullYear();
                 var month = new Date().getMonth();
                 var day = new Date().getDate();
-                var date = day + "/" + (parseInt(month) + 1) + "/" + year;
+                var date = year + "-" + (parseInt(month) + 1) + "-" + day ;
 
                 if (customerorderobj.printeddate) {
                     $("#podate").text(customerorderobj.printeddate)
